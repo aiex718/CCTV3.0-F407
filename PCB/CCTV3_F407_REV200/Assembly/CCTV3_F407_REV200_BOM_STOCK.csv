@@ -1,0 +1,10 @@
+﻿Item,Quantity,Designator,Comment,LibPart,Footprint,Part Type,Comment
+33,1,J1,Jmp_5V,Connector_Generic:Conn_01x02,PinHeader_2x01_P2.54mm_Vertical,TBD,
+34,1,J2,Jmp_3.3V,Connector_Generic:Conn_01x02,PinHeader_2x01_P2.54mm_Vertical,TBD,
+35,1,J3,FireDAP-SWD,Connector_Generic:Conn_01x05,PinHeader_1x05_P2.54mm_Vertical,TBD,
+36,1,J4,UART,Connector_Generic:Conn_01x04,PinHeader_1x04_P2.54mm_Vertical,TBD,
+37,1,J5,DC_Jack,Connector:Barrel_Jack_Switch,BarrelJack_Horizontal,TBD,
+38,1,J6,Conn_01x02,Connector_Generic:Conn_01x02,PinHeader_1x02_P2.54mm_Vertical,TBD,
+39,1,J7,Conn_01x04,Connector_Generic:Conn_01x04,PinHeader_1x04_P2.54mm_Vertical,TBD,
+40,1,J8,Conn_4-20mA,Connector_Generic:Conn_01x03,"PhoenixContact_MSTBA_2,5_3-G_1x03_P5.00mm_Horizontal",TBD,
+49,6,"LED5, LED6, LED7, LED8, LED9, LED10",JE2835AWT,SAW8A32E,LED-SMD_L3.3-W2.8-RD,DNP,
