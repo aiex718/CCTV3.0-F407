@@ -1,0 +1,3 @@
+(sym_lib_table
+  (lib (name "CCTV3_POE")(type "KiCad")(uri "${KIPRJMOD}/CCTV3_POE.kicad_sym")(options "")(descr ""))
+)

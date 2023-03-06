@@ -1,0 +1,72 @@
+(footprint "DP5312_SDAPO" (version 20211014) (generator pcbnew)
+  (layer "F.Cu")
+  (tedit 0)
+  (attr smd)
+  (fp_text reference "REF**" (at 0 -0.5 unlocked) (layer "F.SilkS")
+    (effects (font (size 1 1) (thickness 0.15)))
+    (tstamp 1b3ac73c-be0d-4cc6-923e-4f79f557ee23)
+  )
+  (fp_text value "DP5312_SDAPO" (at 0 1 unlocked) (layer "F.Fab")
+    (effects (font (size 1 1) (thickness 0.15)))
+    (tstamp 1c460461-33ab-4367-8f57-9386e1fa8e94)
+  )
+  (fp_text user "${REFERENCE}" (at 0 2.5 unlocked) (layer "F.Fab")
+    (effects (font (size 1 1) (thickness 0.15)))
+    (tstamp 36d1f126-8f4a-4bfc-9ac7-2da44040114c)
+  )
+  (fp_rect (start 0 2.4) (end 57.31 4) (layer "F.SilkS") (width 0.12) (fill none) (tstamp 0c59ae0f-9583-466a-b16c-989c6ac9c53f))
+  (fp_rect (start 0 0) (end 57.31 16.1) (layer "F.SilkS") (width 0.12) (fill none) (tstamp 2c8430e1-48ba-478f-ae67-69dd1fef25de))
+  (fp_rect (start 27.05 4) (end 40.55 16.05) (layer "F.SilkS") (width 0.12) (fill none) (tstamp 86ee0bda-f6b1-4b3d-9d60-7116b5c3b302))
+  (pad "1" thru_hole rect (at 5.11 8.5 90) (size 1.7 1.7) (drill 1) (layers *.Cu *.Mask) (tstamp a565b7df-68be-4fb4-95f3-d9ef2dd1c8d3))
+  (pad "2" thru_hole oval (at 7.74 8.49 90) (size 1.7 1.7) (drill 1) (layers *.Cu *.Mask) (tstamp 6a4e992b-510a-4e29-94d0-78ed762cfd86))
+  (pad "3" thru_hole oval (at 10.28 8.49 90) (size 1.7 1.7) (drill 1) (layers *.Cu *.Mask) (tstamp 167cebbe-1307-4839-ab6b-07d8e663e44e))
+  (pad "4" thru_hole oval (at 12.82 8.49 90) (size 1.7 1.7) (drill 1) (layers *.Cu *.Mask) (tstamp 6760c92c-bd35-477b-983f-a0da6cf2875f))
+  (pad "5" thru_hole oval (at 48.38 8.49 90) (size 1.7 1.7) (drill 1) (layers *.Cu *.Mask) (tstamp ca613d46-352e-43fd-be57-792a94c108c1))
+  (pad "6" thru_hole oval (at 50.92 8.49 90) (size 1.7 1.7) (drill 1) (layers *.Cu *.Mask) (tstamp 116dc20f-f10d-4fa0-b666-3ef0fc79036e))
+  (pad "7" thru_hole oval (at 53.46 8.49 90) (size 1.7 1.7) (drill 1) (layers *.Cu *.Mask) (tstamp 6b36b86f-d276-4005-b70b-7f57b45f3600))
+  (pad "8" thru_hole oval (at 56 8.49 90) (size 1.7 1.7) (drill 1) (layers *.Cu *.Mask) (tstamp d3012d6e-10bb-4f95-af5f-63257cb372be))
+  (zone (net 0) (net_name "") (layer "F.Cu") (tstamp 10f9a7e5-6c57-4346-8aec-207edc7d710f) (name "pcba") (hatch full 0.508)
+    (connect_pads (clearance 0))
+    (min_thickness 0.254)
+    (keepout (tracks allowed) (vias not_allowed) (pads not_allowed) (copperpour allowed) (footprints not_allowed))
+    (fill (thermal_gap 0.508) (thermal_bridge_width 0.508))
+    (polygon
+      (pts
+        (xy 57.31 4)
+        (xy 0 4)
+        (xy 0 0)
+        (xy 57.31 0)
+      )
+    )
+  )
+  (zone (net 0) (net_name "") (layer "F.Cu") (tstamp 18167534-8fdf-4a74-b659-d06ee89a099d) (name "transformer") (hatch full 0.508)
+    (connect_pads (clearance 0))
+    (min_thickness 0.254)
+    (keepout (tracks allowed) (vias allowed) (pads allowed) (copperpour allowed) (footprints not_allowed))
+    (fill (thermal_gap 0.508) (thermal_bridge_width 0.508))
+    (polygon
+      (pts
+        (xy 40.55 16.05)
+        (xy 27.05 16.05)
+        (xy 27.05 4)
+        (xy 40.55 4)
+      )
+    )
+  )
+  (group "" (id 256336d7-a9d5-4989-b705-1d1f266930c2)
+    (members
+      116dc20f-f10d-4fa0-b666-3ef0fc79036e
+      6b36b86f-d276-4005-b70b-7f57b45f3600
+      ca613d46-352e-43fd-be57-792a94c108c1
+      d3012d6e-10bb-4f95-af5f-63257cb372be
+    )
+  )
+  (group "" (id 79b694ea-0c56-4000-a5f8-9744979c44e0)
+    (members
+      167cebbe-1307-4839-ab6b-07d8e663e44e
+      6760c92c-bd35-477b-983f-a0da6cf2875f
+      6a4e992b-510a-4e29-94d0-78ed762cfd86
+      a565b7df-68be-4fb4-95f3-d9ef2dd1c8d3
+    )
+  )
+)

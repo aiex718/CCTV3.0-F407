@@ -1,0 +1,6 @@
+﻿Item,Qty,Designator,Comment,LibPart,Footprint,Part Type,JLCPCB Part #,Comment
+17,1,J1,Conn_01x04,Connector_Generic:Conn_01x04,PinHeader_1x04_P2.54mm_Vertical,,,
+18,1,J2,Conn_4-20mA,Connector_Generic:Conn_01x03,"PhoenixContact_MSTBA_2,5_3-G_1x03_P5.00mm_Horizontal",,,
+19,1,J3,M12_8P_Horizontal,CCTV3_POE:M12_8P_Horizontal,CCTV3_POE:M12_8P_Horizontal,,,
+20,1,J4,Jmp_12V,Connector_Generic:Conn_01x02,PinHeader_2x01_P2.54mm_Vertical,,,
+35,1,U1,DP5312_SDAPO,CCTV3_POE:DP5312_SDAPO,CCTV3_POE:DP5312_SDAPO,,,

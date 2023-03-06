@@ -1,0 +1,1605 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<export version="E">
+  <design>
+    <source>/Users/aiex718/Private/Workspace/CCTV3.0-F407/PCB/CCTV3_POE_REV100/CCTV3_POE_REV100.kicad_sch</source>
+    <date>Thursday, 24 November 2022 at 03:23:11</date>
+    <tool>Eeschema (6.0.8-1)-1</tool>
+    <sheet number="1" name="/" tstamps="/">
+      <title_block>
+        <title>POE</title>
+        <company>A. Chen</company>
+        <rev>100</rev>
+        <date>2022-10-28</date>
+        <source>CCTV3_POE_REV100.kicad_sch</source>
+        <comment number="1" value="CCTV3_POE_REV100"/>
+        <comment number="2" value=""/>
+        <comment number="3" value=""/>
+        <comment number="4" value=""/>
+        <comment number="5" value=""/>
+        <comment number="6" value=""/>
+        <comment number="7" value=""/>
+        <comment number="8" value=""/>
+        <comment number="9" value=""/>
+      </title_block>
+    </sheet>
+  </design>
+  <components>
+    <comp ref="C1">
+      <value>10pF</value>
+      <footprint>Capacitor_SMD:C_0402_1005Metric</footprint>
+      <fields>
+        <field name="LCSC Part">TBD</field>
+        <field name="Voltage">50V</field>
+      </fields>
+      <libsource lib="lcsc_parts" part="Cap" description="Unpolarized capacitor, small symbol"/>
+      <property name="Voltage" value="50V"/>
+      <property name="Tolerance" value=""/>
+      <property name="LCSC Part" value="TBD"/>
+      <property name="Sheetname" value=""/>
+      <property name="Sheetfile" value="File: CCTV3_POE_REV100.kicad_sch"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>042c67e9-ba9e-4ac3-91d2-2d06f151ffe8</tstamps>
+    </comp>
+    <comp ref="C2">
+      <value>10pF</value>
+      <footprint>Capacitor_SMD:C_0402_1005Metric</footprint>
+      <fields>
+        <field name="LCSC Part">TBD</field>
+        <field name="Voltage">50V</field>
+      </fields>
+      <libsource lib="lcsc_parts" part="Cap" description="Unpolarized capacitor, small symbol"/>
+      <property name="Voltage" value="50V"/>
+      <property name="Tolerance" value=""/>
+      <property name="LCSC Part" value="TBD"/>
+      <property name="Sheetname" value=""/>
+      <property name="Sheetfile" value="File: CCTV3_POE_REV100.kicad_sch"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>5894c103-14db-481e-87e4-d5d780916947</tstamps>
+    </comp>
+    <comp ref="C3">
+      <value>10pF</value>
+      <footprint>Capacitor_SMD:C_0402_1005Metric</footprint>
+      <fields>
+        <field name="LCSC Part">TBD</field>
+        <field name="Voltage">50V</field>
+      </fields>
+      <libsource lib="lcsc_parts" part="Cap" description="Unpolarized capacitor, small symbol"/>
+      <property name="Voltage" value="50V"/>
+      <property name="Tolerance" value=""/>
+      <property name="LCSC Part" value="TBD"/>
+      <property name="Sheetname" value=""/>
+      <property name="Sheetfile" value="File: CCTV3_POE_REV100.kicad_sch"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>54ebcf80-675f-4d27-87c0-b625c326c84c</tstamps>
+    </comp>
+    <comp ref="C4">
+      <value>10pF</value>
+      <footprint>Capacitor_SMD:C_0402_1005Metric</footprint>
+      <fields>
+        <field name="LCSC Part">TBD</field>
+        <field name="Voltage">50V</field>
+      </fields>
+      <libsource lib="lcsc_parts" part="Cap" description="Unpolarized capacitor, small symbol"/>
+      <property name="Voltage" value="50V"/>
+      <property name="Tolerance" value=""/>
+      <property name="LCSC Part" value="TBD"/>
+      <property name="Sheetname" value=""/>
+      <property name="Sheetfile" value="File: CCTV3_POE_REV100.kicad_sch"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>ddeaff8e-3493-449e-acd0-79c9a9c23f20</tstamps>
+    </comp>
+    <comp ref="C5">
+      <value>10nF</value>
+      <footprint>Capacitor_SMD:C_0603_1608Metric</footprint>
+      <fields>
+        <field name="LCSC Part">TBD</field>
+        <field name="Voltage">250V</field>
+      </fields>
+      <libsource lib="lcsc_parts" part="Cap" description="Unpolarized capacitor, small symbol"/>
+      <property name="Voltage" value="250V"/>
+      <property name="Tolerance" value=""/>
+      <property name="LCSC Part" value="TBD"/>
+      <property name="Sheetname" value=""/>
+      <property name="Sheetfile" value="File: CCTV3_POE_REV100.kicad_sch"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>0e51ecca-c730-4692-a1d3-f65e8505c665</tstamps>
+    </comp>
+    <comp ref="C6">
+      <value>10nF</value>
+      <footprint>Capacitor_SMD:C_0603_1608Metric</footprint>
+      <fields>
+        <field name="LCSC Part">TBD</field>
+        <field name="Voltage">250V</field>
+      </fields>
+      <libsource lib="lcsc_parts" part="Cap" description="Unpolarized capacitor, small symbol"/>
+      <property name="Voltage" value="250V"/>
+      <property name="Tolerance" value=""/>
+      <property name="LCSC Part" value="TBD"/>
+      <property name="Sheetname" value=""/>
+      <property name="Sheetfile" value="File: CCTV3_POE_REV100.kicad_sch"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>84775b1e-7b32-435e-9ba4-e6cf5ff5e620</tstamps>
+    </comp>
+    <comp ref="C7">
+      <value>1000pF</value>
+      <footprint>Capacitor_SMD:C_1206_3216Metric</footprint>
+      <fields>
+        <field name="LCSC Part">TBD</field>
+        <field name="Voltage">2KV</field>
+      </fields>
+      <libsource lib="lcsc_parts" part="Cap" description="Unpolarized capacitor, small symbol"/>
+      <property name="Voltage" value="2KV"/>
+      <property name="Tolerance" value=""/>
+      <property name="LCSC Part" value="TBD"/>
+      <property name="Sheetname" value=""/>
+      <property name="Sheetfile" value="File: CCTV3_POE_REV100.kicad_sch"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>e81a1052-410b-4172-8e31-23d5969055f8</tstamps>
+    </comp>
+    <comp ref="C8">
+      <value>220uF</value>
+      <footprint>Capacitor_SMD:CP_Elec_6.3x7.7</footprint>
+      <datasheet>https://lcsc.com/product-detail/Others_Lelon-VZT221M1ETR-0607_C371974.html</datasheet>
+      <fields>
+        <field name="JLC Part">Extended Part</field>
+        <field name="LCSC Part">C371974</field>
+        <field name="Manufacturer">Lelon</field>
+        <field name="Voltage">25V</field>
+      </fields>
+      <libsource lib="lcsc_parts" part="Cap_Polarized" description="Polarized capacitor, small US symbol"/>
+      <property name="Manufacturer" value="Lelon"/>
+      <property name="LCSC Part" value="C371974"/>
+      <property name="JLC Part" value="Extended Part"/>
+      <property name="Voltage" value="25V"/>
+      <property name="Tolerance" value=""/>
+      <property name="Sheetname" value=""/>
+      <property name="Sheetfile" value="File: CCTV3_POE_REV100.kicad_sch"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>9d03741b-646a-48c0-8978-17e629c8ef61</tstamps>
+    </comp>
+    <comp ref="C9">
+      <value>10uF</value>
+      <footprint>Capacitor_SMD:C_0805_2012Metric</footprint>
+      <fields>
+        <field name="LCSC Part">TBD</field>
+        <field name="Voltage">25V</field>
+      </fields>
+      <libsource lib="lcsc_parts" part="Cap" description="Unpolarized capacitor, small symbol"/>
+      <property name="Voltage" value="25V"/>
+      <property name="Tolerance" value=""/>
+      <property name="LCSC Part" value="TBD"/>
+      <property name="Sheetname" value=""/>
+      <property name="Sheetfile" value="File: CCTV3_POE_REV100.kicad_sch"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>49efa324-8f2a-47d7-be0e-cf4baed5acb6</tstamps>
+    </comp>
+    <comp ref="C10">
+      <value>10uF</value>
+      <footprint>Capacitor_SMD:C_0805_2012Metric</footprint>
+      <fields>
+        <field name="LCSC Part">TBD</field>
+        <field name="Voltage">25V</field>
+      </fields>
+      <libsource lib="lcsc_parts" part="Cap" description="Unpolarized capacitor, small symbol"/>
+      <property name="Voltage" value="25V"/>
+      <property name="Tolerance" value=""/>
+      <property name="LCSC Part" value="TBD"/>
+      <property name="Sheetname" value=""/>
+      <property name="Sheetfile" value="File: CCTV3_POE_REV100.kicad_sch"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>738b7acf-b21f-4f22-81f3-ff841202ef92</tstamps>
+    </comp>
+    <comp ref="C11">
+      <value>10uF</value>
+      <footprint>Capacitor_SMD:C_0603_1608Metric</footprint>
+      <fields>
+        <field name="LCSC Part">TBD</field>
+        <field name="Voltage">25V</field>
+      </fields>
+      <libsource lib="lcsc_parts" part="Cap" description="Unpolarized capacitor, small symbol"/>
+      <property name="Voltage" value="25V"/>
+      <property name="Tolerance" value=""/>
+      <property name="LCSC Part" value="TBD"/>
+      <property name="Sheetname" value=""/>
+      <property name="Sheetfile" value="File: CCTV3_POE_REV100.kicad_sch"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>e6f48b12-84b7-4727-890a-772684cf441a</tstamps>
+    </comp>
+    <comp ref="C12">
+      <value>10uF</value>
+      <footprint>Capacitor_SMD:C_1206_3216Metric</footprint>
+      <fields>
+        <field name="LCSC Part">TBD</field>
+        <field name="Voltage">50V</field>
+      </fields>
+      <libsource lib="lcsc_parts" part="Cap" description="Unpolarized capacitor, small symbol"/>
+      <property name="Voltage" value="50V"/>
+      <property name="Tolerance" value=""/>
+      <property name="LCSC Part" value="TBD"/>
+      <property name="Sheetname" value=""/>
+      <property name="Sheetfile" value="File: CCTV3_POE_REV100.kicad_sch"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>8b60a962-81af-496a-9b17-f26ae2113b6e</tstamps>
+    </comp>
+    <comp ref="C13">
+      <value>10nF</value>
+      <footprint>Capacitor_SMD:C_0603_1608Metric</footprint>
+      <fields>
+        <field name="LCSC Part">TBD</field>
+        <field name="Voltage">250V</field>
+      </fields>
+      <libsource lib="lcsc_parts" part="Cap" description="Unpolarized capacitor, small symbol"/>
+      <property name="Voltage" value="250V"/>
+      <property name="Tolerance" value=""/>
+      <property name="LCSC Part" value="TBD"/>
+      <property name="Sheetname" value=""/>
+      <property name="Sheetfile" value="File: CCTV3_POE_REV100.kicad_sch"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>d8e050fd-183c-4013-a1f5-7876e61e1dd6</tstamps>
+    </comp>
+    <comp ref="C14">
+      <value>10nF</value>
+      <footprint>Capacitor_SMD:C_0603_1608Metric</footprint>
+      <fields>
+        <field name="LCSC Part">TBD</field>
+        <field name="Voltage">250V</field>
+      </fields>
+      <libsource lib="lcsc_parts" part="Cap" description="Unpolarized capacitor, small symbol"/>
+      <property name="Voltage" value="250V"/>
+      <property name="Tolerance" value=""/>
+      <property name="LCSC Part" value="TBD"/>
+      <property name="Sheetname" value=""/>
+      <property name="Sheetfile" value="File: CCTV3_POE_REV100.kicad_sch"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>9461671b-357a-447d-a7cf-514566c704bc</tstamps>
+    </comp>
+    <comp ref="C15">
+      <value>10nF</value>
+      <footprint>Capacitor_SMD:C_0603_1608Metric</footprint>
+      <fields>
+        <field name="LCSC Part">TBD</field>
+        <field name="Voltage">250V</field>
+      </fields>
+      <libsource lib="lcsc_parts" part="Cap" description="Unpolarized capacitor, small symbol"/>
+      <property name="Voltage" value="250V"/>
+      <property name="Tolerance" value=""/>
+      <property name="LCSC Part" value="TBD"/>
+      <property name="Sheetname" value=""/>
+      <property name="Sheetfile" value="File: CCTV3_POE_REV100.kicad_sch"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>5a44e1c2-15a2-40be-86f2-78d770f0c069</tstamps>
+    </comp>
+    <comp ref="C16">
+      <value>10nF</value>
+      <footprint>Capacitor_SMD:C_0603_1608Metric</footprint>
+      <fields>
+        <field name="LCSC Part">TBD</field>
+        <field name="Voltage">250V</field>
+      </fields>
+      <libsource lib="lcsc_parts" part="Cap" description="Unpolarized capacitor, small symbol"/>
+      <property name="Voltage" value="250V"/>
+      <property name="Tolerance" value=""/>
+      <property name="LCSC Part" value="TBD"/>
+      <property name="Sheetname" value=""/>
+      <property name="Sheetfile" value="File: CCTV3_POE_REV100.kicad_sch"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>5d34e9eb-4b4c-4417-adaa-066c3c15383a</tstamps>
+    </comp>
+    <comp ref="C17">
+      <value>1000pF</value>
+      <footprint>Capacitor_SMD:C_1206_3216Metric</footprint>
+      <fields>
+        <field name="LCSC Part">TBD</field>
+        <field name="Voltage">2KV</field>
+      </fields>
+      <libsource lib="lcsc_parts" part="Cap" description="Unpolarized capacitor, small symbol"/>
+      <property name="Voltage" value="2KV"/>
+      <property name="Tolerance" value=""/>
+      <property name="LCSC Part" value="TBD"/>
+      <property name="Sheetname" value=""/>
+      <property name="Sheetfile" value="File: CCTV3_POE_REV100.kicad_sch"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>7bab28ba-815e-47bf-8b39-4eb4a8d2011b</tstamps>
+    </comp>
+    <comp ref="C18">
+      <value>10uF</value>
+      <footprint>Capacitor_SMD:C_1206_3216Metric</footprint>
+      <fields>
+        <field name="LCSC Part">TBD</field>
+        <field name="Voltage">50V</field>
+      </fields>
+      <libsource lib="lcsc_parts" part="Cap" description="Unpolarized capacitor, small symbol"/>
+      <property name="Voltage" value="50V"/>
+      <property name="Tolerance" value=""/>
+      <property name="LCSC Part" value="TBD"/>
+      <property name="Sheetname" value=""/>
+      <property name="Sheetfile" value="File: CCTV3_POE_REV100.kicad_sch"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>ff1d2c5d-ff43-4b88-9eed-d84dccdb356d</tstamps>
+    </comp>
+    <comp ref="C19">
+      <value>100nF</value>
+      <footprint>Capacitor_SMD:C_0603_1608Metric</footprint>
+      <fields>
+        <field name="LCSC Part">TBD</field>
+        <field name="Voltage">50V</field>
+      </fields>
+      <libsource lib="lcsc_parts" part="Cap" description="Unpolarized capacitor, small symbol"/>
+      <property name="Voltage" value="50V"/>
+      <property name="Tolerance" value=""/>
+      <property name="LCSC Part" value="TBD"/>
+      <property name="Sheetname" value=""/>
+      <property name="Sheetfile" value="File: CCTV3_POE_REV100.kicad_sch"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>2a90b959-9eda-4600-9a4d-449ab6392db7</tstamps>
+    </comp>
+    <comp ref="C20">
+      <value>47uF</value>
+      <footprint>Capacitor_SMD:C_1206_3216Metric</footprint>
+      <fields>
+        <field name="LCSC Part">TBD</field>
+        <field name="Voltage">10V</field>
+      </fields>
+      <libsource lib="lcsc_parts" part="Cap" description="Unpolarized capacitor, small symbol"/>
+      <property name="Voltage" value="10V"/>
+      <property name="Tolerance" value=""/>
+      <property name="LCSC Part" value="TBD"/>
+      <property name="Sheetname" value=""/>
+      <property name="Sheetfile" value="File: CCTV3_POE_REV100.kicad_sch"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>104c3e22-a978-45b5-b808-f41b65ca090d</tstamps>
+    </comp>
+    <comp ref="C21">
+      <value>10nF</value>
+      <footprint>Capacitor_SMD:C_0603_1608Metric</footprint>
+      <fields>
+        <field name="LCSC Part">TBD</field>
+        <field name="Voltage">50</field>
+      </fields>
+      <libsource lib="lcsc_parts" part="Cap" description="Unpolarized capacitor, small symbol"/>
+      <property name="Voltage" value="50"/>
+      <property name="Tolerance" value=""/>
+      <property name="LCSC Part" value="TBD"/>
+      <property name="Sheetname" value=""/>
+      <property name="Sheetfile" value="File: CCTV3_POE_REV100.kicad_sch"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>4c3c4fbb-e20d-4bde-914c-8812fdf90940</tstamps>
+    </comp>
+    <comp ref="C22">
+      <value>1nF</value>
+      <footprint>Capacitor_SMD:C_0603_1608Metric</footprint>
+      <fields>
+        <field name="LCSC Part">TBD</field>
+        <field name="Voltage">50V</field>
+      </fields>
+      <libsource lib="lcsc_parts" part="Cap" description="Unpolarized capacitor, small symbol"/>
+      <property name="Voltage" value="50V"/>
+      <property name="Tolerance" value=""/>
+      <property name="LCSC Part" value="TBD"/>
+      <property name="Sheetname" value=""/>
+      <property name="Sheetfile" value="File: CCTV3_POE_REV100.kicad_sch"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>41f637e2-2dc4-4018-90b8-282c44351baa</tstamps>
+    </comp>
+    <comp ref="C23">
+      <value>47pF</value>
+      <footprint>Capacitor_SMD:C_0603_1608Metric</footprint>
+      <fields>
+        <field name="LCSC Part">TBD</field>
+        <field name="Voltage">50V</field>
+      </fields>
+      <libsource lib="lcsc_parts" part="Cap" description="Unpolarized capacitor, small symbol"/>
+      <property name="Voltage" value="50V"/>
+      <property name="Tolerance" value=""/>
+      <property name="LCSC Part" value="TBD"/>
+      <property name="Sheetname" value=""/>
+      <property name="Sheetfile" value="File: CCTV3_POE_REV100.kicad_sch"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>3a8ab3ff-340e-4b3a-8613-9b4f7429ead8</tstamps>
+    </comp>
+    <comp ref="D1">
+      <value>MB6S</value>
+      <footprint>Package_TO_SOT_SMD:TO-269AA</footprint>
+      <datasheet>http://www.vishay.com/docs/88573/dfs.pdf</datasheet>
+      <libsource lib="Diode_Bridge" part="MB6S" description="Miniature Glass Passivated Single-Phase Surface Mount Bridge Rectifiers, 700V Vrms, 1.0A If, DFS SMD package"/>
+      <property name="Sheetname" value=""/>
+      <property name="Sheetfile" value="File: CCTV3_POE_REV100.kicad_sch"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>1014453e-64d3-4407-9c0b-7bd4a0ea0d8d</tstamps>
+    </comp>
+    <comp ref="D2">
+      <value>MB6S</value>
+      <footprint>Package_TO_SOT_SMD:TO-269AA</footprint>
+      <datasheet>http://www.vishay.com/docs/88573/dfs.pdf</datasheet>
+      <libsource lib="Diode_Bridge" part="MB6S" description="Miniature Glass Passivated Single-Phase Surface Mount Bridge Rectifiers, 700V Vrms, 1.0A If, DFS SMD package"/>
+      <property name="Sheetname" value=""/>
+      <property name="Sheetfile" value="File: CCTV3_POE_REV100.kicad_sch"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>820515c3-7c57-4e02-88f7-ab461b27e438</tstamps>
+    </comp>
+    <comp ref="D3">
+      <value>SMBJ58A</value>
+      <footprint>Diode_SMD:D_SMB</footprint>
+      <datasheet>https://lcsc.com/product-detail/TVS_FTR-SMBJ58A_C707476.html</datasheet>
+      <fields>
+        <field name="JLC Part">Extended Part</field>
+        <field name="LCSC Part">C707476</field>
+        <field name="Manufacturer">FTR</field>
+      </fields>
+      <libsource lib="lcsc_parts" part="SMBJ58A_C707476" description=""/>
+      <property name="Manufacturer" value="FTR"/>
+      <property name="LCSC Part" value="C707476"/>
+      <property name="JLC Part" value="Extended Part"/>
+      <property name="Sheetname" value=""/>
+      <property name="Sheetfile" value="File: CCTV3_POE_REV100.kicad_sch"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>85927fa5-eb07-44ef-a73d-64669951db0f</tstamps>
+    </comp>
+    <comp ref="D4">
+      <value>SMAJ5.0CA</value>
+      <footprint>Diode_SMD:D_SMA</footprint>
+      <datasheet>https://lcsc.com/product-detail/TVS_Littelfuse_SMAJ5-0CA_SMAJ5-0CA_C83324.html</datasheet>
+      <fields>
+        <field name="JLC Part">Extended Part</field>
+        <field name="LCSC Part">C83324</field>
+        <field name="Manufacturer">Littelfuse</field>
+      </fields>
+      <libsource lib="lcsc_parts" part="SMAJ5.0CA-C83324" description=""/>
+      <property name="Manufacturer" value="Littelfuse"/>
+      <property name="LCSC Part" value="C83324"/>
+      <property name="JLC Part" value="Extended Part"/>
+      <property name="Sheetname" value=""/>
+      <property name="Sheetfile" value="File: CCTV3_POE_REV100.kicad_sch"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>7e3d44b3-29c8-46d8-8cc4-f48b67805a71</tstamps>
+    </comp>
+    <comp ref="D5">
+      <value>SS34</value>
+      <footprint>Diode_SMD:D_SMA</footprint>
+      <datasheet>https://lcsc.com/product-detail/Schottky-Barrier-Diodes-SBD_SS34_C8678.html</datasheet>
+      <fields>
+        <field name="JLC Part">Basic Part</field>
+        <field name="LCSC Part">C8678</field>
+        <field name="Manufacturer">MDD</field>
+      </fields>
+      <libsource lib="lcsc_parts" part="SS34" description=""/>
+      <property name="Manufacturer" value="MDD"/>
+      <property name="LCSC Part" value="C8678"/>
+      <property name="JLC Part" value="Basic Part"/>
+      <property name="Sheetname" value=""/>
+      <property name="Sheetfile" value="File: CCTV3_POE_REV100.kicad_sch"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>81825075-8a33-44ba-9bb2-6e10f2149e0d</tstamps>
+    </comp>
+    <comp ref="H1">
+      <value>MountingHole</value>
+      <footprint>MountingHole:MountingHole_2.2mm_M2_Pad</footprint>
+      <libsource lib="Mechanical" part="MountingHole_Pad" description="Mounting Hole with connection"/>
+      <property name="Sheetname" value=""/>
+      <property name="Sheetfile" value="File: CCTV3_POE_REV100.kicad_sch"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>b6a166a0-3b10-457a-bb30-bf491702f86f</tstamps>
+    </comp>
+    <comp ref="H2">
+      <value>MountingHole</value>
+      <footprint>MountingHole:MountingHole_2.2mm_M2_Pad</footprint>
+      <libsource lib="Mechanical" part="MountingHole_Pad" description="Mounting Hole with connection"/>
+      <property name="Sheetname" value=""/>
+      <property name="Sheetfile" value="File: CCTV3_POE_REV100.kicad_sch"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>d73852d6-3de0-4da9-aab9-95f1873fc62d</tstamps>
+    </comp>
+    <comp ref="H3">
+      <value>MountingHole</value>
+      <footprint>MountingHole:MountingHole_2.2mm_M2_Pad</footprint>
+      <libsource lib="Mechanical" part="MountingHole_Pad" description="Mounting Hole with connection"/>
+      <property name="Sheetname" value=""/>
+      <property name="Sheetfile" value="File: CCTV3_POE_REV100.kicad_sch"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>3b453b32-793a-4415-8b3c-1834b2b379ed</tstamps>
+    </comp>
+    <comp ref="H4">
+      <value>MountingHole</value>
+      <footprint>MountingHole:MountingHole_2.2mm_M2_Pad</footprint>
+      <libsource lib="Mechanical" part="MountingHole_Pad" description="Mounting Hole with connection"/>
+      <property name="Sheetname" value=""/>
+      <property name="Sheetfile" value="File: CCTV3_POE_REV100.kicad_sch"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>eb6f5a34-fa28-44b7-aaf7-51ec1d183ec3</tstamps>
+    </comp>
+    <comp ref="J1">
+      <value>Conn_01x04</value>
+      <footprint>Connector_PinHeader_2.54mm:PinHeader_1x04_P2.54mm_Vertical</footprint>
+      <libsource lib="Connector_Generic" part="Conn_01x04" description="Generic connector, single row, 01x04, script generated (kicad-library-utils/schlib/autogen/connector/)"/>
+      <property name="Sheetname" value=""/>
+      <property name="Sheetfile" value="File: CCTV3_POE_REV100.kicad_sch"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>5405ec6d-20a6-4262-a4f6-ee4289634567</tstamps>
+    </comp>
+    <comp ref="J2">
+      <value>Conn_4-20mA</value>
+      <footprint>Connector_Phoenix_MSTB:PhoenixContact_MSTBA_2,5_3-G_1x03_P5.00mm_Horizontal</footprint>
+      <libsource lib="Connector_Generic" part="Conn_01x03" description="Generic connector, single row, 01x03, script generated (kicad-library-utils/schlib/autogen/connector/)"/>
+      <property name="Sheetname" value=""/>
+      <property name="Sheetfile" value="File: CCTV3_POE_REV100.kicad_sch"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>b456b497-8419-4093-b895-e7dad460137d</tstamps>
+    </comp>
+    <comp ref="J3">
+      <value>M12_8P_Horizontal</value>
+      <footprint>CCTV3_POE:M12_8P_Horizontal</footprint>
+      <datasheet>https://item.taobao.com/item.htm?spm=a230r.1.14.231.1cd43c38zKFxjG&amp;id=651261734211&amp;ns=1&amp;abbucket=19#detail</datasheet>
+      <libsource lib="CCTV3_POE" part="M12_8P_Horizontal" description="Generic connector, single row, 01x08, script generated (kicad-library-utils/schlib/autogen/connector/)"/>
+      <property name="Sheetname" value=""/>
+      <property name="Sheetfile" value="File: CCTV3_POE_REV100.kicad_sch"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>ac37462f-497f-4ff2-87ed-511354ea3d07</tstamps>
+    </comp>
+    <comp ref="J4">
+      <value>Jmp_12V</value>
+      <footprint>Connector_PinHeader_2.54mm:PinHeader_2x01_P2.54mm_Vertical</footprint>
+      <libsource lib="Connector_Generic" part="Conn_01x02" description="Generic connector, single row, 01x02, script generated (kicad-library-utils/schlib/autogen/connector/)"/>
+      <property name="Sheetname" value=""/>
+      <property name="Sheetfile" value="File: CCTV3_POE_REV100.kicad_sch"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>fd45d36c-7400-4d56-a479-99c5d34e8c22</tstamps>
+    </comp>
+    <comp ref="L1">
+      <value>100R</value>
+      <footprint>Inductor_SMD:L_0805_2012Metric</footprint>
+      <datasheet>https://lcsc.com/product-detail/Ferrite-Beads-And-Chips_600R-25-100MHz_C1002.html</datasheet>
+      <fields>
+        <field name="JLC Part">Basic Part</field>
+        <field name="LCSC Part">C1015</field>
+        <field name="Manufacturer">Sunlord</field>
+        <field name="Model">GZ2012D101TF</field>
+      </fields>
+      <libsource lib="lcsc_parts" part="GZ1608D601TF" description=""/>
+      <property name="Manufacturer" value="Sunlord"/>
+      <property name="LCSC Part" value="C1015"/>
+      <property name="JLC Part" value="Basic Part"/>
+      <property name="Model" value="GZ2012D101TF"/>
+      <property name="Sheetname" value=""/>
+      <property name="Sheetfile" value="File: CCTV3_POE_REV100.kicad_sch"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>c586adee-532a-400f-bed4-665311d95548</tstamps>
+    </comp>
+    <comp ref="L2">
+      <value>100R</value>
+      <footprint>Inductor_SMD:L_0805_2012Metric</footprint>
+      <datasheet>https://lcsc.com/product-detail/Ferrite-Beads-And-Chips_600R-25-100MHz_C1002.html</datasheet>
+      <fields>
+        <field name="JLC Part">Basic Part</field>
+        <field name="LCSC Part">C1015</field>
+        <field name="Manufacturer">Sunlord</field>
+        <field name="Model">GZ2012D101TF</field>
+      </fields>
+      <libsource lib="lcsc_parts" part="GZ1608D601TF" description=""/>
+      <property name="Manufacturer" value="Sunlord"/>
+      <property name="LCSC Part" value="C1015"/>
+      <property name="JLC Part" value="Basic Part"/>
+      <property name="Model" value="GZ2012D101TF"/>
+      <property name="Sheetname" value=""/>
+      <property name="Sheetfile" value="File: CCTV3_POE_REV100.kicad_sch"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>6f528a6b-8707-42b9-8035-c5ddcdb3d7fb</tstamps>
+    </comp>
+    <comp ref="L3">
+      <value>HY601742</value>
+      <footprint>lcsc_parts:RJ45-SMD_HY601742</footprint>
+      <datasheet>https://lcsc.com/product-detail/RJ45-Transformer_100MNetwork-transformer-PoE_C55684.html</datasheet>
+      <fields>
+        <field name="JLC Part">Extended Part</field>
+        <field name="LCSC Part">C55684</field>
+        <field name="Manufacturer">HANRUN</field>
+      </fields>
+      <libsource lib="lcsc_parts" part="HY601742" description=""/>
+      <property name="Manufacturer" value="HANRUN"/>
+      <property name="LCSC Part" value="C55684"/>
+      <property name="JLC Part" value="Extended Part"/>
+      <property name="Sheetname" value=""/>
+      <property name="Sheetfile" value="File: CCTV3_POE_REV100.kicad_sch"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>db17220b-4750-44fb-bb8e-cf9a25897a6f</tstamps>
+    </comp>
+    <comp ref="L4">
+      <value>600R</value>
+      <footprint>Inductor_SMD:L_0603_1608Metric</footprint>
+      <datasheet>https://lcsc.com/product-detail/Ferrite-Beads-And-Chips_600R-25-100MHz_C1002.html</datasheet>
+      <fields>
+        <field name="JLC Part">Basic Part</field>
+        <field name="LCSC Part">C1002</field>
+        <field name="Manufacturer">Sunlord</field>
+        <field name="Model">GZ1608D601TF</field>
+      </fields>
+      <libsource lib="lcsc_parts" part="GZ1608D601TF" description=""/>
+      <property name="Manufacturer" value="Sunlord"/>
+      <property name="LCSC Part" value="C1002"/>
+      <property name="JLC Part" value="Basic Part"/>
+      <property name="Model" value="GZ1608D601TF"/>
+      <property name="Sheetname" value=""/>
+      <property name="Sheetfile" value="File: CCTV3_POE_REV100.kicad_sch"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>9dfcbc13-e7c2-49f2-bea9-fee43c82099a</tstamps>
+    </comp>
+    <comp ref="L5">
+      <value>SMNR4020-2.2UH</value>
+      <footprint>lcsc_parts:IND-SMD_L4.0-W4.0_SMNR4020</footprint>
+      <datasheet>https://lcsc.com/product-detail/Power-Inductors_2-2uH-20_C135262.html</datasheet>
+      <fields>
+        <field name="JLC Part">Extended Part</field>
+        <field name="LCSC Part">C135262</field>
+        <field name="Manufacturer">SXN</field>
+      </fields>
+      <libsource lib="lcsc_parts" part="SMNR4020-2.2UH" description=""/>
+      <property name="Manufacturer" value="SXN"/>
+      <property name="LCSC Part" value="C135262"/>
+      <property name="JLC Part" value="Extended Part"/>
+      <property name="Sheetname" value=""/>
+      <property name="Sheetfile" value="File: CCTV3_POE_REV100.kicad_sch"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>a7e27571-eb4a-49e8-a1ec-6452701ccc20</tstamps>
+    </comp>
+    <comp ref="L6">
+      <value>600R</value>
+      <footprint>Inductor_SMD:L_0603_1608Metric</footprint>
+      <datasheet>https://lcsc.com/product-detail/Ferrite-Beads-And-Chips_600R-25-100MHz_C1002.html</datasheet>
+      <fields>
+        <field name="JLC Part">Basic Part</field>
+        <field name="LCSC Part">C1002</field>
+        <field name="Manufacturer">Sunlord</field>
+        <field name="Model">GZ1608D601TF</field>
+      </fields>
+      <libsource lib="lcsc_parts" part="GZ1608D601TF" description=""/>
+      <property name="Manufacturer" value="Sunlord"/>
+      <property name="LCSC Part" value="C1002"/>
+      <property name="JLC Part" value="Basic Part"/>
+      <property name="Model" value="GZ1608D601TF"/>
+      <property name="Sheetname" value=""/>
+      <property name="Sheetfile" value="File: CCTV3_POE_REV100.kicad_sch"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>37300d7b-0bed-409f-acee-49d3c9521d40</tstamps>
+    </comp>
+    <comp ref="L7">
+      <value>33uH</value>
+      <footprint>lcsc_parts:IND-SMD_L6.0-W6.0</footprint>
+      <datasheet>https://lcsc.com/product-detail/Power-Inductors_Chilisin-Elec-LVS606045-330M-N_C285825.html</datasheet>
+      <fields>
+        <field name="LCSC Part">C285825</field>
+        <field name="Manufacturer">Chilisin Elec</field>
+      </fields>
+      <libsource lib="lcsc_parts" part="LVS606045-330M-N" description=""/>
+      <property name="Manufacturer" value="Chilisin Elec"/>
+      <property name="LCSC Part" value="C285825"/>
+      <property name="Sheetname" value=""/>
+      <property name="Sheetfile" value="File: CCTV3_POE_REV100.kicad_sch"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>463b95b6-96ac-4de9-b212-24be135f2465</tstamps>
+    </comp>
+    <comp ref="R1">
+      <value>75R</value>
+      <footprint>Resistor_SMD:R_0603_1608Metric</footprint>
+      <fields>
+        <field name="LCSC Part">TBD</field>
+      </fields>
+      <libsource lib="lcsc_parts" part="Res" description=""/>
+      <property name="Tolerance" value=""/>
+      <property name="LCSC Part" value="TBD"/>
+      <property name="Sheetname" value=""/>
+      <property name="Sheetfile" value="File: CCTV3_POE_REV100.kicad_sch"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>13062170-be36-4e6d-89e4-8ad14e054fa3</tstamps>
+    </comp>
+    <comp ref="R2">
+      <value>75R</value>
+      <footprint>Resistor_SMD:R_0603_1608Metric</footprint>
+      <fields>
+        <field name="LCSC Part">TBD</field>
+      </fields>
+      <libsource lib="lcsc_parts" part="Res" description=""/>
+      <property name="Tolerance" value=""/>
+      <property name="LCSC Part" value="TBD"/>
+      <property name="Sheetname" value=""/>
+      <property name="Sheetfile" value="File: CCTV3_POE_REV100.kicad_sch"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>2740f085-9ca9-4d97-a3ef-cfcd55ef7274</tstamps>
+    </comp>
+    <comp ref="R3">
+      <value>4.7k</value>
+      <footprint>Resistor_SMD:R_0603_1608Metric</footprint>
+      <fields>
+        <field name="LCSC Part">TBD</field>
+      </fields>
+      <libsource lib="lcsc_parts" part="Res" description=""/>
+      <property name="Tolerance" value=""/>
+      <property name="LCSC Part" value="TBD"/>
+      <property name="Sheetname" value=""/>
+      <property name="Sheetfile" value="File: CCTV3_POE_REV100.kicad_sch"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>cd114bbe-981c-4e90-b10c-fb593f7cba0a</tstamps>
+    </comp>
+    <comp ref="R4">
+      <value>6.8k</value>
+      <footprint>Resistor_SMD:R_0603_1608Metric</footprint>
+      <fields>
+        <field name="LCSC Part">TBD</field>
+      </fields>
+      <libsource lib="lcsc_parts" part="Res" description=""/>
+      <property name="Tolerance" value=""/>
+      <property name="LCSC Part" value="TBD"/>
+      <property name="Sheetname" value=""/>
+      <property name="Sheetfile" value="File: CCTV3_POE_REV100.kicad_sch"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>66510786-a1c0-4470-a24b-c5dc9fcab45a</tstamps>
+    </comp>
+    <comp ref="R5">
+      <value>75R</value>
+      <footprint>Resistor_SMD:R_0603_1608Metric</footprint>
+      <fields>
+        <field name="LCSC Part">TBD</field>
+      </fields>
+      <libsource lib="lcsc_parts" part="Res" description=""/>
+      <property name="Tolerance" value=""/>
+      <property name="LCSC Part" value="TBD"/>
+      <property name="Sheetname" value=""/>
+      <property name="Sheetfile" value="File: CCTV3_POE_REV100.kicad_sch"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>c5bd6c24-7151-4810-9418-e8e840bd5a52</tstamps>
+    </comp>
+    <comp ref="R6">
+      <value>75R</value>
+      <footprint>Resistor_SMD:R_0603_1608Metric</footprint>
+      <fields>
+        <field name="LCSC Part">TBD</field>
+      </fields>
+      <libsource lib="lcsc_parts" part="Res" description=""/>
+      <property name="Tolerance" value=""/>
+      <property name="LCSC Part" value="TBD"/>
+      <property name="Sheetname" value=""/>
+      <property name="Sheetfile" value="File: CCTV3_POE_REV100.kicad_sch"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>23efb589-d869-4a84-a8c1-d9f5170236ff</tstamps>
+    </comp>
+    <comp ref="R7">
+      <value>75R</value>
+      <footprint>Resistor_SMD:R_0603_1608Metric</footprint>
+      <fields>
+        <field name="LCSC Part">TBD</field>
+      </fields>
+      <libsource lib="lcsc_parts" part="Res" description=""/>
+      <property name="Tolerance" value=""/>
+      <property name="LCSC Part" value="TBD"/>
+      <property name="Sheetname" value=""/>
+      <property name="Sheetfile" value="File: CCTV3_POE_REV100.kicad_sch"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>6ed4cb59-22cf-4077-bb58-3078643d88cf</tstamps>
+    </comp>
+    <comp ref="R8">
+      <value>75R</value>
+      <footprint>Resistor_SMD:R_0603_1608Metric</footprint>
+      <fields>
+        <field name="LCSC Part">TBD</field>
+      </fields>
+      <libsource lib="lcsc_parts" part="Res" description=""/>
+      <property name="Tolerance" value=""/>
+      <property name="LCSC Part" value="TBD"/>
+      <property name="Sheetname" value=""/>
+      <property name="Sheetfile" value="File: CCTV3_POE_REV100.kicad_sch"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>9a175462-ae76-4024-98d0-df5fbf0eb205</tstamps>
+    </comp>
+    <comp ref="R9">
+      <value>330k</value>
+      <footprint>Resistor_SMD:R_0603_1608Metric</footprint>
+      <fields>
+        <field name="LCSC Part">TBD</field>
+      </fields>
+      <libsource lib="lcsc_parts" part="Res" description=""/>
+      <property name="Tolerance" value=""/>
+      <property name="LCSC Part" value="TBD"/>
+      <property name="Sheetname" value=""/>
+      <property name="Sheetfile" value="File: CCTV3_POE_REV100.kicad_sch"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>18e01d60-a087-4843-b101-c3fbe9b50d40</tstamps>
+    </comp>
+    <comp ref="R10">
+      <value>10k</value>
+      <footprint>Resistor_SMD:R_0603_1608Metric</footprint>
+      <fields>
+        <field name="LCSC Part">TBD</field>
+      </fields>
+      <libsource lib="lcsc_parts" part="Res" description=""/>
+      <property name="Tolerance" value=""/>
+      <property name="LCSC Part" value="TBD"/>
+      <property name="Sheetname" value=""/>
+      <property name="Sheetfile" value="File: CCTV3_POE_REV100.kicad_sch"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>5b103a94-b8c3-439b-9094-e22d0d9291d9</tstamps>
+    </comp>
+    <comp ref="R11">
+      <value>68k</value>
+      <footprint>Resistor_SMD:R_0603_1608Metric</footprint>
+      <fields>
+        <field name="LCSC Part">TBD</field>
+      </fields>
+      <libsource lib="lcsc_parts" part="Res" description=""/>
+      <property name="Tolerance" value=""/>
+      <property name="LCSC Part" value="TBD"/>
+      <property name="Sheetname" value=""/>
+      <property name="Sheetfile" value="File: CCTV3_POE_REV100.kicad_sch"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>4ad264f5-b44e-4239-b521-3f5ebb164f95</tstamps>
+    </comp>
+    <comp ref="R12">
+      <value>2k</value>
+      <footprint>Resistor_SMD:R_0603_1608Metric</footprint>
+      <fields>
+        <field name="LCSC Part">TBD</field>
+      </fields>
+      <libsource lib="lcsc_parts" part="Res" description=""/>
+      <property name="Tolerance" value=""/>
+      <property name="LCSC Part" value="TBD"/>
+      <property name="Sheetname" value=""/>
+      <property name="Sheetfile" value="File: CCTV3_POE_REV100.kicad_sch"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>d05e999f-eed8-4798-99de-bd7b129303e4</tstamps>
+    </comp>
+    <comp ref="R13">
+      <value>30K</value>
+      <footprint>Resistor_SMD:R_0603_1608Metric</footprint>
+      <fields>
+        <field name="LCSC Part">TBD</field>
+      </fields>
+      <libsource lib="lcsc_parts" part="Res" description=""/>
+      <property name="Tolerance" value=""/>
+      <property name="LCSC Part" value="TBD"/>
+      <property name="Sheetname" value=""/>
+      <property name="Sheetfile" value="File: CCTV3_POE_REV100.kicad_sch"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>e8aab4bf-325c-4910-9129-7e6dc45fc1fd</tstamps>
+    </comp>
+    <comp ref="RJ1">
+      <value>R-RJ45S08P-C000</value>
+      <footprint>lcsc_parts:RJ45-TH_R-RJ45S08P-C000</footprint>
+      <datasheet>https://lcsc.com/product-detail/Ethernet-Connectors-Modular-Connectors-RJ45-RJ11_Shenzhen-Cankemeng-R-RJ45S08P-C000_C386764.html</datasheet>
+      <fields>
+        <field name="JLC Part">Extended Part</field>
+        <field name="LCSC Part">C386764</field>
+        <field name="Manufacturer">Shenzhen Cankemeng</field>
+      </fields>
+      <libsource lib="lcsc_parts" part="R-RJ45S08P-C000" description=""/>
+      <property name="Manufacturer" value="Shenzhen Cankemeng"/>
+      <property name="LCSC Part" value="C386764"/>
+      <property name="JLC Part" value="Extended Part"/>
+      <property name="Sheetname" value=""/>
+      <property name="Sheetfile" value="File: CCTV3_POE_REV100.kicad_sch"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>9df0ef1f-72d2-4323-9072-cebfc2083971</tstamps>
+    </comp>
+    <comp ref="U1">
+      <value>DP5312_SDAPO</value>
+      <footprint>CCTV3_POE:DP5312_SDAPO</footprint>
+      <libsource lib="CCTV3_POE" part="DP5312_SDAPO" description=""/>
+      <property name="Sheetname" value=""/>
+      <property name="Sheetfile" value="File: CCTV3_POE_REV100.kicad_sch"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>c7ff2f51-21b9-4b06-9039-7b69273a57b0</tstamps>
+    </comp>
+    <comp ref="U2">
+      <value>MT9700</value>
+      <footprint>Package_TO_SOT_SMD:SOT-23-5</footprint>
+      <datasheet>https://lcsc.com/product-detail/PMIC-Power-Distribution-Switches_MT9700_C89855.html</datasheet>
+      <fields>
+        <field name="JLC Part">Extended Part</field>
+        <field name="LCSC Part">C89855</field>
+        <field name="Manufacturer">AEROSEMI</field>
+      </fields>
+      <libsource lib="lcsc_parts" part="MT9700" description=""/>
+      <property name="Manufacturer" value="AEROSEMI"/>
+      <property name="LCSC Part" value="C89855"/>
+      <property name="JLC Part" value="Extended Part"/>
+      <property name="Sheetname" value=""/>
+      <property name="Sheetfile" value="File: CCTV3_POE_REV100.kicad_sch"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>7fd0c2d6-fb9f-462d-a84c-e50a750da3e4</tstamps>
+    </comp>
+    <comp ref="U3">
+      <value>TPS54331DR</value>
+      <footprint>Package_SO:SOIC-8_3.9x4.9mm_P1.27mm</footprint>
+      <datasheet>https://lcsc.com/product-detail/DC-DC-Converters_TI_TPS54331DR_TPS54331DR_C9865.html</datasheet>
+      <fields>
+        <field name="JLC Part">Basic Part</field>
+        <field name="LCSC Part">C9865</field>
+        <field name="Manufacturer">TI</field>
+      </fields>
+      <libsource lib="lcsc_parts" part="TPS54331DR" description=""/>
+      <property name="Manufacturer" value="TI"/>
+      <property name="LCSC Part" value="C9865"/>
+      <property name="JLC Part" value="Basic Part"/>
+      <property name="Sheetname" value=""/>
+      <property name="Sheetfile" value="File: CCTV3_POE_REV100.kicad_sch"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>94b665f5-1495-4cf2-93b3-023eb4791b1b</tstamps>
+    </comp>
+  </components>
+  <libparts>
+    <libpart lib="CCTV3_POE" part="DP5312_SDAPO">
+      <fields>
+        <field name="Reference">U</field>
+        <field name="Value">DP5312_SDAPO</field>
+        <field name="Footprint">CCTV3_POE:DP5312_SDAPO</field>
+      </fields>
+      <pins>
+        <pin num="1" name="VIN+" type="input"/>
+        <pin num="2" name="VIN-" type="input"/>
+        <pin num="3" name="NC" type="no_connect"/>
+        <pin num="4" name="NC" type="no_connect"/>
+        <pin num="5" name="-VDC" type="output"/>
+        <pin num="6" name="+VDC" type="output"/>
+        <pin num="7" name="ADJ" type="input"/>
+        <pin num="8" name="-VDC" type="output"/>
+      </pins>
+    </libpart>
+    <libpart lib="CCTV3_POE" part="M12_8P_Horizontal">
+      <description>Generic connector, single row, 01x08, script generated (kicad-library-utils/schlib/autogen/connector/)</description>
+      <docs>https://item.taobao.com/item.htm?spm=a230r.1.14.231.1cd43c38zKFxjG&amp;id=651261734211&amp;ns=1&amp;abbucket=19#detail</docs>
+      <footprints>
+        <fp>Connector*:*_1x??_*</fp>
+      </footprints>
+      <fields>
+        <field name="Reference">J</field>
+        <field name="Value">M12_8P_Horizontal</field>
+        <field name="Footprint">CCTV3_POE:M12_8P_Horizontal</field>
+        <field name="Datasheet">https://item.taobao.com/item.htm?spm=a230r.1.14.231.1cd43c38zKFxjG&amp;id=651261734211&amp;ns=1&amp;abbucket=19#detail</field>
+      </fields>
+      <pins>
+        <pin num="1" name="Pin_1" type="passive"/>
+        <pin num="2" name="Pin_2" type="passive"/>
+        <pin num="3" name="Pin_3" type="passive"/>
+        <pin num="4" name="Pin_4" type="passive"/>
+        <pin num="5" name="Pin_5" type="passive"/>
+        <pin num="6" name="Pin_6" type="passive"/>
+        <pin num="7" name="Pin_7" type="passive"/>
+        <pin num="8" name="Pin_8" type="passive"/>
+        <pin num="9" name="Pin_9" type="passive"/>
+      </pins>
+    </libpart>
+    <libpart lib="Connector_Generic" part="Conn_01x02">
+      <description>Generic connector, single row, 01x02, script generated (kicad-library-utils/schlib/autogen/connector/)</description>
+      <docs>~</docs>
+      <footprints>
+        <fp>Connector*:*_1x??_*</fp>
+      </footprints>
+      <fields>
+        <field name="Reference">J</field>
+        <field name="Value">Conn_01x02</field>
+        <field name="Datasheet">~</field>
+      </fields>
+      <pins>
+        <pin num="1" name="Pin_1" type="passive"/>
+        <pin num="2" name="Pin_2" type="passive"/>
+      </pins>
+    </libpart>
+    <libpart lib="Connector_Generic" part="Conn_01x03">
+      <description>Generic connector, single row, 01x03, script generated (kicad-library-utils/schlib/autogen/connector/)</description>
+      <docs>~</docs>
+      <footprints>
+        <fp>Connector*:*_1x??_*</fp>
+      </footprints>
+      <fields>
+        <field name="Reference">J</field>
+        <field name="Value">Conn_01x03</field>
+        <field name="Datasheet">~</field>
+      </fields>
+      <pins>
+        <pin num="1" name="Pin_1" type="passive"/>
+        <pin num="2" name="Pin_2" type="passive"/>
+        <pin num="3" name="Pin_3" type="passive"/>
+      </pins>
+    </libpart>
+    <libpart lib="Connector_Generic" part="Conn_01x04">
+      <description>Generic connector, single row, 01x04, script generated (kicad-library-utils/schlib/autogen/connector/)</description>
+      <docs>~</docs>
+      <footprints>
+        <fp>Connector*:*_1x??_*</fp>
+      </footprints>
+      <fields>
+        <field name="Reference">J</field>
+        <field name="Value">Conn_01x04</field>
+        <field name="Datasheet">~</field>
+      </fields>
+      <pins>
+        <pin num="1" name="Pin_1" type="passive"/>
+        <pin num="2" name="Pin_2" type="passive"/>
+        <pin num="3" name="Pin_3" type="passive"/>
+        <pin num="4" name="Pin_4" type="passive"/>
+      </pins>
+    </libpart>
+    <libpart lib="Diode_Bridge" part="MB6S">
+      <description>Miniature Glass Passivated Single-Phase Surface Mount Bridge Rectifiers, 700V Vrms, 1.0A If, DFS SMD package</description>
+      <docs>http://www.vishay.com/docs/88573/dfs.pdf</docs>
+      <footprints>
+        <fp>TO?269AA*</fp>
+      </footprints>
+      <fields>
+        <field name="Reference">D</field>
+        <field name="Value">MB6S</field>
+        <field name="Footprint">Package_TO_SOT_SMD:TO-269AA</field>
+        <field name="Datasheet">http://www.vishay.com/docs/88573/dfs.pdf</field>
+      </fields>
+      <pins>
+        <pin num="1" name="" type="passive"/>
+        <pin num="2" name="" type="passive"/>
+        <pin num="3" name="+" type="passive"/>
+        <pin num="4" name="-" type="passive"/>
+      </pins>
+    </libpart>
+    <libpart lib="Mechanical" part="MountingHole_Pad">
+      <description>Mounting Hole with connection</description>
+      <docs>~</docs>
+      <footprints>
+        <fp>MountingHole*Pad*</fp>
+      </footprints>
+      <fields>
+        <field name="Reference">H</field>
+        <field name="Value">MountingHole_Pad</field>
+        <field name="Datasheet">~</field>
+      </fields>
+      <pins>
+        <pin num="1" name="1" type="input"/>
+      </pins>
+    </libpart>
+    <libpart lib="lcsc_parts" part="Cap">
+      <description>Unpolarized capacitor, small symbol</description>
+      <docs>~</docs>
+      <footprints>
+        <fp>C_*</fp>
+      </footprints>
+      <fields>
+        <field name="Reference">C</field>
+        <field name="Value">Cap</field>
+        <field name="Datasheet">~</field>
+        <field name="LCSC Part">TBD</field>
+      </fields>
+      <pins>
+        <pin num="1" name="" type="passive"/>
+        <pin num="2" name="" type="passive"/>
+      </pins>
+    </libpart>
+    <libpart lib="lcsc_parts" part="Cap_Polarized">
+      <description>Polarized capacitor, small US symbol</description>
+      <docs>~</docs>
+      <footprints>
+        <fp>CP_*</fp>
+      </footprints>
+      <fields>
+        <field name="Reference">C</field>
+        <field name="Value">Cap_Polarized</field>
+        <field name="Datasheet">~</field>
+        <field name="LCSC Part">TBD</field>
+      </fields>
+      <pins>
+        <pin num="1" name="" type="passive"/>
+        <pin num="2" name="" type="passive"/>
+      </pins>
+    </libpart>
+    <libpart lib="lcsc_parts" part="GZ1608D601TF">
+      <docs>https://lcsc.com/product-detail/Ferrite-Beads-And-Chips_600R-25-100MHz_C1002.html</docs>
+      <fields>
+        <field name="Reference">L</field>
+        <field name="Value">GZ1608D601TF</field>
+        <field name="Footprint">lcsc_parts:L0603</field>
+        <field name="Datasheet">https://lcsc.com/product-detail/Ferrite-Beads-And-Chips_600R-25-100MHz_C1002.html</field>
+        <field name="Manufacturer">Sunlord</field>
+        <field name="LCSC Part">C1002</field>
+        <field name="JLC Part">Basic Part</field>
+      </fields>
+      <pins>
+        <pin num="1" name="1" type="unspecified"/>
+        <pin num="2" name="2" type="unspecified"/>
+      </pins>
+    </libpart>
+    <libpart lib="lcsc_parts" part="HY601742">
+      <docs>https://lcsc.com/product-detail/RJ45-Transformer_100MNetwork-transformer-PoE_C55684.html</docs>
+      <fields>
+        <field name="Reference">L</field>
+        <field name="Value">HY601742</field>
+        <field name="Footprint">lcsc_parts:RJ45-SMD_HY601742</field>
+        <field name="Datasheet">https://lcsc.com/product-detail/RJ45-Transformer_100MNetwork-transformer-PoE_C55684.html</field>
+        <field name="Manufacturer">HANRUN</field>
+        <field name="LCSC Part">C55684</field>
+        <field name="JLC Part">Extended Part</field>
+      </fields>
+      <pins>
+        <pin num="1" name="1" type="input"/>
+        <pin num="2" name="2" type="input"/>
+        <pin num="3" name="3" type="input"/>
+        <pin num="4" name="4" type="input"/>
+        <pin num="5" name="5" type="input"/>
+        <pin num="6" name="6" type="input"/>
+        <pin num="7" name="7" type="input"/>
+        <pin num="8" name="8" type="input"/>
+        <pin num="9" name="9" type="input"/>
+        <pin num="10" name="10" type="input"/>
+        <pin num="11" name="11" type="input"/>
+        <pin num="12" name="12" type="input"/>
+        <pin num="13" name="13" type="input"/>
+        <pin num="14" name="14" type="input"/>
+        <pin num="15" name="15" type="input"/>
+        <pin num="16" name="16" type="input"/>
+      </pins>
+    </libpart>
+    <libpart lib="lcsc_parts" part="LVS606045-330M-N">
+      <docs>https://lcsc.com/product-detail/Power-Inductors_Chilisin-Elec-LVS606045-330M-N_C285825.html</docs>
+      <fields>
+        <field name="Reference">L</field>
+        <field name="Value">LVS606045-330M-N</field>
+        <field name="Footprint">lcsc_parts:IND-SMD_L6.0-W6.0</field>
+        <field name="Datasheet">https://lcsc.com/product-detail/Power-Inductors_Chilisin-Elec-LVS606045-330M-N_C285825.html</field>
+        <field name="Manufacturer">Chilisin Elec</field>
+        <field name="LCSC Part">C285825</field>
+      </fields>
+      <pins>
+        <pin num="1" name="1" type="unspecified"/>
+        <pin num="2" name="2" type="unspecified"/>
+      </pins>
+    </libpart>
+    <libpart lib="lcsc_parts" part="MT9700">
+      <docs>https://lcsc.com/product-detail/PMIC-Power-Distribution-Switches_MT9700_C89855.html</docs>
+      <fields>
+        <field name="Reference">U</field>
+        <field name="Value">MT9700</field>
+        <field name="Footprint">lcsc_parts:SOT-23-5_L3.0-W1.7-P0.95-LS2.8-BR</field>
+        <field name="Datasheet">https://lcsc.com/product-detail/PMIC-Power-Distribution-Switches_MT9700_C89855.html</field>
+        <field name="Manufacturer">AEROSEMI</field>
+        <field name="LCSC Part">C89855</field>
+        <field name="JLC Part">Extended Part</field>
+      </fields>
+      <pins>
+        <pin num="1" name="VOUT" type="unspecified"/>
+        <pin num="2" name="GND" type="unspecified"/>
+        <pin num="3" name="SET" type="unspecified"/>
+        <pin num="4" name="EN" type="unspecified"/>
+        <pin num="5" name="VIN" type="unspecified"/>
+      </pins>
+    </libpart>
+    <libpart lib="lcsc_parts" part="R-RJ45S08P-C000">
+      <docs>https://lcsc.com/product-detail/Ethernet-Connectors-Modular-Connectors-RJ45-RJ11_Shenzhen-Cankemeng-R-RJ45S08P-C000_C386764.html</docs>
+      <fields>
+        <field name="Reference">RJ</field>
+        <field name="Value">R-RJ45S08P-C000</field>
+        <field name="Footprint">lcsc_parts:RJ45-TH_R-RJ45S08P-C000</field>
+        <field name="Datasheet">https://lcsc.com/product-detail/Ethernet-Connectors-Modular-Connectors-RJ45-RJ11_Shenzhen-Cankemeng-R-RJ45S08P-C000_C386764.html</field>
+        <field name="Manufacturer">Shenzhen Cankemeng</field>
+        <field name="LCSC Part">C386764</field>
+        <field name="JLC Part">Extended Part</field>
+      </fields>
+      <pins>
+        <pin num="1" name="1" type="unspecified"/>
+        <pin num="2" name="2" type="unspecified"/>
+        <pin num="3" name="3" type="unspecified"/>
+        <pin num="4" name="4" type="unspecified"/>
+        <pin num="5" name="5" type="unspecified"/>
+        <pin num="6" name="6" type="unspecified"/>
+        <pin num="7" name="7" type="unspecified"/>
+        <pin num="8" name="8" type="unspecified"/>
+        <pin num="9" name="Y+" type="unspecified"/>
+        <pin num="10" name="Y-" type="unspecified"/>
+        <pin num="11" name="G+" type="unspecified"/>
+        <pin num="12" name="G-" type="unspecified"/>
+        <pin num="13" name="S" type="unspecified"/>
+        <pin num="14" name="S" type="unspecified"/>
+      </pins>
+    </libpart>
+    <libpart lib="lcsc_parts" part="Res">
+      <docs>~</docs>
+      <footprints>
+        <fp>R_*</fp>
+      </footprints>
+      <fields>
+        <field name="Reference">R</field>
+        <field name="Value">Res</field>
+        <field name="Datasheet">~</field>
+        <field name="LCSC Part">TBD</field>
+      </fields>
+      <pins>
+        <pin num="1" name="" type="passive"/>
+        <pin num="2" name="" type="passive"/>
+      </pins>
+    </libpart>
+    <libpart lib="lcsc_parts" part="SMAJ5.0CA-C83324">
+      <docs>https://lcsc.com/product-detail/TVS_Littelfuse_SMAJ5-0CA_SMAJ5-0CA_C83324.html</docs>
+      <fields>
+        <field name="Reference">D</field>
+        <field name="Value">SMAJ5.0CA-C83324</field>
+        <field name="Footprint">lcsc_parts:SMA_L4.4-W2.6-LS5.0-BI</field>
+        <field name="Datasheet">https://lcsc.com/product-detail/TVS_Littelfuse_SMAJ5-0CA_SMAJ5-0CA_C83324.html</field>
+        <field name="Manufacturer">Littelfuse</field>
+        <field name="LCSC Part">C83324</field>
+        <field name="JLC Part">Extended Part</field>
+      </fields>
+      <pins>
+        <pin num="1" name="1" type="unspecified"/>
+        <pin num="2" name="2" type="unspecified"/>
+      </pins>
+    </libpart>
+    <libpart lib="lcsc_parts" part="SMBJ58A_C707476">
+      <docs>https://lcsc.com/product-detail/TVS_FTR-SMBJ58A_C707476.html</docs>
+      <fields>
+        <field name="Reference">D</field>
+        <field name="Value">SMBJ58A_C707476</field>
+        <field name="Footprint">lcsc_parts:SMB_L4.6-W3.6-LS5.3-R-RD</field>
+        <field name="Datasheet">https://lcsc.com/product-detail/TVS_FTR-SMBJ58A_C707476.html</field>
+        <field name="Manufacturer">FTR</field>
+        <field name="LCSC Part">C707476</field>
+        <field name="JLC Part">Extended Part</field>
+      </fields>
+      <pins>
+        <pin num="1" name="K" type="unspecified"/>
+        <pin num="2" name="A" type="unspecified"/>
+      </pins>
+    </libpart>
+    <libpart lib="lcsc_parts" part="SMNR4020-2.2UH">
+      <docs>https://lcsc.com/product-detail/Power-Inductors_2-2uH-20_C135262.html</docs>
+      <fields>
+        <field name="Reference">L</field>
+        <field name="Value">SMNR4020-2.2UH</field>
+        <field name="Footprint">lcsc_parts:IND-SMD_L4.0-W4.0_SMNR4020</field>
+        <field name="Datasheet">https://lcsc.com/product-detail/Power-Inductors_2-2uH-20_C135262.html</field>
+        <field name="Manufacturer">SXN</field>
+        <field name="LCSC Part">C135262</field>
+        <field name="JLC Part">Extended Part</field>
+      </fields>
+      <pins>
+        <pin num="1" name="1" type="unspecified"/>
+        <pin num="2" name="2" type="unspecified"/>
+      </pins>
+    </libpart>
+    <libpart lib="lcsc_parts" part="SS34">
+      <docs>https://lcsc.com/product-detail/Schottky-Barrier-Diodes-SBD_SS34_C8678.html</docs>
+      <fields>
+        <field name="Reference">D3</field>
+        <field name="Value">SS34</field>
+        <field name="Footprint">Diode_SMD:D_SMA</field>
+        <field name="Datasheet">https://lcsc.com/product-detail/Schottky-Barrier-Diodes-SBD_SS34_C8678.html</field>
+        <field name="Manufacturer">MDD</field>
+        <field name="LCSC Part">C8678</field>
+        <field name="JLC Part">Basic Part</field>
+      </fields>
+      <pins>
+        <pin num="1" name="K" type="unspecified"/>
+        <pin num="2" name="A" type="unspecified"/>
+      </pins>
+    </libpart>
+    <libpart lib="lcsc_parts" part="TPS54331DR">
+      <docs>https://lcsc.com/product-detail/DC-DC-Converters_TI_TPS54331DR_TPS54331DR_C9865.html</docs>
+      <fields>
+        <field name="Reference">U</field>
+        <field name="Value">TPS54331DR</field>
+        <field name="Footprint">lcsc_parts:SOIC-8_L5.0-W4.0-P1.27-LS6.0-BL</field>
+        <field name="Datasheet">https://lcsc.com/product-detail/DC-DC-Converters_TI_TPS54331DR_TPS54331DR_C9865.html</field>
+        <field name="Manufacturer">TI</field>
+        <field name="LCSC Part">C9865</field>
+        <field name="JLC Part">Basic Part</field>
+      </fields>
+      <pins>
+        <pin num="1" name="BOOT" type="unspecified"/>
+        <pin num="2" name="VIN" type="power_in"/>
+        <pin num="3" name="EN" type="unspecified"/>
+        <pin num="4" name="SS" type="unspecified"/>
+        <pin num="5" name="VSENSE" type="unspecified"/>
+        <pin num="6" name="COMP" type="unspecified"/>
+        <pin num="7" name="GND" type="power_in"/>
+        <pin num="8" name="PH" type="power_in"/>
+      </pins>
+    </libpart>
+  </libparts>
+  <libraries>
+    <library logical="CCTV3_POE">
+      <uri>/Users/aiex718/Private/Workspace/CCTV3.0-F407/PCB/CCTV3_POE_REV100/CCTV3_POE.kicad_sym</uri>
+    </library>
+    <library logical="Connector_Generic">
+      <uri>/Applications/KiCad/KiCad.app/Contents/SharedSupport/symbols//Connector_Generic.kicad_sym</uri>
+    </library>
+    <library logical="Diode_Bridge">
+      <uri>/Applications/KiCad/KiCad.app/Contents/SharedSupport/symbols//Diode_Bridge.kicad_sym</uri>
+    </library>
+    <library logical="Mechanical">
+      <uri>/Applications/KiCad/KiCad.app/Contents/SharedSupport/symbols//Mechanical.kicad_sym</uri>
+    </library>
+    <library logical="lcsc_parts">
+      <uri>/Users/aiex718/Documents/KiCad/6.0/easyeda2kicad/lcsc_parts.kicad_sym</uri>
+    </library>
+  </libraries>
+  <nets>
+    <net code="1" name="+5V_POE">
+      <node ref="C20" pin="1" pintype="passive"/>
+      <node ref="D4" pin="1" pinfunction="1" pintype="unspecified"/>
+      <node ref="J1" pin="3" pinfunction="Pin_3" pintype="passive"/>
+      <node ref="L7" pin="2" pinfunction="2" pintype="unspecified"/>
+      <node ref="R10" pin="1" pintype="passive"/>
+    </net>
+    <net code="2" name="+12V_POE">
+      <node ref="C12" pin="1" pintype="passive"/>
+      <node ref="C18" pin="1" pintype="passive"/>
+      <node ref="J1" pin="4" pinfunction="Pin_4" pintype="passive"/>
+      <node ref="L1" pin="2" pinfunction="2" pintype="unspecified"/>
+      <node ref="R9" pin="1" pintype="passive"/>
+      <node ref="U2" pin="1" pinfunction="VOUT" pintype="unspecified"/>
+      <node ref="U3" pin="2" pinfunction="VIN" pintype="power_in"/>
+    </net>
+    <net code="3" name="/MGND">
+      <node ref="C17" pin="1" pintype="passive"/>
+      <node ref="J3" pin="9" pinfunction="Pin_9" pintype="passive"/>
+      <node ref="L6" pin="1" pinfunction="1" pintype="unspecified"/>
+    </net>
+    <net code="4" name="/RGND">
+      <node ref="C7" pin="1" pintype="passive"/>
+      <node ref="L4" pin="1" pinfunction="1" pintype="unspecified"/>
+      <node ref="RJ1" pin="13" pinfunction="S" pintype="unspecified"/>
+      <node ref="RJ1" pin="14" pinfunction="S" pintype="unspecified"/>
+    </net>
+    <net code="5" name="/RJ4">
+      <node ref="C14" pin="1" pintype="passive"/>
+      <node ref="D2" pin="2" pintype="passive"/>
+      <node ref="J3" pin="1" pinfunction="Pin_1" pintype="passive"/>
+      <node ref="J3" pin="7" pinfunction="Pin_7" pintype="passive"/>
+    </net>
+    <net code="6" name="/RJ7">
+      <node ref="C13" pin="1" pintype="passive"/>
+      <node ref="D2" pin="1" pintype="passive"/>
+      <node ref="J3" pin="2" pinfunction="Pin_2" pintype="passive"/>
+      <node ref="J3" pin="3" pinfunction="Pin_3" pintype="passive"/>
+    </net>
+    <net code="7" name="/RJ12_N">
+      <node ref="J3" pin="4" pinfunction="Pin_4" pintype="passive"/>
+      <node ref="L3" pin="1" pinfunction="1" pintype="input"/>
+    </net>
+    <net code="8" name="/RJ12_P">
+      <node ref="J3" pin="6" pinfunction="Pin_6" pintype="passive"/>
+      <node ref="L3" pin="3" pinfunction="3" pintype="input"/>
+    </net>
+    <net code="9" name="/RJ36_N">
+      <node ref="J3" pin="8" pinfunction="Pin_8" pintype="passive"/>
+      <node ref="L3" pin="8" pinfunction="8" pintype="input"/>
+    </net>
+    <net code="10" name="/RJ36_P">
+      <node ref="J3" pin="5" pinfunction="Pin_5" pintype="passive"/>
+      <node ref="L3" pin="6" pinfunction="6" pintype="input"/>
+    </net>
+    <net code="11" name="/RXN">
+      <node ref="C4" pin="1" pintype="passive"/>
+      <node ref="L3" pin="9" pinfunction="9" pintype="input"/>
+      <node ref="RJ1" pin="6" pinfunction="6" pintype="unspecified"/>
+    </net>
+    <net code="12" name="/RXP">
+      <node ref="C3" pin="1" pintype="passive"/>
+      <node ref="L3" pin="11" pinfunction="11" pintype="input"/>
+      <node ref="RJ1" pin="3" pinfunction="3" pintype="unspecified"/>
+    </net>
+    <net code="13" name="/TXN">
+      <node ref="C1" pin="1" pintype="passive"/>
+      <node ref="L3" pin="16" pinfunction="16" pintype="input"/>
+      <node ref="RJ1" pin="2" pinfunction="2" pintype="unspecified"/>
+    </net>
+    <net code="14" name="/TXP">
+      <node ref="C2" pin="1" pintype="passive"/>
+      <node ref="L3" pin="14" pinfunction="14" pintype="input"/>
+      <node ref="RJ1" pin="1" pinfunction="1" pintype="unspecified"/>
+    </net>
+    <net code="15" name="GND">
+      <node ref="C1" pin="2" pintype="passive"/>
+      <node ref="C10" pin="2" pintype="passive"/>
+      <node ref="C11" pin="2" pintype="passive"/>
+      <node ref="C12" pin="2" pintype="passive"/>
+      <node ref="C18" pin="2" pintype="passive"/>
+      <node ref="C2" pin="2" pintype="passive"/>
+      <node ref="C20" pin="2" pintype="passive"/>
+      <node ref="C21" pin="1" pintype="passive"/>
+      <node ref="C23" pin="2" pintype="passive"/>
+      <node ref="C3" pin="2" pintype="passive"/>
+      <node ref="C4" pin="2" pintype="passive"/>
+      <node ref="C8" pin="2" pintype="passive"/>
+      <node ref="C9" pin="2" pintype="passive"/>
+      <node ref="D4" pin="2" pinfunction="2" pintype="unspecified"/>
+      <node ref="D5" pin="2" pinfunction="A" pintype="unspecified"/>
+      <node ref="H1" pin="1" pinfunction="1" pintype="input"/>
+      <node ref="H2" pin="1" pinfunction="1" pintype="input"/>
+      <node ref="H3" pin="1" pinfunction="1" pintype="input"/>
+      <node ref="H4" pin="1" pinfunction="1" pintype="input"/>
+      <node ref="J1" pin="2" pinfunction="Pin_2" pintype="passive"/>
+      <node ref="L2" pin="2" pinfunction="2" pintype="unspecified"/>
+      <node ref="L4" pin="2" pinfunction="2" pintype="unspecified"/>
+      <node ref="L6" pin="2" pinfunction="2" pintype="unspecified"/>
+      <node ref="R11" pin="2" pintype="passive"/>
+      <node ref="R12" pin="2" pintype="passive"/>
+      <node ref="R13" pin="2" pintype="passive"/>
+      <node ref="R4" pin="2" pintype="passive"/>
+      <node ref="U1" pin="5" pinfunction="-VDC" pintype="output"/>
+      <node ref="U1" pin="8" pinfunction="-VDC" pintype="output"/>
+      <node ref="U2" pin="2" pinfunction="GND" pintype="unspecified"/>
+      <node ref="U3" pin="7" pinfunction="GND" pintype="power_in"/>
+    </net>
+    <net code="16" name="ISEN">
+      <node ref="J1" pin="1" pinfunction="Pin_1" pintype="passive"/>
+      <node ref="J2" pin="2" pinfunction="Pin_2" pintype="passive"/>
+    </net>
+    <net code="17" name="Net-(C5-Pad1)">
+      <node ref="C5" pin="1" pintype="passive"/>
+      <node ref="R1" pin="2" pintype="passive"/>
+    </net>
+    <net code="18" name="Net-(C5-Pad2)">
+      <node ref="C5" pin="2" pintype="passive"/>
+      <node ref="C6" pin="2" pintype="passive"/>
+      <node ref="C7" pin="2" pintype="passive"/>
+    </net>
+    <net code="19" name="Net-(C6-Pad1)">
+      <node ref="C6" pin="1" pintype="passive"/>
+      <node ref="R2" pin="2" pintype="passive"/>
+    </net>
+    <net code="20" name="Net-(C8-Pad1)">
+      <node ref="C8" pin="1" pintype="passive"/>
+      <node ref="C9" pin="1" pintype="passive"/>
+      <node ref="L5" pin="1" pinfunction="1" pintype="unspecified"/>
+      <node ref="U1" pin="6" pinfunction="+VDC" pintype="output"/>
+    </net>
+    <net code="21" name="Net-(C10-Pad1)">
+      <node ref="C10" pin="1" pintype="passive"/>
+      <node ref="J4" pin="1" pinfunction="Pin_1" pintype="passive"/>
+      <node ref="L5" pin="2" pinfunction="2" pintype="unspecified"/>
+    </net>
+    <net code="22" name="Net-(C11-Pad1)">
+      <node ref="C11" pin="1" pintype="passive"/>
+      <node ref="J4" pin="2" pinfunction="Pin_2" pintype="passive"/>
+      <node ref="R3" pin="1" pintype="passive"/>
+      <node ref="U2" pin="5" pinfunction="VIN" pintype="unspecified"/>
+    </net>
+    <net code="23" name="Net-(C13-Pad2)">
+      <node ref="C13" pin="2" pintype="passive"/>
+      <node ref="R5" pin="1" pintype="passive"/>
+    </net>
+    <net code="24" name="Net-(C14-Pad2)">
+      <node ref="C14" pin="2" pintype="passive"/>
+      <node ref="R6" pin="1" pintype="passive"/>
+    </net>
+    <net code="25" name="Net-(C15-Pad1)">
+      <node ref="C15" pin="1" pintype="passive"/>
+      <node ref="D1" pin="1" pintype="passive"/>
+      <node ref="L3" pin="2" pinfunction="2" pintype="input"/>
+    </net>
+    <net code="26" name="Net-(C15-Pad2)">
+      <node ref="C15" pin="2" pintype="passive"/>
+      <node ref="R7" pin="1" pintype="passive"/>
+    </net>
+    <net code="27" name="Net-(C16-Pad1)">
+      <node ref="C16" pin="1" pintype="passive"/>
+      <node ref="D1" pin="2" pintype="passive"/>
+      <node ref="L3" pin="7" pinfunction="7" pintype="input"/>
+    </net>
+    <net code="28" name="Net-(C16-Pad2)">
+      <node ref="C16" pin="2" pintype="passive"/>
+      <node ref="R8" pin="1" pintype="passive"/>
+    </net>
+    <net code="29" name="Net-(C17-Pad2)">
+      <node ref="C17" pin="2" pintype="passive"/>
+      <node ref="R5" pin="2" pintype="passive"/>
+      <node ref="R6" pin="2" pintype="passive"/>
+      <node ref="R7" pin="2" pintype="passive"/>
+      <node ref="R8" pin="2" pintype="passive"/>
+    </net>
+    <net code="30" name="Net-(C19-Pad1)">
+      <node ref="C19" pin="1" pintype="passive"/>
+      <node ref="D5" pin="1" pinfunction="K" pintype="unspecified"/>
+      <node ref="L7" pin="1" pinfunction="1" pintype="unspecified"/>
+      <node ref="U3" pin="8" pinfunction="PH" pintype="power_in"/>
+    </net>
+    <net code="31" name="Net-(C19-Pad2)">
+      <node ref="C19" pin="2" pintype="passive"/>
+      <node ref="U3" pin="1" pinfunction="BOOT" pintype="unspecified"/>
+    </net>
+    <net code="32" name="Net-(C21-Pad2)">
+      <node ref="C21" pin="2" pintype="passive"/>
+      <node ref="U3" pin="4" pinfunction="SS" pintype="unspecified"/>
+    </net>
+    <net code="33" name="Net-(C22-Pad1)">
+      <node ref="C22" pin="1" pintype="passive"/>
+      <node ref="C23" pin="1" pintype="passive"/>
+      <node ref="U3" pin="6" pinfunction="COMP" pintype="unspecified"/>
+    </net>
+    <net code="34" name="Net-(C22-Pad2)">
+      <node ref="C22" pin="2" pintype="passive"/>
+      <node ref="R13" pin="1" pintype="passive"/>
+    </net>
+    <net code="35" name="Net-(D1-Pad3)">
+      <node ref="D1" pin="3" pinfunction="+" pintype="passive"/>
+      <node ref="D2" pin="3" pinfunction="+" pintype="passive"/>
+      <node ref="D3" pin="1" pinfunction="K" pintype="unspecified"/>
+      <node ref="U1" pin="1" pinfunction="VIN+" pintype="input"/>
+    </net>
+    <net code="36" name="Net-(D1-Pad4)">
+      <node ref="D1" pin="4" pinfunction="-" pintype="passive"/>
+      <node ref="D2" pin="4" pinfunction="-" pintype="passive"/>
+      <node ref="D3" pin="2" pinfunction="A" pintype="unspecified"/>
+      <node ref="U1" pin="2" pinfunction="VIN-" pintype="input"/>
+    </net>
+    <net code="37" name="Net-(J2-Pad1)">
+      <node ref="J2" pin="1" pinfunction="Pin_1" pintype="passive"/>
+      <node ref="L1" pin="1" pinfunction="1" pintype="unspecified"/>
+    </net>
+    <net code="38" name="Net-(J2-Pad3)">
+      <node ref="J2" pin="3" pinfunction="Pin_3" pintype="passive"/>
+      <node ref="L2" pin="1" pinfunction="1" pintype="unspecified"/>
+    </net>
+    <net code="39" name="Net-(L3-Pad10)">
+      <node ref="L3" pin="10" pinfunction="10" pintype="input"/>
+      <node ref="R1" pin="1" pintype="passive"/>
+    </net>
+    <net code="40" name="Net-(L3-Pad15)">
+      <node ref="L3" pin="15" pinfunction="15" pintype="input"/>
+      <node ref="R2" pin="1" pintype="passive"/>
+    </net>
+    <net code="41" name="Net-(R3-Pad2)">
+      <node ref="R3" pin="2" pintype="passive"/>
+      <node ref="U2" pin="4" pinfunction="EN" pintype="unspecified"/>
+    </net>
+    <net code="42" name="Net-(R4-Pad1)">
+      <node ref="R4" pin="1" pintype="passive"/>
+      <node ref="U2" pin="3" pinfunction="SET" pintype="unspecified"/>
+    </net>
+    <net code="43" name="Net-(R10-Pad2)">
+      <node ref="R10" pin="2" pintype="passive"/>
+      <node ref="R12" pin="1" pintype="passive"/>
+      <node ref="U3" pin="5" pinfunction="VSENSE" pintype="unspecified"/>
+    </net>
+    <net code="44" name="Net-(R11-Pad1)">
+      <node ref="R11" pin="1" pintype="passive"/>
+      <node ref="R9" pin="2" pintype="passive"/>
+      <node ref="U3" pin="3" pinfunction="EN" pintype="unspecified"/>
+    </net>
+    <net code="45" name="unconnected-(L3-Pad4)">
+      <node ref="L3" pin="4" pinfunction="4" pintype="input+no_connect"/>
+    </net>
+    <net code="46" name="unconnected-(L3-Pad5)">
+      <node ref="L3" pin="5" pinfunction="5" pintype="input+no_connect"/>
+    </net>
+    <net code="47" name="unconnected-(L3-Pad12)">
+      <node ref="L3" pin="12" pinfunction="12" pintype="input+no_connect"/>
+    </net>
+    <net code="48" name="unconnected-(L3-Pad13)">
+      <node ref="L3" pin="13" pinfunction="13" pintype="input+no_connect"/>
+    </net>
+    <net code="49" name="unconnected-(RJ1-Pad4)">
+      <node ref="RJ1" pin="4" pinfunction="4" pintype="unspecified+no_connect"/>
+    </net>
+    <net code="50" name="unconnected-(RJ1-Pad5)">
+      <node ref="RJ1" pin="5" pinfunction="5" pintype="unspecified+no_connect"/>
+    </net>
+    <net code="51" name="unconnected-(RJ1-Pad7)">
+      <node ref="RJ1" pin="7" pinfunction="7" pintype="unspecified+no_connect"/>
+    </net>
+    <net code="52" name="unconnected-(RJ1-Pad8)">
+      <node ref="RJ1" pin="8" pinfunction="8" pintype="unspecified+no_connect"/>
+    </net>
+    <net code="53" name="unconnected-(RJ1-Pad9)">
+      <node ref="RJ1" pin="9" pinfunction="Y+" pintype="unspecified+no_connect"/>
+    </net>
+    <net code="54" name="unconnected-(RJ1-Pad10)">
+      <node ref="RJ1" pin="10" pinfunction="Y-" pintype="unspecified+no_connect"/>
+    </net>
+    <net code="55" name="unconnected-(RJ1-Pad11)">
+      <node ref="RJ1" pin="11" pinfunction="G+" pintype="unspecified+no_connect"/>
+    </net>
+    <net code="56" name="unconnected-(RJ1-Pad12)">
+      <node ref="RJ1" pin="12" pinfunction="G-" pintype="unspecified+no_connect"/>
+    </net>
+    <net code="57" name="unconnected-(U1-Pad3)">
+      <node ref="U1" pin="3" pinfunction="NC" pintype="no_connect"/>
+    </net>
+    <net code="58" name="unconnected-(U1-Pad4)">
+      <node ref="U1" pin="4" pinfunction="NC" pintype="no_connect"/>
+    </net>
+    <net code="59" name="unconnected-(U1-Pad7)">
+      <node ref="U1" pin="7" pinfunction="ADJ" pintype="input+no_connect"/>
+    </net>
+  </nets>
+</export>
