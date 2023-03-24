@@ -1,5 +1,9 @@
 #include "stm32f4xx.h"
-#include "stdio.h"
+
+
+#include "bsp/platform/periph_list.h"
+#include "bsp/sys/systime.h"
+
 
 void USARTx_Config(void)
 {
@@ -36,34 +40,41 @@ void USARTx_Config(void)
 	USART_Cmd(USART3, ENABLE);
 }
 
-int fputc(int ch, FILE *f)
-{
-	USART_SendData(USART3, (uint8_t) ch);
-	while (USART_GetFlagStatus(USART3, USART_FLAG_TXE) == RESET);
-	return (ch);
-}
 
-int fgetc(FILE *f)
-{
-	while (USART_GetFlagStatus(USART3, USART_FLAG_RXNE) == RESET);
-	return (int)USART_ReceiveData(USART3);
-}
 
 
 int main(void)
 {
 	//SystemInit() is inside system_stm32f4xx.c
-	//SystemInit() will config sysclk to 180MHZ
-	char rxBuffer[100];
-	USARTx_Config();
+	HAL_Systick_Init();
+	//USARTx_Config();
+	HAL_GPIO_InitPin(Button_Wkup_pin);
+	HAL_GPIO_InitPin(LED_STAT_pin);
+	HAL_GPIO_InitPin(LED_Load_pin);
+	HAL_USART_Init(Debug_Usart3);
+	HAL_USART_Cmd(Debug_Usart3,true);
+	HAL_USART_RxStreamCmd(Debug_Usart3,true);
 
-	printf("hello world!");
+	printf("hello world!\n");
 
 	while(1)
 	{
-		scanf("%s",rxBuffer);
-		printf("You say:%s",rxBuffer);
+		uint8_t ch;
+		HAL_USART_Service(Debug_Usart3);
+		while(HAL_USART_ReadByte(Debug_Usart3, &ch))
+		{
+			HAL_USART_WriteByte(Debug_Usart3, ch);
+		}
+
+		HAL_GPIO_WritePin(LED_STAT_pin,1);
+		HAL_GPIO_WritePin(LED_Load_pin,0);
+		//printf("%d:pin %d\n",Systime_Get(),HAL_GPIO_ReadPin(Button_Wkup_pin));
+		delay(1000);
+
+		HAL_GPIO_WritePin(LED_STAT_pin,0);
+		HAL_GPIO_WritePin(LED_Load_pin,1);
+		//printf("%d:pin %d\n",Systime_Get(),HAL_GPIO_ReadPin(Button_Wkup_pin));
+		delay(1000);
+		
 	}
 }
-
-
