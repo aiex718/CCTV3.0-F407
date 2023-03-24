@@ -1,0 +1,43 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"type": "shell",
+			"label": "Clean",
+			"command": "rm",
+			"args": [
+				"-r",
+				"${workspaceFolder}/Output/*"
+			]
+		},
+		{
+			"type": "shell",
+			"label": "GCC build current file",
+			"command": "/usr/bin/gcc",
+			"args": [
+				"-std=c99",
+				"-fcolor-diagnostics",
+				"-fansi-escape-codes",
+				"-g",
+				"${file}",
+				"-o",
+				"${workspaceFolder}/Output/${fileBasenameNoExtension}",
+				"-I",
+				"${workspaceFolder}/",
+				"-I",
+				"${workspaceFolder}/User"
+			],
+			"options": {
+				"cwd": "${workspaceFolder}/"
+			},
+			"problemMatcher": [
+				"$gcc"
+			],
+			"group": {
+				"kind": "build",
+				"isDefault": true
+			},
+			"detail": "Compiler: /usr/bin/gcc"
+		}
+	]
+}
