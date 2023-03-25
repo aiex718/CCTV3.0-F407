@@ -65,15 +65,17 @@ __BSP_STRUCT_ALIGN typedef struct
 
 #define HAL_USART_IsTxEnabled(usart) ((usart)->USARTx->CR1 & USART_Mode_Tx)
 #define HAL_USART_IsTxDmaEnabled(usart) ((usart)->USARTx->CR3 & USART_CR3_DMAT)
+#define HAL_USART_IsTxStreamEnabled(usart) ((usart)->USARTx->CR1 & USART_CR1_TXEIE)
 #define HAL_USART_IsTransmitting(usart) (                                   \
-    HAL_USART_IsEnabled(usart) && HAL_USART_IsTxEnabled(usart) &&           \
-    (HAL_USART_IsTxDmaEnabled(usart)||(usart)->USARTx->CR1 & USART_CR1_TCIE))
+     HAL_USART_IsEnabled(usart) && HAL_USART_IsTxEnabled(usart) &&          \
+    (HAL_USART_IsTxDmaEnabled(usart) || HAL_USART_IsTxStreamEnabled(usart)) )
 
 #define HAL_USART_IsRxEnabled(usart) ((usart)->USARTx->CR1 & USART_Mode_Rx)
 #define HAL_USART_IsRxDmaEnabled(usart) ((usart)->USARTx->CR3 & USART_CR3_DMAR)
+#define HAL_USART_IsRxStreamEnabled(usart) ((usart)->USARTx->CR1 & USART_CR1_RXNEIE)
 #define HAL_USART_IsReceiving(usart) (                                      \
-    HAL_USART_IsEnabled(usart) && HAL_USART_IsRxEnabled(usart) &&           \
-    (HAL_USART_IsRxDmaEnabled(usart)||(usart)->USARTx->CR1 & USART_CR1_RXNEIE))
+     HAL_USART_IsEnabled(usart) && HAL_USART_IsRxEnabled(usart) &&          \
+    (HAL_USART_IsRxDmaEnabled(usart) || HAL_USART_IsRxStreamEnabled(usart)) )
 
 #define HAL_USART_Cmd(usart,en) USART_Cmd((usart)->USARTx,(en)?ENABLE:DISABLE)
 

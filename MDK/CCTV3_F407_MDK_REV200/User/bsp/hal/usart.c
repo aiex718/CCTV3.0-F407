@@ -81,17 +81,16 @@ uint16_t HAL_USART_Read(const HAL_USART_t* usart, uint8_t* data, uint16_t len)
 HAL_USART_Status_t HAL_USART_TxStreamCmd(const HAL_USART_t* usart, bool en)
 {
     USART_TypeDef *usart_hw = usart->USARTx;
-    if(HAL_USART_IsTxDmaEnabled(usart)) 
-        return HAL_USART_CONFLICT;
-    else if (en)
+    if(HAL_USART_IsTransmitting(usart)) 
+        return HAL_USART_BUSY;
+    if (en)
     {
-        if(HAL_USART_IsTransmitting(usart)) 
-            return HAL_USART_BUSY;
-        else if(usart->USART_Tx_Buf == NULL)
+        if(usart->USART_Tx_Buf == NULL)
             return HAL_USART_BUF_ERROR;
 
         USART_ClearFlag(usart_hw, USART_FLAG_TC);
         USART_ITConfig(usart_hw, USART_IT_TC, DISABLE);
+        USART_GetITStatus(usart_hw, USART_IT_TC);
         USART_ITConfig(usart_hw, USART_IT_TXE, ENABLE);
     }
     else
@@ -104,13 +103,11 @@ HAL_USART_Status_t HAL_USART_TxStreamCmd(const HAL_USART_t* usart, bool en)
 HAL_USART_Status_t HAL_USART_RxStreamCmd(const HAL_USART_t* usart, bool en)
 {
     USART_TypeDef *usart_hw = usart->USARTx;
-    if(HAL_USART_IsRxDmaEnabled(usart)) 
-        return HAL_USART_CONFLICT;
+    if(HAL_USART_IsReceiving(usart)) 
+        return HAL_USART_BUSY;
     else if (en)
     {
-        if(HAL_USART_IsReceiving(usart)) 
-            return HAL_USART_BUSY;
-        else if(usart->USART_Rx_Buf == NULL)
+        if(usart->USART_Rx_Buf == NULL)
             return HAL_USART_BUF_ERROR;
         USART_ClearFlag(usart_hw, USART_FLAG_RXNE);
         USART_ITConfig(usart_hw, USART_IT_RXNE, ENABLE);
