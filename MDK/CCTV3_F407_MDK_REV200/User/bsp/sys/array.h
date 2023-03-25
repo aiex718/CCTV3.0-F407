@@ -6,7 +6,7 @@
 #define __ARRAY_LEN uint16_t
 
 #define __ARRAY_DECL(__type)        \
-__HAL_STRUCT_ALIGN typedef struct   \
+__BSP_STRUCT_ALIGN typedef struct   \
 {                                   \
     __type          *ptr;           \
     __ARRAY_LEN      len;           \

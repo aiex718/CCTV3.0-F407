@@ -59,7 +59,7 @@ const HAL_GPIO_pin_t *Button_Wkup_pin = &(const HAL_GPIO_pin_t)
 };
 
 //Debug serial
-#define Debug_Serial_Tx_Buffer_Size 1024
+#define Debug_Serial_Tx_Buffer_Size 256
 #define Debug_Serial_Rx_Buffer_Size 16
 #define Debug_Serial_Callback_Queue_Size 4
 HAL_USART_t *Debug_Usart3 = &(HAL_USART_t)
@@ -118,7 +118,7 @@ HAL_USART_t *Debug_Usart3 = &(HAL_USART_t)
 	},
 	.USART_Enable_ITs = __CONST_ARRAY_CAST_VAR(uint16_t)
 	{
-		USART_IT_IDLE,
+		//USART_IT_IDLE,
 		0
 	},
 	.USART_TxDma_Cfg = NULL,
@@ -213,12 +213,12 @@ HAL_USART_t *Debug_Usart3 = &(HAL_USART_t)
 		},
 		.len=Debug_Serial_Rx_Buffer_Size
 	},
-	.USART_Rx_Threshold = 0,
-	.USART_Rx_Timeout = 0,
+	.USART_Rx_Threshold = 8,
+	.USART_Rx_Timeout = 5500,
 	// Callbacks
 	.USART_IT_Callback = NULL,
 	.USART_Tx_Empty_Callback = NULL,
-	.USART_Rx_Data_Callback = NULL,
+	.USART_Rx_ThrsReach_Callback = NULL,
 	.USART_Rx_Timeout_Callback = NULL,
 	.USART_Rx_Dropped_Callback = NULL,
 	.USART_Rx_Full_Callback = NULL,

@@ -4,7 +4,7 @@
 #include "bsp/platform/platform_defs.h"
 #include "bsp/sys/boolean.h"
 
-__HAL_STRUCT_ALIGN typedef struct 
+__BSP_STRUCT_ALIGN typedef struct 
 {
     uint32_t RCC_AHB1Periph;
     uint32_t RCC_AHB2Periph;

@@ -15,7 +15,7 @@
 #define __Buffer_Queue_IncPtr(self,ptr) __Buffer_Queue_MovePtr(self,ptr,1)
 /* Generic decleartion  */ 
 #define __BUFFER_DECL(__type,__name)        \
-__HAL_STRUCT_ALIGN typedef struct           \
+__BSP_STRUCT_ALIGN typedef struct           \
 {                                           \
     BUFFER_STORAGE_LEN_T      len;          \
     __type          *buf_ptr;               \

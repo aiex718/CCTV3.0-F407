@@ -9,11 +9,11 @@
 #include "stm32f4xx.h"
 #endif
 #if defined  (__GNUC__)
-#define __HAL_STRUCT_ALIGN __attribute__((aligned(4)))
-//#define __HAL_STRUCT_ALIGN __attribute__((packed))
+#define __BSP_STRUCT_ALIGN __attribute__((aligned(4)))
+//#define __BSP_STRUCT_ALIGN __attribute__((packed))
 #else
-#define __HAL_STRUCT_ALIGN __align(4)
-//#define __HAL_STRUCT_ALIGN __packed
+#define __BSP_STRUCT_ALIGN __align(4)
+//#define __BSP_STRUCT_ALIGN __packed
 #endif
 
 #include "bsp/sys/boolean.h"

@@ -1,0 +1,10 @@
+#ifndef __SYSCTRL_H__
+#define __SYSCTRL_H__
+
+#include "bsp/platform/platform_defs.h"
+
+#define SysCtrl_EnterSleep() __WFI()
+#define SysCtrl_IsThreadInIRq() (SCB->ICSR & SCB_ICSR_VECTACTIVE_Msk > 0)
+
+
+#endif

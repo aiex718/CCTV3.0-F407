@@ -28,7 +28,7 @@
 #define __CONCURRENT_QUEUE_T    \
     __CONCURRENT_QUEUE_TYPE_GENERIC(CONCURRENT_QUEUE_STORAGE_T)
                      
-__HAL_STRUCT_ALIGN typedef struct                       
+__BSP_STRUCT_ALIGN typedef struct                       
 {                                                       
     __IO CONCURRENT_QUEUE_INDEX_T r_idx,w_idx,l_idx;    
     CONCURRENT_QUEUE_STORAGE_T *mem;             

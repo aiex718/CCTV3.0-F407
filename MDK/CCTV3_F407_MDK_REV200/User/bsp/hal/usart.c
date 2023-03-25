@@ -1,20 +1,6 @@
 #include "bsp/hal/usart.h"
 #include "bsp/sys/systime.h"
 
-#define HAL_USART_IsEnabled(usart) ((usart)->USARTx->CR1 & USART_CR1_UE)
-
-#define HAL_USART_IsTxEnabled(usart) ((usart)->USARTx->CR1 & USART_Mode_Tx)
-#define HAL_USART_IsTxDmaEnabled(usart) ((usart)->USARTx->CR3 & USART_CR3_DMAT)
-#define HAL_USART_IsTransmitting(usart) (                                   \
-    HAL_USART_IsEnabled(usart) && HAL_USART_IsTxEnabled(usart) &&           \
-    (HAL_USART_IsTxDmaEnabled(usart)||(usart)->USARTx->CR1 & USART_CR1_TCIE))
-
-#define HAL_USART_IsRxEnabled(usart) ((usart)->USARTx->CR1 & USART_Mode_Rx)
-#define HAL_USART_IsRxDmaEnabled(usart) ((usart)->USARTx->CR3 & USART_CR3_DMAR)
-#define HAL_USART_IsReceiving(usart) (                                      \
-    HAL_USART_IsEnabled(usart) && HAL_USART_IsRxEnabled(usart) &&           \
-    (HAL_USART_IsRxDmaEnabled(usart)||(usart)->USARTx->CR1 & USART_CR1_RXNEIE))
-
 // private functions declaration
 static HAL_USART_Status_t HAL_USART_TxStreamCmd(const HAL_USART_t* usart, bool en);
 
@@ -47,11 +33,6 @@ void HAL_USART_Init(const HAL_USART_t* usart)
         if(usart->USART_Rx_Buf)
             Buffer_Clear(usart->USART_Rx_Buf);
     }
-}
-
-void HAL_USART_Cmd(const HAL_USART_t* usart, bool en)
-{
-    USART_Cmd(usart->USARTx,en?ENABLE:DISABLE);
 }
 
 bool HAL_USART_WriteByte(const HAL_USART_t* usart, uint8_t data)
@@ -273,7 +254,7 @@ void HAL_USART_IRQHandler(HAL_USART_t* usart)
                 usart->USART_Rx_Threshold)
         {
             Callback_InvokeOrQueue_IRq(usart,
-                usart->USART_Rx_Data_Callback,
+                usart->USART_Rx_ThrsReach_Callback,
                 usart->USART_Callback_PendingQueue);
         }
     }
@@ -297,10 +278,9 @@ void HAL_USART_IRQHandler(HAL_USART_t* usart)
 void HAL_USART_Service(HAL_USART_t* usart)
 {
     Callback_t* cb;
-    Systime_t now = Systime_Get();
     //check rx timeout
     if( usart->USART_Rx_Timeout && Buffer_Queue_IsEmpty(usart->USART_Rx_Buf)==false &&
-        (now - usart->_last_rx_time) >= usart->USART_Rx_Timeout)
+        (Systime_Get() - usart->_last_rx_time) >= usart->USART_Rx_Timeout)
     {
         Callback_Invoke(usart,usart->USART_Rx_Timeout_Callback);
     }

@@ -9,7 +9,7 @@
     #define HAL_DMA_NUMOFDATA_LEN_T uint16_t
 #endif
 
-__HAL_STRUCT_ALIGN typedef struct
+__BSP_STRUCT_ALIGN typedef struct
 {
     DMA_Stream_TypeDef *DMA_Streamx;
 

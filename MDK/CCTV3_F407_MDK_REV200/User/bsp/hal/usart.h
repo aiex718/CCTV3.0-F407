@@ -24,7 +24,7 @@ typedef enum
     HAL_USART_CONFLICT              =128,
 }HAL_USART_Status_t;
 
-__HAL_STRUCT_ALIGN typedef struct
+__BSP_STRUCT_ALIGN typedef struct
 {
     //usart
     USART_TypeDef* USARTx;
@@ -46,12 +46,12 @@ __HAL_STRUCT_ALIGN typedef struct
     uint16_t USART_Rx_Threshold;
     uint16_t USART_Rx_Timeout;
     //callbacks
-    CallbackIT_t* USART_IT_Callback;
+    CallbackIRq_t* USART_IT_Callback;
     Callback_t* USART_Tx_Empty_Callback;
-    Callback_t* USART_Rx_Data_Callback;
+    Callback_t* USART_Rx_ThrsReach_Callback;
     Callback_t* USART_Rx_Timeout_Callback;
-    CallbackIT_t* USART_Rx_Dropped_Callback;
-    CallbackIT_t* USART_Rx_Full_Callback;
+    CallbackIRq_t* USART_Rx_Dropped_Callback;
+    CallbackIRq_t* USART_Rx_Full_Callback;
     Buffer_CallbackP_t *USART_Callback_PendingQueue;
     //customize data structure
     void* pExtension;
@@ -60,8 +60,24 @@ __HAL_STRUCT_ALIGN typedef struct
     Systime_t _last_rx_time;
 }HAL_USART_t;
 
+//Macro as functions
+#define HAL_USART_IsEnabled(usart) ((usart)->USARTx->CR1 & USART_CR1_UE)
+
+#define HAL_USART_IsTxEnabled(usart) ((usart)->USARTx->CR1 & USART_Mode_Tx)
+#define HAL_USART_IsTxDmaEnabled(usart) ((usart)->USARTx->CR3 & USART_CR3_DMAT)
+#define HAL_USART_IsTransmitting(usart) (                                   \
+    HAL_USART_IsEnabled(usart) && HAL_USART_IsTxEnabled(usart) &&           \
+    (HAL_USART_IsTxDmaEnabled(usart)||(usart)->USARTx->CR1 & USART_CR1_TCIE))
+
+#define HAL_USART_IsRxEnabled(usart) ((usart)->USARTx->CR1 & USART_Mode_Rx)
+#define HAL_USART_IsRxDmaEnabled(usart) ((usart)->USARTx->CR3 & USART_CR3_DMAR)
+#define HAL_USART_IsReceiving(usart) (                                      \
+    HAL_USART_IsEnabled(usart) && HAL_USART_IsRxEnabled(usart) &&           \
+    (HAL_USART_IsRxDmaEnabled(usart)||(usart)->USARTx->CR1 & USART_CR1_RXNEIE))
+
+#define HAL_USART_Cmd(usart,en) USART_Cmd((usart)->USARTx,(en)?ENABLE:DISABLE)
+
 void HAL_USART_Init(const HAL_USART_t* usart);
-void HAL_USART_Cmd(const HAL_USART_t* usart, bool en);
 bool HAL_USART_WriteByte(const HAL_USART_t* usart, uint8_t data);
 uint16_t HAL_USART_Write(const HAL_USART_t* usart, uint8_t* data, uint16_t len);
 bool HAL_USART_ReadByte(const HAL_USART_t* usart, uint8_t* data);

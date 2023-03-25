@@ -3,19 +3,6 @@
 #include "bsp/hal/usart.h"
 #include "stdio.h"
 
-int fputc(int ch, FILE *f)
-{
-	HAL_USART_WriteByte(Debug_Usart3, (uint8_t) ch);
-	return (ch);
-}
-
-int fgetc(FILE *f)
-{
-	uint8_t ch;
-	while (HAL_USART_ReadByte(Debug_Usart3, &ch)==false);
-	return (int)ch;
-}
-
 // int fputc(int ch, FILE *f)
 // {
 // 	USART_SendData(USART3, (uint8_t) ch);

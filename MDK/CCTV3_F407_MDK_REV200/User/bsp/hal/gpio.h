@@ -4,7 +4,7 @@
 #include "bsp/platform/platform_defs.h"
 #include "bsp/hal/rcc.h"
 
-__HAL_STRUCT_ALIGN typedef struct
+__BSP_STRUCT_ALIGN typedef struct
 {
     //RCC
     HAL_RCC_Cmd_t* GPIO_RCC_cmd;
@@ -19,6 +19,6 @@ __HAL_STRUCT_ALIGN typedef struct
 void HAL_GPIO_InitPin(const HAL_GPIO_pin_t* gpio);
 #define HAL_GPIO_WritePin(gpio,val) GPIO_WriteBit((gpio)->GPIOx,(gpio)->GPIO_InitCfg->GPIO_Pin,(BitAction)(val))
 #define HAL_GPIO_ReadPin(gpio) GPIO_ReadInputDataBit((gpio)->GPIOx,(gpio)->GPIO_InitCfg->GPIO_Pin)
-
+#define HAL_GPIO_TogglePin(gpio) GPIO_ToggleBits((gpio)->GPIOx,(gpio)->GPIO_InitCfg->GPIO_Pin)
 
 #endif
