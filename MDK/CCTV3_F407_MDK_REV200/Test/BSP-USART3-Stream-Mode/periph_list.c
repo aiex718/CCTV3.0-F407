@@ -59,9 +59,6 @@ const HAL_GPIO_pin_t *Button_Wkup_pin = &(const HAL_GPIO_pin_t)
 };
 
 //Debug serial
-#define Debug_Serial_Tx_Buffer_Size 256
-#define Debug_Serial_Rx_Buffer_Size 16
-#define Debug_Serial_Callback_Queue_Size 4
 HAL_USART_t *Debug_Usart3 = &(HAL_USART_t)
 {
 	.USARTx = USART3,
@@ -123,80 +120,6 @@ HAL_USART_t *Debug_Usart3 = &(HAL_USART_t)
 	},
 	.USART_TxDma_Cfg = NULL,
 	.USART_RxDma_Cfg = NULL,
-	// .USART_TxDma_Cfg = __CONST_CAST_VAR(HAL_DMA_t)
-	// {
-	// 	.DMA_Streamx = DMA1_Stream3,
-	// 	.DMA_RCC_Cmd = __CONST_CAST_VAR(HAL_RCC_Cmd_t)
-	// 	{
-	// 		.RCC_AHB1Periph = RCC_AHB1Periph_DMA1,
-	// 	},
-	// 	.DMA_InitCfg = __CONST_CAST_VAR(DMA_InitTypeDef)
-	// 	{
-	// 		.DMA_Channel = DMA_Channel_4,
-	// 		.DMA_PeripheralBaseAddr = 0,
-	// 		.DMA_Memory0BaseAddr = 0,
-	// 		.DMA_DIR = DMA_DIR_MemoryToPeripheral,
-	// 		.DMA_BufferSize = 0,
-	// 		.DMA_PeripheralInc = DMA_PeripheralInc_Disable,
-	// 		.DMA_MemoryInc = DMA_MemoryInc_Enable,
-	// 		.DMA_PeripheralDataSize = DMA_PeripheralDataSize_Byte,
-	// 		.DMA_MemoryDataSize = DMA_MemoryDataSize_Byte,
-	// 		.DMA_Mode = DMA_Mode_Normal,
-	// 		.DMA_Priority = DMA_Priority_High,
-	// 		.DMA_FIFOMode = DMA_FIFOMode_Enable,
-	// 		.DMA_FIFOThreshold = DMA_FIFOThreshold_HalfFull,
-	// 		.DMA_MemoryBurst = DMA_MemoryBurst_INC4,
-	// 		.DMA_PeripheralBurst = DMA_PeripheralBurst_Single,
-	// 	},
-	// 	.DMA_NVIC_InitCfg = __CONST_CAST_VAR(NVIC_InitTypeDef)
-	// 	{
-	// 		.NVIC_IRQChannel = DMA1_Stream3_IRQn,
-	// 		.NVIC_IRQChannelPreemptionPriority = 0,
-	// 		.NVIC_IRQChannelSubPriority = 0,
-	// 		.NVIC_IRQChannelCmd = DISABLE,
-	// 	},
-	// 	.DMA_Enable_ITs = __CONST_ARRAY_CAST_VAR(uint16_t)
-	// 	{
-	// 		0
-	// 	},
-	// },
-	// .USART_RxDma_Cfg = __CONST_CAST_VAR(HAL_DMA_t)
-	// {
-	// 	.DMA_Streamx = DMA1_Stream1,
-	// 	.DMA_RCC_Cmd = __CONST_CAST_VAR(HAL_RCC_Cmd_t)
-	// 	{
-	// 		.RCC_AHB1Periph = RCC_AHB1Periph_DMA1,
-	// 	},
-	// 	.DMA_InitCfg = __CONST_CAST_VAR(DMA_InitTypeDef)
-	// 	{
-	// 		.DMA_Channel = DMA_Channel_4,
-	// 		.DMA_PeripheralBaseAddr = 0,
-	// 		.DMA_Memory0BaseAddr = 0,
-	// 		.DMA_DIR = DMA_DIR_PeripheralToMemory,
-	// 		.DMA_BufferSize = 0,
-	// 		.DMA_PeripheralInc = DMA_PeripheralInc_Disable,
-	// 		.DMA_MemoryInc = DMA_MemoryInc_Enable,
-	// 		.DMA_PeripheralDataSize = DMA_PeripheralDataSize_Byte,
-	// 		.DMA_MemoryDataSize = DMA_MemoryDataSize_Byte,
-	// 		.DMA_Mode = DMA_Mode_Normal,
-	// 		.DMA_Priority = DMA_Priority_High,
-	// 		.DMA_FIFOMode = DMA_FIFOMode_Enable,
-	// 		.DMA_FIFOThreshold = DMA_FIFOThreshold_HalfFull,
-	// 		.DMA_MemoryBurst = DMA_MemoryBurst_INC4,
-	// 		.DMA_PeripheralBurst = DMA_PeripheralBurst_Single,
-	// 	},
-	// 	.DMA_NVIC_InitCfg = __CONST_CAST_VAR(NVIC_InitTypeDef)
-	// 	{
-	// 		.NVIC_IRQChannel = DMA1_Stream1_IRQn,
-	// 		.NVIC_IRQChannelPreemptionPriority = 0,
-	// 		.NVIC_IRQChannelSubPriority = 0,
-	// 		.NVIC_IRQChannelCmd = DISABLE,
-	// 	},
-	// 	.DMA_Enable_ITs = __CONST_ARRAY_CAST_VAR(uint16_t)
-	// 	{
-	// 		0
-	// 	},
-	// },
 	.USART_Tx_Buf = __VAR_CAST_VAR(Buffer_uint8_t)
 	{
 		.buf_ptr = __VAR_ARRAY_CAST_VAR(uint8_t,Debug_Serial_Tx_Buffer_Size)
@@ -214,22 +137,7 @@ HAL_USART_t *Debug_Usart3 = &(HAL_USART_t)
 		.len=Debug_Serial_Rx_Buffer_Size
 	},
 	.USART_Rx_Threshold = 8,
-	.USART_Rx_Timeout = 5500,
-	// Callbacks
-	.USART_IT_Callback = NULL,
-	.USART_Tx_Empty_Callback = NULL,
-	.USART_Rx_ThrsReach_Callback = NULL,
-	.USART_Rx_Timeout_Callback = NULL,
-	.USART_Rx_Dropped_Callback = NULL,
-	.USART_Rx_Full_Callback = NULL,
-	.USART_Callback_PendingQueue = __VAR_CAST_VAR(Buffer_CallbackP_t)
-	{
-		.buf_ptr = __VAR_ARRAY_CAST_VAR(Callback_t*,Debug_Serial_Callback_Queue_Size)
-		{
-			0
-		},
-		.len=Debug_Serial_Callback_Queue_Size
-	},
+	.USART_Rx_Timeout = 500,
 	.pExtension = NULL,
 };
 

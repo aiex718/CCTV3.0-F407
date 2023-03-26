@@ -7,23 +7,33 @@
 #include "bsp/sys/sysctrl.h"
 #include "stdio.h"
 
+bool StressTestTx=false;
 //Normally, you should not directly print stuff in ISR callback,
 //because our buffer is not thread safe, this is just for test purpose
-void Tx_Empty_Callback(void *sender,void* para)
+void Tx_Empty(void *sender,void* para)
 {
 	HAL_GPIO_TogglePin(LED_STAT_pin);
 }
-void Rx_ThrsReach_Callback(void *sender,void* para)
+void Rx_ThrsReach(void *sender,void* para)
 { 
-	uint8_t ch;
+	//because rx_buf could receive data anytime,
+	//so we should snap buf size or use usart->USART_Rx_Threshold as rx count
+	//instead of while(Buffer_Queue_Pop_uint8_t)
 	HAL_USART_t* usart = (HAL_USART_t*)sender;
+	Buffer_uint8_t *rx_queue=usart->USART_Rx_Buf;
+	uint8_t rx_data[Debug_Serial_Rx_Buffer_Size]={0};
+	uint16_t cnt=usart->USART_Rx_Threshold,i=0;
+	while (i<cnt)
+	{
+		Buffer_Queue_Pop_uint8_t(rx_queue,rx_data+i);
+		i++;
+	}
+	if(strcmp(rx_data,"stress")==0)
+		StressTestTx=!StressTestTx;
 	printf("Rx_ThrsReach_Callback,in IRq %d\n",SysCtrl_IsThreadInIRq()); 
-	printf("len %d, content:",Buffer_Queue_GetSize(usart->USART_Rx_Buf));
-	while(Buffer_Queue_Pop_uint8_t(usart->USART_Rx_Buf,&ch))
-		printf("%c",ch);
-	printf("\n");
+	printf("len %d, content: %s\n",cnt,rx_data);
 }
-void Rx_Timeout_Callback(void *sender,void* para)
+void Rx_Timeout(void *sender,void* para)
 {	
 	uint8_t ch;
 	HAL_USART_t* usart = (HAL_USART_t*)sender;
@@ -34,20 +44,22 @@ void Rx_Timeout_Callback(void *sender,void* para)
 	printf("\n");
 }
 //Config rx threshold to larger than rx_queue max capacity to test these callback
-void Rx_Dropped_Callback(void *sender,void* para)
+//Becareful these callback is executed in ISR, and printf will block until tx finished
+//so if tx buffer is full, it will block the ISR, thread will hang forever
+void Rx_Dropped(void *sender,void* para)
 {
 	printf("Rx_Dropped_Callback,in IRq %d\n",SysCtrl_IsThreadInIRq());
 }
-void Rx_Full_Callback(void *sender,void* para)
+void Rx_Full(void *sender,void* para)
 {
 	printf("Rx_Full_Callback,in IRq %d\n",SysCtrl_IsThreadInIRq());
 }
 
-Callback_t USART_Tx_Empty_Callback = {Tx_Empty_Callback,NULL,INVOKE_IN_IRQ};
-Callback_t USART_Rx_ThrsReach_Callback = {Rx_ThrsReach_Callback,NULL,INVOKE_IN_TASK};
-Callback_t USART_Rx_Timeout_Callback = {Rx_Timeout_Callback,NULL,INVOKE_IN_TASK};
-CallbackIRq_t USART_Rx_Dropped_Callback = {Rx_Dropped_Callback,NULL};
-CallbackIRq_t USART_Rx_Full_Callback = {Rx_Full_Callback,NULL};
+Callback_t Tx_Empty_Callback = {Tx_Empty,NULL,INVOKE_IN_IRQ};
+Callback_t Rx_ThrsReach_Callback = {Rx_ThrsReach,NULL,INVOKE_IN_TASK};
+Callback_t Rx_Timeout_Callback = {Rx_Timeout,NULL,INVOKE_IN_TASK};
+Callback_t Rx_Dropped_Callback = {Rx_Dropped,NULL};
+Callback_t Rx_Full_Callback = {Rx_Full,NULL};
 Timer_t blinkTimer;
 char ch='a';
 int main(void)
@@ -58,11 +70,12 @@ int main(void)
 	HAL_GPIO_InitPin(LED_STAT_pin);
 	HAL_GPIO_InitPin(LED_Load_pin);
 	HAL_USART_Init(Debug_Usart3);
-	Debug_Usart3->USART_Tx_Empty_Callback = &USART_Tx_Empty_Callback;
-	Debug_Usart3->USART_Rx_ThrsReach_Callback = &USART_Rx_ThrsReach_Callback;
-	Debug_Usart3->USART_Rx_Timeout_Callback = &USART_Rx_Timeout_Callback;
-	Debug_Usart3->USART_Rx_Dropped_Callback = &USART_Rx_Dropped_Callback;
-	Debug_Usart3->USART_Rx_Full_Callback = &USART_Rx_Full_Callback;
+	
+	HAL_USART_SetCallback(Debug_Usart3,USART_CALLBACK_TX_EMPTY,&Tx_Empty_Callback);
+	HAL_USART_SetCallback(Debug_Usart3,USART_CALLBACK_RX_THRSHOLD,&Rx_ThrsReach_Callback);
+	HAL_USART_SetCallback(Debug_Usart3,USART_CALLBACK_RX_TIMEOUT,&Rx_Timeout_Callback);
+	HAL_USART_SetCallback(Debug_Usart3,USART_CALLBACK_IRQ_RX_DROPPED,&Rx_Dropped_Callback);
+	HAL_USART_SetCallback(Debug_Usart3,USART_CALLBACK_IRQ_RX_FULL,&Rx_Full_Callback);
 
 	HAL_USART_Cmd(Debug_Usart3,true);
 	HAL_USART_RxStreamCmd(Debug_Usart3,true);
@@ -77,19 +90,23 @@ int main(void)
 
 		//stress test tx queue
 		//could overwhalm your PC if it's a potato :P
-		printf("%c",ch++);
-		if(ch>'z') 
-		{	
-			ch='a';
-			printf("\n");
-		} 
+		if(StressTestTx)
+		{
+			printf("%c",ch++);
+			if(ch>'z') 
+			{	
+				ch='a';
+				printf("\n");
+			} 
+		}
 
 		//blink Load LED
 		if(Timer_IsElapsed(&blinkTimer))
 		{
 			HAL_GPIO_TogglePin(LED_Load_pin);
 			Timer_Reset(&blinkTimer);
-			//printf("%d:Wkup pin %d\n",Systime_Get(),HAL_GPIO_ReadPin(Button_Wkup_pin));
+			if(StressTestTx==false)
+				printf("%d:Wkup pin %d\n",Systime_Get(),HAL_GPIO_ReadPin(Button_Wkup_pin));
 		}
 		
 	}
