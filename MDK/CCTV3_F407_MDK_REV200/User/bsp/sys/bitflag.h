@@ -3,6 +3,8 @@
 
 #include "bsp/platform/platform_defs.h"
 
+//make sure your cpu can read/write BitFlag_t atomically
+//otherwise, you should use mutex or cas to protect it
 #ifndef BitFlag_t
 typedef uint32_t BitFlag_t;
 #endif
