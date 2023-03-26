@@ -27,11 +27,9 @@ __BSP_STRUCT_ALIGN typedef struct
     DMA_SetCurrDataCounter((self)->DMA_Streamx,(ndt))
 #define HAL_DMA_GetNumOfData(self) \
     DMA_GetCurrDataCounter((self)->DMA_Streamx)
-#define HAL_DMA_Cmd(self,en) do{                                \
-    if(en) DMA_Cmd((self)->DMA_Streamx, ENABLE);                \
-    else{ DMA_Cmd((self)->DMA_Streamx, DISABLE);                \
-    while(DMA_GetCmdStatus((self)->DMA_Streamx) != DISABLE);}   \
-}while(0)
+
 void HAL_DMA_Init(const HAL_DMA_t *self);
+void HAL_DMA_DeInit(const HAL_DMA_t *self);
+void HAL_DMA_Cmd(const HAL_DMA_t *self, bool en);
 
 #endif
