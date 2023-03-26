@@ -15,6 +15,8 @@ extern const HAL_GPIO_pin_t* LED_STAT_pin;
 extern const HAL_GPIO_pin_t* Button_Wkup_pin;
 
 //Debug serial
+#define Debug_Serial_Tx_Buffer_Size 1024
+#define Debug_Serial_Rx_Buffer_Size 16
 extern HAL_USART_t *Debug_Usart3;
 
 

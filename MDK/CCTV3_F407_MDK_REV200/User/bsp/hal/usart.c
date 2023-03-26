@@ -1,13 +1,29 @@
 #include "bsp/hal/usart.h"
 #include "bsp/sys/systime.h"
 
-// private functions declaration
+//Private functions declaration
 static HAL_USART_Status_t HAL_USART_TxStreamCmd(const HAL_USART_t* usart, bool en);
 
-void HAL_USART_Init(const HAL_USART_t* usart)
-{
+//Private helper functions and macros
+#define __InvokeOrPending_CallbackIdx_IRq(usart,cb_idx) do{ \
+    Callback_t* callback = (usart)->USART_Callbacks[(cb_idx)]; \
+    if(callback && Callback_TryInvoke_IRq((usart),callback)==false) \
+        BitFlag_SetIdx((usart)->_callback_pending_flag,cb_idx); \
+}while(0)
+
+#define __Invoke_CallbackIdx(usart,cb_idx) do{ \
+    Callback_t* callback = (usart)->USART_Callbacks[(cb_idx)]; \
+    if(callback) Callback_Invoke((usart),callback); \
+}while(0)
+
+
+void HAL_USART_Init(HAL_USART_t* usart)
+{   
     HAL_RCC_Cmd(usart->USART_RCC_Cmd,true);
     USART_Init(usart->USARTx,(USART_InitTypeDef*)usart->USART_InitCfg);
+    usart->_last_rx_time = 0;
+    usart->_callback_pending_flag = 0;
+    BSP_MEMSET(usart->USART_Callbacks,0,sizeof(usart->USART_Callbacks));
 
     if(usart->USART_NVIC_InitCfg)
     {
@@ -16,9 +32,6 @@ void HAL_USART_Init(const HAL_USART_t* usart)
         while (*it_ptr)
             USART_ITConfig(usart->USARTx, *it_ptr++, ENABLE);
     }
-
-    if(usart->USART_Callback_PendingQueue)
-        Buffer_Clear(usart->USART_Callback_PendingQueue);
 
     if(usart->USART_InitCfg->USART_Mode | USART_Mode_Tx)
     {
@@ -33,6 +46,18 @@ void HAL_USART_Init(const HAL_USART_t* usart)
         if(usart->USART_Rx_Buf)
             Buffer_Clear(usart->USART_Rx_Buf);
     }
+}
+
+void HAL_USART_SetCallback(HAL_USART_t* usart, HAL_USART_Callback_t cb, Callback_t* callback)
+{
+    if(cb < __NOT_CALLBACK_USART_MAX)
+        usart->USART_Callbacks[cb] = callback;
+}
+
+void HAL_USART_WriteByte_Software(const HAL_USART_t* usart, uint8_t data)
+{
+    while(USART_GetFlagStatus(usart->USARTx, USART_FLAG_TXE) == RESET);
+    USART_SendData(usart->USARTx, data);
 }
 
 bool HAL_USART_WriteByte(const HAL_USART_t* usart, uint8_t data)
@@ -60,6 +85,12 @@ uint16_t HAL_USART_Write(const HAL_USART_t* usart, uint8_t* data, uint16_t len)
         return ret;
     }
     return 0;
+}
+
+void HAL_USART_ReadByte_Software(const HAL_USART_t* usart, uint8_t* data)
+{
+    while(USART_GetFlagStatus(usart->USARTx, USART_FLAG_RXNE) == RESET);
+    *data = USART_ReceiveData(usart->USARTx);
 }
 
 bool HAL_USART_ReadByte(const HAL_USART_t* usart, uint8_t* data)
@@ -103,12 +134,13 @@ HAL_USART_Status_t HAL_USART_TxStreamCmd(const HAL_USART_t* usart, bool en)
 HAL_USART_Status_t HAL_USART_RxStreamCmd(const HAL_USART_t* usart, bool en)
 {
     USART_TypeDef *usart_hw = usart->USARTx;
-    if(HAL_USART_IsReceiving(usart)) 
+    if(HAL_USART_IsRxDmaEnabled(usart)) 
         return HAL_USART_BUSY;
     else if (en)
     {
         if(usart->USART_Rx_Buf == NULL)
             return HAL_USART_BUF_ERROR;
+        
         USART_ClearFlag(usart_hw, USART_FLAG_RXNE);
         USART_ITConfig(usart_hw, USART_IT_RXNE, ENABLE);
     }
@@ -159,9 +191,10 @@ HAL_USART_Status_t HAL_USART_DmaWrite(const HAL_USART_t* usart)
     else
     {
         //config DMA
+        HAL_DMA_DeInit(dma_cfg);
         HAL_DMA_Init(dma_cfg);
         HAL_DMA_SetMemAddr(dma_cfg, queue->buf_ptr);
-        HAL_DMA_SetPeriphAddr(dma_cfg , hw_USART->DR);
+        HAL_DMA_SetPeriphAddr(dma_cfg , &hw_USART->DR);
         HAL_DMA_SetNumOfData(dma_cfg, Buffer_Queue_GetSize(queue));
         HAL_DMA_Cmd(dma_cfg,true);
 
@@ -181,6 +214,7 @@ HAL_USART_Status_t HAL_USART_DmaRead(const HAL_USART_t* usart,uint16_t len)
 {
     Buffer_uint8_t* queue = usart->USART_Rx_Buf;
     const HAL_DMA_t *dma_cfg = usart->USART_RxDma_Cfg;
+    USART_TypeDef *usart_hw = usart->USARTx;
     
     if(HAL_USART_IsReceiving(usart)) 
         return HAL_USART_BUSY;
@@ -193,25 +227,32 @@ HAL_USART_Status_t HAL_USART_DmaRead(const HAL_USART_t* usart,uint16_t len)
     else
     {
         Buffer_Clear(queue);
+        if(len==0)
+            len = Buffer_Queue_GetMaxCapacity(queue);
         queue->w_ptr = queue->buf_ptr+len;
         //config DMA
+        HAL_DMA_DeInit(dma_cfg);
         HAL_DMA_Init(dma_cfg);
         HAL_DMA_SetMemAddr(dma_cfg , queue->buf_ptr);
-        HAL_DMA_SetPeriphAddr(dma_cfg ,usart->USARTx->DR);
+        HAL_DMA_SetPeriphAddr(dma_cfg ,&usart_hw->DR);
         HAL_DMA_SetNumOfData(dma_cfg ,len);
         HAL_DMA_Cmd(dma_cfg,true);
 
+        //clear IDLE flag
+        USART_GetFlagStatus(usart_hw, USART_FLAG_IDLE);
+        USART_ReceiveData(usart_hw); 
         //config IT,
-        USART_ITConfig(usart->USARTx, USART_IT_RXNE, DISABLE);
+        USART_ITConfig(usart_hw, USART_IT_RXNE, DISABLE);
+        USART_ITConfig(usart_hw, USART_IT_IDLE, ENABLE);
 
-        USART_DMACmd(usart->USARTx, USART_DMAReq_Rx, ENABLE);
+        USART_DMACmd(usart_hw, USART_DMAReq_Rx, ENABLE);
     }
     return HAL_USART_OK;
 }
 
 void HAL_USART_IRQHandler(HAL_USART_t* usart)
 {
-    Callback_Invoke(usart,usart->USART_IT_Callback);
+    __Invoke_CallbackIdx(usart,USART_CALLBACK_IRQ);
 
     if(USART_GetITStatus(usart->USARTx, USART_IT_TXE) != RESET)
     {
@@ -221,44 +262,42 @@ void HAL_USART_IRQHandler(HAL_USART_t* usart)
         else
         {
             USART_ITConfig(usart->USARTx, USART_IT_TXE, DISABLE);
-            Callback_InvokeOrQueue_IRq(usart,
-                usart->USART_Tx_Empty_Callback ,
-                usart->USART_Callback_PendingQueue);
+            
+            __InvokeOrPending_CallbackIdx_IRq(usart,USART_CALLBACK_TX_EMPTY);
         }
     }
     if(USART_GetITStatus(usart->USARTx, USART_IT_TC) != RESET)
     {
         USART_ITConfig(usart->USARTx, USART_IT_TC, DISABLE);
-        if(usart->USART_TxDma_Cfg)
+        if(HAL_USART_IsTxDmaEnabled(usart))
         {
             USART_DMACmd(usart->USARTx, USART_DMAReq_Tx, DISABLE);
             HAL_DMA_Cmd(usart->USART_TxDma_Cfg,false);
             Buffer_Clear(usart->USART_Tx_Buf);
+            
+            __InvokeOrPending_CallbackIdx_IRq(usart,USART_CALLBACK_TX_EMPTY);
         }
     }
     if(USART_GetITStatus(usart->USARTx, USART_IT_RXNE) != RESET)
     {
         uint8_t data = USART_ReceiveData(usart->USARTx);
         if(Buffer_Queue_IsFull(usart->USART_Rx_Buf))
-            Callback_Invoke(usart,usart->USART_Rx_Full_Callback);
+            __Invoke_CallbackIdx(usart,USART_CALLBACK_IRQ_RX_FULL);
         
         if(Buffer_Queue_Push_uint8_t(usart->USART_Rx_Buf, data))
             usart->_last_rx_time = Systime_Get();
         else
-            Callback_Invoke(usart,usart->USART_Rx_Dropped_Callback);
+            __Invoke_CallbackIdx(usart,USART_CALLBACK_IRQ_RX_DROPPED);
 
-        if (Buffer_Queue_GetSize(usart->USART_Rx_Buf) >= 
-                usart->USART_Rx_Threshold)
-        {
-            Callback_InvokeOrQueue_IRq(usart,
-                usart->USART_Rx_ThrsReach_Callback,
-                usart->USART_Callback_PendingQueue);
-        }
+        if (Buffer_Queue_GetSize(usart->USART_Rx_Buf)==usart->USART_Rx_Threshold)
+            __InvokeOrPending_CallbackIdx_IRq(usart,USART_CALLBACK_RX_THRSHOLD);
     }
     if(USART_GetITStatus(usart->USARTx, USART_IT_IDLE) != RESET)
     {
         USART_ReceiveData(usart->USARTx); //clear IDLE flag
-        if(usart->USART_RxDma_Cfg)
+        USART_ITConfig(usart->USARTx, USART_IT_IDLE, DISABLE);
+        usart->_last_rx_time = Systime_Get();
+        if(HAL_USART_IsRxDmaEnabled(usart))
         {
             uint16_t ndt;
             USART_DMACmd(usart->USARTx, USART_DMAReq_Rx, DISABLE);
@@ -266,22 +305,26 @@ void HAL_USART_IRQHandler(HAL_USART_t* usart)
             ndt = HAL_DMA_GetNumOfData(usart->USART_RxDma_Cfg);
             usart->USART_Rx_Buf->w_ptr -= ndt;
         }
-        Callback_InvokeOrQueue_IRq(usart,
-                usart->USART_Rx_Timeout_Callback,
-                usart->USART_Callback_PendingQueue);
+        __InvokeOrPending_CallbackIdx_IRq(usart,USART_CALLBACK_RX_TIMEOUT);
     }
 }
 
 void HAL_USART_Service(HAL_USART_t* usart)
 {
-    Callback_t* cb;
-    //check rx timeout
-    if( usart->USART_Rx_Timeout && Buffer_Queue_IsEmpty(usart->USART_Rx_Buf)==false &&
+    //Execute pending callbacks
+    while(usart->_callback_pending_flag)
+    {
+        uint8_t idx = BitFlag_BinToIdx(usart->_callback_pending_flag);
+        __Invoke_CallbackIdx(usart,idx);
+        BitFlag_ClearIdx(usart->_callback_pending_flag,idx);
+    }
+
+    //check rx timeout, only applicable for stream rx mode
+    //dma mode only use idle interrupt to detect timeout
+    if( HAL_USART_IsRxDmaEnabled(usart) == false && 
+        usart->USART_Rx_Timeout && Buffer_Queue_IsEmpty(usart->USART_Rx_Buf)==false &&
         (Systime_Get() - usart->_last_rx_time) >= usart->USART_Rx_Timeout)
     {
-        Callback_Invoke(usart,usart->USART_Rx_Timeout_Callback);
+        __Invoke_CallbackIdx(usart,USART_CALLBACK_RX_TIMEOUT);
     }
-    //Execute pending callbacks
-    while(Buffer_Queue_Pop_CallbackP_t(usart->USART_Callback_PendingQueue, &cb))
-        Callback_Invoke(usart,cb);
 }

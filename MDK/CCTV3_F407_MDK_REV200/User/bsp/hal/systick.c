@@ -6,8 +6,10 @@ void HAL_Systick_Init(void)
 {
     RCC_ClocksTypeDef rcc_clocks;
     systime_tick=0;
+    NVIC_PriorityGroupConfig(NVIC_PriorityGroup_2);
     RCC_GetClocksFreq(&rcc_clocks);
-    SysTick_Config((rcc_clocks.HCLK_Frequency / 1000 )-1);
+    SysTick_Config((rcc_clocks.HCLK_Frequency / 1000 ));
+    NVIC_SetPriority(SysTick_IRQn, 0);
 }
 
 

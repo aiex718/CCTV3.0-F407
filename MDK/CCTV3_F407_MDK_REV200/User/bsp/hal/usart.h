@@ -5,24 +5,39 @@
 #include "bsp/sys/array.h"
 #include "bsp/sys/buffer.h"
 #include "bsp/sys/callback.h"
+#include "bsp/sys/systime.h"
+#include "bsp/sys/bitflag.h"
 
 #include "bsp/hal/gpio.h"
 #include "bsp/hal/rcc.h"
 #include "bsp/hal/dma.h"
-#include "bsp/sys/systime.h"
+
 
 typedef enum 
 {
-    HAL_USART_OK                    =0,
-    HAL_USART_ERROR                 =1,
-    HAL_USART_BUSY                  =2,
-    HAL_USART_BAD_ARGS              =4,
-    HAL_USART_BUF_ERROR             =8,
-    HAL_USART_BUF_EMPTY             =16,
-    HAL_USART_BUF_NOT_EMPTY         =32,
-    HAL_USART_TOO_MANY              =64,
-    HAL_USART_CONFLICT              =128,
+    HAL_USART_OK =0         ,
+    HAL_USART_ERROR         ,
+    HAL_USART_BUSY          ,
+    HAL_USART_BAD_ARGS      ,
+    HAL_USART_BUF_ERROR     ,
+    HAL_USART_BUF_EMPTY     ,
+    HAL_USART_BUF_NOT_EMPTY ,
+    HAL_USART_TOO_MANY      ,
+    HAL_USART_CONFLICT      ,
 }HAL_USART_Status_t;
+
+typedef enum 
+{
+    //IRQ callback always invoked in ISR
+    USART_CALLBACK_IRQ =0           ,
+    USART_CALLBACK_IRQ_RX_DROPPED   ,
+    USART_CALLBACK_IRQ_RX_FULL      ,
+    //Nornam callback invoked in ISR or delay to task/main thread
+    USART_CALLBACK_TX_EMPTY         ,
+    USART_CALLBACK_RX_THRSHOLD      ,
+    USART_CALLBACK_RX_TIMEOUT       ,
+    __NOT_CALLBACK_USART_MAX        ,
+}HAL_USART_Callback_t;
 
 __BSP_STRUCT_ALIGN typedef struct
 {
@@ -46,23 +61,17 @@ __BSP_STRUCT_ALIGN typedef struct
     uint16_t USART_Rx_Threshold;
     uint16_t USART_Rx_Timeout;
     //callbacks
-    CallbackIRq_t* USART_IT_Callback;
-    Callback_t* USART_Tx_Empty_Callback;
-    Callback_t* USART_Rx_ThrsReach_Callback;
-    Callback_t* USART_Rx_Timeout_Callback;
-    CallbackIRq_t* USART_Rx_Dropped_Callback;
-    CallbackIRq_t* USART_Rx_Full_Callback;
-    Buffer_CallbackP_t *USART_Callback_PendingQueue;
+    Callback_t* USART_Callbacks[__NOT_CALLBACK_USART_MAX];
     //customize data structure
     void* pExtension;
 
     //private flags, dont use
+    BitFlag_t _callback_pending_flag;
     Systime_t _last_rx_time;
 }HAL_USART_t;
 
 //Macro as functions
 #define HAL_USART_IsEnabled(usart) ((usart)->USARTx->CR1 & USART_CR1_UE)
-
 #define HAL_USART_IsTxEnabled(usart) ((usart)->USARTx->CR1 & USART_Mode_Tx)
 #define HAL_USART_IsTxDmaEnabled(usart) ((usart)->USARTx->CR3 & USART_CR3_DMAT)
 #define HAL_USART_IsTxStreamEnabled(usart) ((usart)->USARTx->CR1 & USART_CR1_TXEIE)
@@ -78,10 +87,15 @@ __BSP_STRUCT_ALIGN typedef struct
     (HAL_USART_IsRxDmaEnabled(usart) || HAL_USART_IsRxStreamEnabled(usart)) )
 
 #define HAL_USART_Cmd(usart,en) USART_Cmd((usart)->USARTx,(en)?ENABLE:DISABLE)
+#define HAL_USART_ClearCallback(usart,cb) HAL_USART_SetCallback((usart),(cb_idx),NULL)
 
-void HAL_USART_Init(const HAL_USART_t* usart);
+
+void HAL_USART_Init(HAL_USART_t* usart);
+void HAL_USART_SetCallback(HAL_USART_t* usart, HAL_USART_Callback_t cb, Callback_t* callback); 
+void HAL_USART_WriteByte_Software(const HAL_USART_t* usart, uint8_t data);
 bool HAL_USART_WriteByte(const HAL_USART_t* usart, uint8_t data);
 uint16_t HAL_USART_Write(const HAL_USART_t* usart, uint8_t* data, uint16_t len);
+void HAL_USART_ReadByte_Software(const HAL_USART_t* usart, uint8_t* data);
 bool HAL_USART_ReadByte(const HAL_USART_t* usart, uint8_t* data);
 uint16_t HAL_USART_Read(const HAL_USART_t* usart, uint8_t* data, uint16_t len);
 HAL_USART_Status_t HAL_USART_RxStreamCmd(const HAL_USART_t* usart, bool en);
