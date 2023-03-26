@@ -39,6 +39,9 @@
 #ifndef BSP_UNUSED_ARG
     #define BSP_UNUSED_ARG(x) (void)(x)
 #endif 
+#ifndef BSP_ARRLEN
+    #define BSP_ARRLEN(arr) (sizeof(arr)/sizeof(arr[0]))
+#endif
 
 #ifndef NULL 
     #define NULL ((void*)0)
