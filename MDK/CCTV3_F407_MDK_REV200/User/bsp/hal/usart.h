@@ -28,11 +28,11 @@ typedef enum
 
 typedef enum 
 {
-    //IRQ callback always invoked in ISR
+    //IRQ callbacks, always invoked in ISR
     USART_CALLBACK_IRQ =0           ,
     USART_CALLBACK_IRQ_RX_DROPPED   ,
     USART_CALLBACK_IRQ_RX_FULL      ,
-    //Nornam callback invoked in ISR or delay to task/main thread
+    //Nornam callbacks, invoked in ISR or delay to task/main thread
     USART_CALLBACK_TX_EMPTY         ,
     USART_CALLBACK_RX_THRSHOLD      ,
     USART_CALLBACK_RX_TIMEOUT       ,
@@ -99,6 +99,7 @@ void HAL_USART_ReadByte_Software(const HAL_USART_t* usart, uint8_t* data);
 bool HAL_USART_ReadByte(const HAL_USART_t* usart, uint8_t* data);
 uint16_t HAL_USART_Read(const HAL_USART_t* usart, uint8_t* data, uint16_t len);
 HAL_USART_Status_t HAL_USART_RxStreamCmd(const HAL_USART_t* usart, bool en);
+HAL_USART_Status_t HAL_USART_TxStreamCmd(const HAL_USART_t* usart, bool en);
 HAL_USART_Status_t HAL_USART_SwapTxBuffer(HAL_USART_t* usart, Buffer_uint8_t* buf, Buffer_uint8_t* swap_out);
 HAL_USART_Status_t HAL_USART_SwapRxBuffer(HAL_USART_t* usart, Buffer_uint8_t* buf, Buffer_uint8_t* swap_out);
 HAL_USART_Status_t HAL_USART_DmaWrite(const HAL_USART_t* usart);

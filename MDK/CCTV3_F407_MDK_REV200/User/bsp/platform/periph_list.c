@@ -109,7 +109,7 @@ HAL_USART_t *Debug_Usart3 = &(HAL_USART_t)
 	.USART_NVIC_InitCfg = __CONST_CAST_VAR(NVIC_InitTypeDef)
 	{
 		.NVIC_IRQChannel = USART3_IRQn,
-		.NVIC_IRQChannelPreemptionPriority = 2,
+		.NVIC_IRQChannelPreemptionPriority = 0,
 		.NVIC_IRQChannelSubPriority = 2,
 		.NVIC_IRQChannelCmd = ENABLE,
 	},
@@ -207,12 +207,33 @@ HAL_USART_t *Debug_Usart3 = &(HAL_USART_t)
 		},
 		.len=Debug_Serial_Rx_Buffer_Size
 	},
-	.USART_Rx_Threshold = 8,
+	.USART_Rx_Threshold = 0,
 	.USART_Rx_Timeout = 100,
 	.pExtension = NULL,
 };
 
-void USART3_IRQHandler(void)
+DBG_Serial_t* DBG_Serial= &(DBG_Serial_t)
 {
-	HAL_USART_IRQHandler(Debug_Usart3);
-}
+	.tx_con_queue = __VAR_CAST_VAR(Concurrent_Queue_uint8_t)
+	{
+		.mem = __VAR_ARRAY_CAST_VAR(uint8_t,Debug_Serial_Tx_Buffer_Size)
+		{
+			0
+		},
+		.mem_len = Debug_Serial_Tx_Buffer_Size
+	},
+	.rx_buf = __VAR_CAST_VAR(Buffer_uint8_t)
+	{
+		.buf_ptr = __VAR_ARRAY_CAST_VAR(uint8_t,Debug_Serial_Rx_Buffer_Size)
+		{
+			0
+		},
+		.len=Debug_Serial_Rx_Buffer_Size
+	},
+	//alloc memory for callbacks
+	._tx_empty_cb = __VAR_CAST_VAR(Callback_t){0},
+	._rx_timeout_cb = __VAR_CAST_VAR(Callback_t){0},
+};
+
+
+

@@ -1,9 +1,6 @@
 #include "bsp/hal/usart.h"
 #include "bsp/sys/systime.h"
 
-//Private functions declaration
-static HAL_USART_Status_t HAL_USART_TxStreamCmd(const HAL_USART_t* usart, bool en);
-
 //Private helper functions and macros
 #define __InvokeOrPending_CallbackIdx_IRq(usart,cb_idx) do{ \
     Callback_t* callback = (usart)->USART_Callbacks[(cb_idx)]; \

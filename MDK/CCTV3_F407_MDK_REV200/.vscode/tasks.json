@@ -12,8 +12,8 @@
 		},
 		{
 			"type": "shell",
-			"label": "GCC build current file",
-			"command": "/usr/bin/gcc",
+			"label": "C/C++: clang++ build active file",
+			"command": "/usr/bin/clang",
 			"args": [
 				"-std=c99",
 				"-fcolor-diagnostics",
@@ -37,7 +37,7 @@
 				"kind": "build",
 				"isDefault": true
 			},
-			"detail": "Compiler: /usr/bin/gcc"
+			"detail": "Compiler: /usr/bin/clang"
 		}
 	]
 }

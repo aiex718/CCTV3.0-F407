@@ -20,6 +20,8 @@
 #include <string.h>
 
 #define CONCURRENT_QUEUE_ALLOW_PREEMPT 1
+#define DBG_SERIAL_ENABLE_DMA 1
+
 
 #ifndef BSP_MEMCPY 
     #define BSP_MEMCPY memcpy
