@@ -212,7 +212,3 @@ HAL_USART_t *Debug_Usart3 = &(HAL_USART_t)
 	.pExtension = NULL,
 };
 
-void USART3_IRQHandler(void)
-{
-	HAL_USART_IRQHandler(Debug_Usart3);
-}

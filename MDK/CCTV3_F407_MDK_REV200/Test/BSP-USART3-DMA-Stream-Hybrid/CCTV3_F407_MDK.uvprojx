@@ -718,19 +718,14 @@
           <GroupName>User\bsp\sys</GroupName>
           <Files>
             <File>
-              <FileName>stm32f4xx_it.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\User\bsp\sys\stm32f4xx_it.c</FilePath>
-            </File>
-            <File>
               <FileName>systime.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\User\bsp\sys\systime.c</FilePath>
             </File>
             <File>
-              <FileName>dbg_serial.c</FileName>
+              <FileName>sysirq.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\..\User\bsp\sys\dbg_serial.c</FilePath>
+              <FilePath>..\..\User\bsp\sys\sysirq.c</FilePath>
             </File>
           </Files>
         </Group>
