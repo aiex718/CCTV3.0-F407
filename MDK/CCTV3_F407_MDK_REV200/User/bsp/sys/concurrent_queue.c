@@ -5,7 +5,7 @@
 //check if x is power of 2
 #define __CONQUEUE_IS_POWER_OF_2(x) ((x)>0&&((x)&((x)-1))==0)
 
-//equal to x%d but faster when d is power of 2
+//equal to x%d, but faster when d is power of 2
 #define __CONQUEUE_MOD_FAST(x,d) (x&((d)-1))
 
 void Concurrent_Queue_Init(__CONCURRENT_QUEUE_T *self, 
@@ -39,7 +39,7 @@ bool Concurrent_Queue_TryPush(__CONCURRENT_QUEUE_T *self,
         
         if (snap_w_idx-snap_r_idx>=self->mem_len)//is Full
             return false;
-        else if(Atomic_Cmpxchg(CONCURRENT_QUEUE_STORAGE_T,
+        else if(Atomic_Cmpxchg(CONCURRENT_QUEUE_INDEX_T,
                                 &self->w_idx,(snap_w_idx+1),
                                 snap_w_idx) ==snap_w_idx)
             break;
@@ -48,11 +48,11 @@ bool Concurrent_Queue_TryPush(__CONCURRENT_QUEUE_T *self,
     self->mem[__CONQUEUE_MOD_FAST(snap_w_idx,self->mem_len)] = val;
 
 #if CONCURRENT_QUEUE_ALLOW_PREEMPT
-    Atomic_Increment(CONCURRENT_QUEUE_STORAGE_T,&self->l_idx);
+    Atomic_Increment(CONCURRENT_QUEUE_INDEX_T,&self->l_idx);
 #else
     do
     {
-        if(Atomic_Cmpxchg(CONCURRENT_QUEUE_STORAGE_T,
+        if(Atomic_Cmpxchg(CONCURRENT_QUEUE_INDEX_T,
                             &self->l_idx,(snap_w_idx+1),
                             snap_w_idx)==snap_w_idx)
             break;
@@ -83,7 +83,7 @@ bool Concurrent_Queue_TryPop(__CONCURRENT_QUEUE_T *self,
         {
             *out = self->mem[__CONQUEUE_MOD_FAST(snap_r_idx,self->mem_len)];
 
-            if (Atomic_Cmpxchg(CONCURRENT_QUEUE_STORAGE_T,
+            if (Atomic_Cmpxchg(CONCURRENT_QUEUE_INDEX_T,
                                 &self->r_idx,(snap_r_idx+1),
                                 snap_r_idx)==snap_r_idx)
                 return true;
