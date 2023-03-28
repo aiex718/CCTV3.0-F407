@@ -24,7 +24,6 @@ int main(void)
 	HAL_GPIO_InitPin(LED_Load_pin);
 	HAL_GPIO_WritePin(LED_STAT_pin,0);
 	
-
 	
 	Timer_Init(&blinkTimer,1000);
 	while(1)
