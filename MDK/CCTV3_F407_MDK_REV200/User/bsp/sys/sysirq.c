@@ -1,4 +1,5 @@
 #include "bsp/sys/systime.h"
+#include "bsp/platform/periph_list.h"
 
 void NMI_Handler(void)
 {
@@ -51,4 +52,10 @@ void PendSV_Handler(void)
 void SysTick_Handler(void)
 {
     Systime_Inc();
+}
+
+
+void USART3_IRQHandler(void)
+{
+	HAL_USART_IRQHandler(Debug_Usart3);
 }
