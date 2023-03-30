@@ -196,6 +196,7 @@ HAL_USART_Status_t HAL_USART_DmaWrite(const HAL_USART_t* usart)
     else
     {
         //config DMA
+        HAL_DMA_ReloadCfg(dma_cfg);
         HAL_DMA_SetMemAddr(dma_cfg, queue->buf_ptr);
         HAL_DMA_SetPeriphAddr(dma_cfg , &hw_USART->DR);
         HAL_DMA_SetNumOfData(dma_cfg, Buffer_Queue_GetSize(queue));
@@ -234,6 +235,7 @@ HAL_USART_Status_t HAL_USART_DmaRead(const HAL_USART_t* usart,uint16_t len)
             len = Buffer_Queue_GetMaxCapacity(queue);
         queue->w_ptr = queue->buf_ptr+len;
         //config DMA
+        HAL_DMA_ReloadCfg(dma_cfg);
         HAL_DMA_SetMemAddr(dma_cfg , queue->buf_ptr);
         HAL_DMA_SetPeriphAddr(dma_cfg ,&usart_hw->DR);
         HAL_DMA_SetNumOfData(dma_cfg ,len);

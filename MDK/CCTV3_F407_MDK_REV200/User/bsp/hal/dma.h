@@ -45,6 +45,7 @@ __BSP_STRUCT_ALIGN typedef struct
 
 void HAL_DMA_Init(HAL_DMA_t *self);
 void HAL_DMA_DeInit(const HAL_DMA_t *self);
+void HAL_DMA_ReloadCfg(const HAL_DMA_t *self);
 void HAL_DMA_Cmd(const HAL_DMA_t *self, bool en);
 void HAL_DMA_SetCallback(HAL_DMA_t* self, HAL_DMA_CallbackIdx_t cb_idx, Callback_t* callback); 
 void HAL_DMA_IRQHandler(HAL_DMA_t* self);
