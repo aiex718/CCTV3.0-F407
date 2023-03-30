@@ -248,7 +248,7 @@ HAL_USART_Status_t HAL_USART_DmaRead(const HAL_USART_t* usart,uint16_t len)
 
 void HAL_USART_IRQHandler(HAL_USART_t* usart)
 {
-    __Invoke_CallbackIdx(usart,USART_CALLBACK_IRQ);
+    Callback_InvokeIdx(usart,usart->USART_Callbacks,USART_CALLBACK_IRQ);
 
     if(USART_GetITStatus(usart->USARTx, USART_IT_TXE) != RESET)
     {
@@ -276,12 +276,12 @@ void HAL_USART_IRQHandler(HAL_USART_t* usart)
     {
         uint8_t data = USART_ReceiveData(usart->USARTx);
         if(Buffer_Queue_IsFull(usart->USART_Rx_Buf))
-            __Invoke_CallbackIdx(usart,USART_CALLBACK_IRQ_RX_FULL);
+            Callback_InvokeIdx(usart,usart->USART_Callbacks,USART_CALLBACK_IRQ_RX_FULL);
         
         if(Buffer_Queue_Push_uint8_t(usart->USART_Rx_Buf, data))
             usart->_last_rx_time = Systime_Get();
         else
-            __Invoke_CallbackIdx(usart,USART_CALLBACK_IRQ_RX_DROPPED);
+            Callback_InvokeIdx(usart,usart->USART_Callbacks,USART_CALLBACK_IRQ_RX_DROPPED);            
 
         if (Buffer_Queue_GetSize(usart->USART_Rx_Buf)==usart->USART_Rx_Threshold)
             __InvokeOrPending_CallbackIdx_IRq(usart,USART_CALLBACK_RX_THRSHOLD);
@@ -308,9 +308,9 @@ void HAL_USART_Service(HAL_USART_t* usart)
     //Execute pending callbacks
     while(usart->_callback_pending_flag)
     {
-        uint8_t idx = BitFlag_BinToIdx(usart->_callback_pending_flag);
-        __Invoke_CallbackIdx(usart,idx);
-        BitFlag_ClearIdx(usart->_callback_pending_flag,idx);
+        uint8_t cb_idx = BitFlag_BinToIdx(usart->_callback_pending_flag);
+        Callback_InvokeIdx(usart,usart->USART_Callbacks,cb_idx);        
+        BitFlag_ClearIdx(usart->_callback_pending_flag,cb_idx);
     }
 
     //check rx timeout, only applicable for stream rx mode
@@ -319,6 +319,6 @@ void HAL_USART_Service(HAL_USART_t* usart)
         usart->USART_Rx_Timeout && Buffer_Queue_IsEmpty(usart->USART_Rx_Buf)==false &&
         (Systime_Get() - usart->_last_rx_time) >= usart->USART_Rx_Timeout)
     {
-        __Invoke_CallbackIdx(usart,USART_CALLBACK_RX_TIMEOUT);
+        Callback_InvokeIdx(usart,usart->USART_Callbacks,USART_CALLBACK_RX_TIMEOUT);   
     }
 }
