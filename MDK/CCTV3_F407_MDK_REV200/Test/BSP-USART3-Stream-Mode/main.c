@@ -37,10 +37,20 @@ void Rx_Timeout(void *sender,void* para)
 {	
 	uint8_t ch;
 	HAL_USART_t* usart = (HAL_USART_t*)sender;
+	Buffer_uint8_t *rx_queue=usart->USART_Rx_Buf;
+	uint8_t rx_data[Debug_Serial_Rx_Buffer_Size]={0};
+	uint16_t cnt=Buffer_Queue_GetSize(usart->USART_Rx_Buf),i=0;
+	while (i<cnt)
+	{
+		Buffer_Queue_Pop_uint8_t(rx_queue,rx_data+i);
+		i++;
+	}
+	
+	if(strcmp(rx_data,"stress")==0)
+		StressTestTx=!StressTestTx;
+	
 	printf("Rx_Timeout_Callback,in IRq %d ,",SysCtrl_IsThreadInIRq());
-	printf("len %d, content:",Buffer_Queue_GetSize(usart->USART_Rx_Buf));
-	while(Buffer_Queue_Pop_uint8_t(usart->USART_Rx_Buf,&ch))
-		printf("%c",ch);
+	printf("len %d, content:%s",cnt,rx_data);
 	printf("\n");
 }
 //Config rx threshold to larger than rx_queue max capacity to test these callback
