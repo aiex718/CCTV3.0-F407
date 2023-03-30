@@ -117,9 +117,12 @@ HAL_USART_Status_t HAL_USART_TxStreamCmd(const HAL_USART_t* usart, bool en)
         if(usart->USART_Tx_Buf == NULL)
             return HAL_USART_BUF_ERROR;
 
-        USART_ClearFlag(usart_hw, USART_FLAG_TC);
+        //TC only used for DMA mode, so disable it
+        //TxStream mode use TXE interrupt and 
+        //Normally USART_IT_TC is disabled if we come here
+        //Disable again just for robustness
         USART_ITConfig(usart_hw, USART_IT_TC, DISABLE);
-        USART_GetITStatus(usart_hw, USART_IT_TC);
+        USART_ClearFlag(usart_hw, USART_FLAG_TC);
         USART_ITConfig(usart_hw, USART_IT_TXE, ENABLE);
     }
     else
@@ -138,8 +141,12 @@ HAL_USART_Status_t HAL_USART_RxStreamCmd(const HAL_USART_t* usart, bool en)
     {
         if(usart->USART_Rx_Buf == NULL)
             return HAL_USART_BUF_ERROR;
-        
-        USART_ClearFlag(usart_hw, USART_FLAG_RXNE);
+        //IDLE only used for DMA mode, so disable it
+        //RxStream mode use RXNE interrupt and _last_rx_time to detect idle
+        //Normally USART_IT_IDLE is disabled if we come here
+        //Disable again just for robustness
+        USART_ITConfig(usart->USARTx, USART_IT_IDLE, DISABLE);
+        USART_ClearFlag(usart_hw, USART_FLAG_RXNE); //clear RXNE flag
         USART_ITConfig(usart_hw, USART_IT_RXNE, ENABLE);
     }
     else
@@ -189,19 +196,17 @@ HAL_USART_Status_t HAL_USART_DmaWrite(const HAL_USART_t* usart)
     else
     {
         //config DMA
-        HAL_DMA_DeInit(dma_cfg);
-        HAL_DMA_Init(dma_cfg);
         HAL_DMA_SetMemAddr(dma_cfg, queue->buf_ptr);
         HAL_DMA_SetPeriphAddr(dma_cfg , &hw_USART->DR);
         HAL_DMA_SetNumOfData(dma_cfg, Buffer_Queue_GetSize(queue));
         HAL_DMA_Cmd(dma_cfg,true);
 
-        //config IT, clear TC for robustness
+        //TXE is only used for stream mode, so disable it
+        //Enable TC interrupt to detect tx dma finish
+        USART_ITConfig(hw_USART, USART_IT_TXE, DISABLE);
         USART_ClearFlag(hw_USART, USART_FLAG_TC);
         USART_ITConfig(hw_USART, USART_IT_TC, ENABLE);
-        //TXE is only used for stream mode
-        USART_ITConfig(hw_USART, USART_IT_TXE, DISABLE);
-
+        
         USART_DMACmd(hw_USART, USART_DMAReq_Tx, ENABLE);
     }
 
@@ -237,7 +242,8 @@ HAL_USART_Status_t HAL_USART_DmaRead(const HAL_USART_t* usart,uint16_t len)
         //clear IDLE flag
         USART_GetFlagStatus(usart_hw, USART_FLAG_IDLE);
         USART_ReceiveData(usart_hw); 
-        //config IT,
+        //RXNE is only used for stream mode, so disable it
+        //Enable IDLE interrupt to detect rx dma finish
         USART_ITConfig(usart_hw, USART_IT_RXNE, DISABLE);
         USART_ITConfig(usart_hw, USART_IT_IDLE, ENABLE);
 
