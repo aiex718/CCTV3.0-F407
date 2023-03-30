@@ -46,7 +46,7 @@ void Rx_Timeout(void *sender,void* para)
 		i++;
 	}
 	
-	if(strcmp(rx_data,"stress")==0)
+	if(strcmp(rx_data,"stress\n")==0)
 		StressTestTx=!StressTestTx;
 	
 	printf("Rx_Timeout_Callback,in IRq %d ,",SysCtrl_IsThreadInIRq());
