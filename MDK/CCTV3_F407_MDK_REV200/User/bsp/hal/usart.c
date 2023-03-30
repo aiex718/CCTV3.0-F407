@@ -1,18 +1,14 @@
 #include "bsp/hal/usart.h"
 #include "bsp/sys/systime.h"
 
-//Private helper functions and macros
-#define __InvokeOrPending_CallbackIdx_IRq(usart,cb_idx) do{ \
-    Callback_t* callback = (usart)->USART_Callbacks[(cb_idx)]; \
-    if(callback && Callback_TryInvoke_IRq((usart),callback)==false) \
-        BitFlag_SetIdx((usart)->_callback_pending_flag,cb_idx); \
-}while(0)
-
-#define __Invoke_CallbackIdx(usart,cb_idx) do{ \
-    Callback_t* callback = (usart)->USART_Callbacks[(cb_idx)]; \
-    if(callback) Callback_Invoke((usart),callback); \
-}while(0)
-
+//Private helper functions 
+__STATIC_INLINE void __InvokeOrPending_CallbackIdx_IRq
+    (HAL_USART_t *usart,HAL_USART_CallbackIdx_t cb_idx) 
+{
+    Callback_t* callback = usart->USART_Callbacks[cb_idx]; 
+    if(callback && Callback_TryInvoke_IRq(usart,callback)==false) 
+        BitFlag_SetIdx(usart->_callback_pending_flag,cb_idx); 
+}
 
 void HAL_USART_Init(HAL_USART_t* usart)
 {   
