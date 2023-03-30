@@ -79,6 +79,13 @@ void HAL_DMA_Cmd(const HAL_DMA_t *self, bool en)
     }
 }
 
+void HAL_DMA_ReloadCfg(const HAL_DMA_t *self)
+{
+    DMA_DeInit(self->DMA_Streamx);
+    while (DMA_GetCmdStatus(self->DMA_Streamx) != DISABLE);
+    DMA_Init(self->DMA_Streamx, self->DMA_InitCfg);
+}
+
 void HAL_DMA_SetCallback(HAL_DMA_t *self, HAL_DMA_CallbackIdx_t cb_idx, Callback_t* callback)
 {
     if(cb_idx < __NOT_CALLBACK_DMA_MAX)
