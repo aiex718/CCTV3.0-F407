@@ -32,12 +32,12 @@ typedef enum
     USART_CALLBACK_IRQ =0           ,
     USART_CALLBACK_IRQ_RX_DROPPED   ,
     USART_CALLBACK_IRQ_RX_FULL      ,
-    //Nornam callbacks, invoked in ISR or delay to task/main thread
+    //Normal callbacks, invoked in ISR or delay to task/main thread
     USART_CALLBACK_TX_EMPTY         ,
     USART_CALLBACK_RX_THRSHOLD      ,
     USART_CALLBACK_RX_TIMEOUT       ,
     __NOT_CALLBACK_USART_MAX        ,
-}HAL_USART_Callback_t;
+}HAL_USART_CallbackIdx_t;
 
 __BSP_STRUCT_ALIGN typedef struct
 {
@@ -87,15 +87,15 @@ __BSP_STRUCT_ALIGN typedef struct
     (HAL_USART_IsRxDmaEnabled(usart) || HAL_USART_IsRxStreamEnabled(usart)) )
 
 #define HAL_USART_Cmd(usart,en) USART_Cmd((usart)->USARTx,(en)?ENABLE:DISABLE)
-#define HAL_USART_ClearCallback(usart,cb) HAL_USART_SetCallback((usart),(cb_idx),NULL)
+#define HAL_USART_ClearCallback(usart,cb_idx) HAL_USART_SetCallback((usart),(cb_idx),NULL)
 
 
 void HAL_USART_Init(HAL_USART_t* usart);
-void HAL_USART_SetCallback(HAL_USART_t* usart, HAL_USART_Callback_t cb, Callback_t* callback); 
-void HAL_USART_WriteByte_Software(const HAL_USART_t* usart, uint8_t data);
+void HAL_USART_SetCallback(HAL_USART_t* usart, HAL_USART_CallbackIdx_t cb_idx, Callback_t* callback); 
+void HAL_USART_WriteByte_Polling(const HAL_USART_t* usart, uint8_t data);
 bool HAL_USART_WriteByte(const HAL_USART_t* usart, uint8_t data);
 uint16_t HAL_USART_Write(const HAL_USART_t* usart, uint8_t* data, uint16_t len);
-void HAL_USART_ReadByte_Software(const HAL_USART_t* usart, uint8_t* data);
+void HAL_USART_ReadByte_Polling(const HAL_USART_t* usart, uint8_t* data);
 bool HAL_USART_ReadByte(const HAL_USART_t* usart, uint8_t* data);
 uint16_t HAL_USART_Read(const HAL_USART_t* usart, uint8_t* data, uint16_t len);
 HAL_USART_Status_t HAL_USART_RxStreamCmd(const HAL_USART_t* usart, bool en);
