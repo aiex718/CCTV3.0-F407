@@ -31,23 +31,28 @@ void HAL_USART_Init(HAL_USART_t* usart)
         HAL_GPIO_InitPin(usart->USART_TxPin);
         if(usart->USART_Tx_Buf)
             Buffer_Clear(usart->USART_Tx_Buf);
+        if(usart->USART_TxDma_Cfg)
+            HAL_DMA_Init(usart->USART_TxDma_Cfg);
     }
+    
     
     if(usart->USART_InitCfg->USART_Mode | USART_Mode_Rx)
     {
 	    HAL_GPIO_InitPin(usart->USART_RxPin);
         if(usart->USART_Rx_Buf)
             Buffer_Clear(usart->USART_Rx_Buf);
+        if(usart->USART_RxDma_Cfg)
+            HAL_DMA_Init(usart->USART_RxDma_Cfg);
     }
 }
 
-void HAL_USART_SetCallback(HAL_USART_t* usart, HAL_USART_Callback_t cb, Callback_t* callback)
+void HAL_USART_SetCallback(HAL_USART_t* usart, HAL_USART_CallbackIdx_t cb_idx, Callback_t* callback)
 {
-    if(cb < __NOT_CALLBACK_USART_MAX)
-        usart->USART_Callbacks[cb] = callback;
+    if(cb_idx < __NOT_CALLBACK_USART_MAX)
+        usart->USART_Callbacks[cb_idx] = callback;
 }
 
-void HAL_USART_WriteByte_Software(const HAL_USART_t* usart, uint8_t data)
+void HAL_USART_WriteByte_Polling(const HAL_USART_t* usart, uint8_t data)
 {
     while(USART_GetFlagStatus(usart->USARTx, USART_FLAG_TXE) == RESET);
     USART_SendData(usart->USARTx, data);
@@ -80,7 +85,7 @@ uint16_t HAL_USART_Write(const HAL_USART_t* usart, uint8_t* data, uint16_t len)
     return 0;
 }
 
-void HAL_USART_ReadByte_Software(const HAL_USART_t* usart, uint8_t* data)
+void HAL_USART_ReadByte_Polling(const HAL_USART_t* usart, uint8_t* data)
 {
     while(USART_GetFlagStatus(usart->USARTx, USART_FLAG_RXNE) == RESET);
     *data = USART_ReceiveData(usart->USARTx);
@@ -169,9 +174,9 @@ HAL_USART_Status_t HAL_USART_SwapRxBuffer(HAL_USART_t* usart,
 
 HAL_USART_Status_t HAL_USART_DmaWrite(const HAL_USART_t* usart)
 {
-    Buffer_uint8_t* queue = usart->USART_Tx_Buf;
     const HAL_DMA_t *dma_cfg = usart->USART_TxDma_Cfg;
-    USART_TypeDef* hw_USART = usart->USARTx;
+    Buffer_uint8_t *queue = usart->USART_Tx_Buf;
+    USART_TypeDef *hw_USART = usart->USARTx;
 
     if(HAL_USART_IsTransmitting(usart)) 
         return HAL_USART_BUSY;
@@ -224,8 +229,6 @@ HAL_USART_Status_t HAL_USART_DmaRead(const HAL_USART_t* usart,uint16_t len)
             len = Buffer_Queue_GetMaxCapacity(queue);
         queue->w_ptr = queue->buf_ptr+len;
         //config DMA
-        HAL_DMA_DeInit(dma_cfg);
-        HAL_DMA_Init(dma_cfg);
         HAL_DMA_SetMemAddr(dma_cfg , queue->buf_ptr);
         HAL_DMA_SetPeriphAddr(dma_cfg ,&usart_hw->DR);
         HAL_DMA_SetNumOfData(dma_cfg ,len);
@@ -255,7 +258,6 @@ void HAL_USART_IRQHandler(HAL_USART_t* usart)
         else
         {
             USART_ITConfig(usart->USARTx, USART_IT_TXE, DISABLE);
-            
             __InvokeOrPending_CallbackIdx_IRq(usart,USART_CALLBACK_TX_EMPTY);
         }
     }
@@ -267,7 +269,6 @@ void HAL_USART_IRQHandler(HAL_USART_t* usart)
             USART_DMACmd(usart->USARTx, USART_DMAReq_Tx, DISABLE);
             HAL_DMA_Cmd(usart->USART_TxDma_Cfg,false);
             Buffer_Clear(usart->USART_Tx_Buf);
-            
             __InvokeOrPending_CallbackIdx_IRq(usart,USART_CALLBACK_TX_EMPTY);
         }
     }
