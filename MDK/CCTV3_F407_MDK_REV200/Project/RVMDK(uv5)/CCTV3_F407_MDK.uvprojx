@@ -704,6 +704,21 @@
               <FileType>1</FileType>
               <FilePath>..\..\User\bsp\hal\usart.c</FilePath>
             </File>
+            <File>
+              <FileName>mco.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\User\bsp\hal\mco.c</FilePath>
+            </File>
+            <File>
+              <FileName>timer.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\User\bsp\hal\timer.c</FilePath>
+            </File>
+            <File>
+              <FileName>timer_pwm.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\User\bsp\hal\timer_pwm.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -738,6 +753,16 @@
               <FileName>sysirq.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\User\bsp\sys\sysirq.c</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>User\device</GroupName>
+          <Files>
+            <File>
+              <FileName>flashlight.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\User\device\flashlight.c</FilePath>
             </File>
           </Files>
         </Group>
