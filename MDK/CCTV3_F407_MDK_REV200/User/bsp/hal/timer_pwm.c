@@ -1,7 +1,5 @@
 #include "bsp/hal/timer_pwm.h"
 
-//TODO:Test timer pwm all
-
 void HAL_Timer_PWM_Init(HAL_Timer_PWM_t *self)
 {
     HAL_Timer_Init(self->Timer);
