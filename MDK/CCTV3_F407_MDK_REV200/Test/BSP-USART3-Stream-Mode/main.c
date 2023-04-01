@@ -3,7 +3,7 @@
 
 #include "bsp/platform/periph_list.h"
 #include "bsp/sys/systime.h"
-#include "bsp/sys/timer.h"
+#include "bsp/sys/systimer.h"
 #include "bsp/sys/sysctrl.h"
 #include "stdio.h"
 
@@ -70,7 +70,7 @@ Callback_t Rx_ThrsReach_Callback = {Rx_ThrsReach,NULL,INVOKE_IN_TASK};
 Callback_t Rx_Timeout_Callback = {Rx_Timeout,NULL,INVOKE_IN_TASK};
 Callback_t Rx_Dropped_Callback = {Rx_Dropped,NULL};
 Callback_t Rx_Full_Callback = {Rx_Full,NULL};
-Timer_t blinkTimer;
+SysTimer_t blinkTimer;
 char ch='a';
 int main(void)
 {
@@ -91,7 +91,7 @@ int main(void)
 	HAL_USART_RxStreamCmd(Debug_Usart3,true);
 
 	printf("hello world!\n");
-	Timer_Init(&blinkTimer,1000);
+	SysTimer_Init(&blinkTimer,1000);
 	HAL_GPIO_WritePin(LED_STAT_pin,0);
 
 	while(1)
@@ -111,10 +111,10 @@ int main(void)
 		}
 
 		//blink Load LED
-		if(Timer_IsElapsed(&blinkTimer))
+		if(SysTimer_IsElapsed(&blinkTimer))
 		{
 			HAL_GPIO_TogglePin(LED_Load_pin);
-			Timer_Reset(&blinkTimer);
+			SysTimer_Reset(&blinkTimer);
 			if(StressTestTx==false)
 				printf("%d:Wkup pin %d\n",Systime_Get(),HAL_GPIO_ReadPin(Button_Wkup_pin));
 		}

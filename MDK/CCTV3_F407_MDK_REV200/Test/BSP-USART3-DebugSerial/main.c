@@ -2,11 +2,11 @@
 
 #include "bsp/platform/periph_list.h"
 #include "bsp/sys/systime.h"
-#include "bsp/sys/timer.h"
+#include "bsp/sys/systimer.h"
 #include "bsp/sys/sysctrl.h"
 #include "bsp/sys/dbg_serial.h"
 
-Timer_t blinkTimer;
+SysTimer_t blinkTimer;
 char ch='a';
 bool StressTestTx=false;
 int main(void)
@@ -28,7 +28,7 @@ int main(void)
 	printf("Boot\n");
 
 	
-	Timer_Init(&blinkTimer,1000);
+	SysTimer_Init(&blinkTimer,1000);
 	while(1)
 	{
 		uint8_t rxcmd[16]={0};
@@ -83,10 +83,10 @@ int main(void)
 		DBG_Serial_Service(DBG_Serial);
 
 		//blink Load LED
-		if(Timer_IsElapsed(&blinkTimer))
+		if(SysTimer_IsElapsed(&blinkTimer))
 		{
 			HAL_GPIO_TogglePin(LED_Load_pin);
-			Timer_Reset(&blinkTimer);
+			SysTimer_Reset(&blinkTimer);
 			if(StressTestTx==false)
 				printf("%d:Wkup pin %d\n",Systime_Get(),HAL_GPIO_ReadPin(Button_Wkup_pin));
 		}
