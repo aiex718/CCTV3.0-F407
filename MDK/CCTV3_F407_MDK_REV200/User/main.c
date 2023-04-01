@@ -2,12 +2,12 @@
 
 #include "bsp/platform/periph_list.h"
 #include "bsp/sys/systime.h"
-#include "bsp/sys/timer.h"
+#include "bsp/sys/systimer.h"
 #include "bsp/sys/sysctrl.h"
 #include "bsp/sys/dbg_serial.h"
 #include "stdio.h"
 
-Timer_t blinkTimer;
+SysTimer_t blinkTimer;
 int main(void)
 {
 	//SystemInit() is inside system_stm32f4xx.c
@@ -25,7 +25,7 @@ int main(void)
 	HAL_GPIO_WritePin(LED_STAT_pin,0);
 	
 	
-	Timer_Init(&blinkTimer,1000);
+	SysTimer_Init(&blinkTimer,1000);
 	while(1)
 	{
 		uint8_t rxcmd[Debug_Serial_Rx_Buffer_Size]={0};
@@ -39,10 +39,10 @@ int main(void)
 		DBG_Serial_Service(DBG_Serial);
 
 		//blink Load LED
-		if(Timer_IsElapsed(&blinkTimer))
+		if(SysTimer_IsElapsed(&blinkTimer))
 		{
 			HAL_GPIO_TogglePin(LED_Load_pin);
-			Timer_Reset(&blinkTimer);
+			SysTimer_Reset(&blinkTimer);
 				printf("%d:Wkup pin %d\n",Systime_Get(),HAL_GPIO_ReadPin(Button_Wkup_pin));
 		}
 	}
