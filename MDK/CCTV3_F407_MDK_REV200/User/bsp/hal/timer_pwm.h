@@ -22,7 +22,7 @@ typedef struct
     HAL_GPIO_pin_t *Timer_PWM_pins[__NOT_PWM_CHANNEL_MAX];
 }HAL_Timer_PWM_t;
 
-#define HAL_Timer_PWM_Cmd(self,en) TIM_Cmd((self)->Timer->TIMx,(en)?ENABLE:DISABLE)
+#define HAL_Timer_PWM_Cmd(self,en) HAL_Timer_Cmd((self)->Timer,en)
 
 void HAL_Timer_PWM_Init(HAL_Timer_PWM_t *self);
 void HAL_Timer_PWM_SetDutyCycle(HAL_Timer_PWM_t *self,HAL_Timer_PWM_Channel_t ch,uint32_t duty_cycle);

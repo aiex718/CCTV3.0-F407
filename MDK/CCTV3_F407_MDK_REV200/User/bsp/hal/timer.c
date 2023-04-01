@@ -11,3 +11,10 @@ void HAL_Timer_Init(HAL_Timer_t *self)
     while(*EnableITs)
         TIM_ITConfig(self->TIMx,*EnableITs++,ENABLE);
 }
+
+void HAL_Timer_Cmd(HAL_Timer_t *self,bool en)
+{
+    FunctionalState state = en?ENABLE:DISABLE;
+    TIM_Cmd(self->TIMx,state);
+    while((self->TIMx->CR1&TIM_CR1_CEN)!=state);
+}
