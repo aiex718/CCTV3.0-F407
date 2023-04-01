@@ -3,7 +3,7 @@
 
 #include "bsp/platform/periph_list.h"
 #include "bsp/sys/systime.h"
-#include "bsp/sys/timer.h"
+#include "bsp/sys/systimer.h"
 #include "bsp/sys/sysctrl.h"
 #include "stdio.h"
 
@@ -49,7 +49,7 @@ void Rx_Timeout(void *sender,void* para)
 		Buffer_Queue_Push_uint8_t(tx_queue,ch);
 	tx_queue->w_ptr+=sprintf(tx_queue->w_ptr,"\n");
 
-	//switch rx between DMA and non-DMA mode
+	//switch rx between DMA and Stream(interrupt) mode
 	if(IsRxStreamEnabled)
 	{
 		HAL_USART_RxStreamCmd(Debug_Usart3,false);
@@ -62,16 +62,16 @@ void Rx_Timeout(void *sender,void* para)
 	
 	HAL_USART_DmaWrite(usart);
 }
-//Config rx threshold to larger than rx_queue max capacity to test these callback
-//Becareful these callback is executed in ISR, and printf will block until tx finished
-//so if tx buffer is full, it will block the ISR, thread will hang forever
+//Becareful these callback is always executed in usart ISR, and printf will block until tx finished
+//so if tx buffer is full, thread will hang forever , this is just for demo purpose
+//DONT PRINTF IN ISR UNLESS YOU IMPLEMENT NON-BLOCKING PUTC 
 void Rx_Dropped(void *sender,void* para)
 {
-	printf("Rx_Dropped_Callback,in IRq %d\n",SysCtrl_IsThreadInIRq());
+	printf("RxDrop\n");
 }
 void Rx_Full(void *sender,void* para)
 {
-	printf("Rx_Full_Callback,in IRq %d\n",SysCtrl_IsThreadInIRq());
+	printf("RxFull\n");
 }
 
 Callback_t Tx_Empty_Callback = {Tx_Empty,NULL,INVOKE_IN_IRQ};
@@ -80,8 +80,7 @@ Callback_t Rx_Timeout_Callback = {Rx_Timeout,NULL,INVOKE_IN_TASK};
 Callback_t Rx_Dropped_Callback = {Rx_Dropped,NULL,INVOKE_IN_IRQ};
 Callback_t Rx_Full_Callback = {Rx_Full,NULL,INVOKE_IN_IRQ};
 
-Timer_t blinkTimer;
-char ch='a';
+SysTimer_t blinkTimer;
 int main(void)
 {
 	//SystemInit() is inside system_stm32f4xx.c
@@ -120,17 +119,17 @@ int main(void)
 	//this will block thread until DMA tx finished
 	printf("3rd Hello World from tx stream!\n");
 	
-	Timer_Init(&blinkTimer,1000);
+	SysTimer_Init(&blinkTimer,1000);
 
 	while(1)
 	{
 		HAL_USART_Service(Debug_Usart3);
 
 		//blink Load LED
-		if(Timer_IsElapsed(&blinkTimer))
+		if(SysTimer_IsElapsed(&blinkTimer))
 		{
 			HAL_GPIO_TogglePin(LED_Load_pin);
-			Timer_Reset(&blinkTimer);
+			SysTimer_Reset(&blinkTimer);
 			printf("%d:Wkup pin %d\n",Systime_Get(),HAL_GPIO_ReadPin(Button_Wkup_pin));
 		}
 	}
@@ -138,7 +137,7 @@ int main(void)
 
 int fputc(int ch, FILE *f)
 {
-	while (HAL_USART_WriteByte(Debug_Usart3, (uint8_t) ch)==false);
+	while (HAL_USART_WriteByte(Debug_Usart3, (uint8_t) ch)==false && SysCtrl_IsThreadInIRq() ==false);
 	return (ch);
 }
 
