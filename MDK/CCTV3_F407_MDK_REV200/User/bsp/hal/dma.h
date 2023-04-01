@@ -31,6 +31,9 @@ __BSP_STRUCT_ALIGN typedef struct
     Callback_t* DMA_Callbacks[__NOT_CALLBACK_DMA_MAX];
     //customize data structure
     void* pExtension;
+
+    //Private data, do not modify
+    uint32_t* __it_status_flags;
 }HAL_DMA_t;
 
 #define HAL_DMA_SetMemAddr(self,addr) \
