@@ -39,8 +39,8 @@ int main(void)
 	Device_FlashLight_Cmd(FlashLight_Bottom,true);
 	
 	
-	Timer_Init(&blinkTimer,1000);
-	Timer_Init(&breathLightTimer,10);
+	SysTimer_Init(&blinkTimer,1000);
+	SysTimer_Init(&breathLightTimer,10);
 	while(1)
 	{
 		uint8_t rxcmd[Debug_Serial_Rx_Buffer_Size]={0};
