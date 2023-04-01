@@ -249,14 +249,15 @@ HAL_Timer_PWM_t *Timer_PWM_FlashLight = &(HAL_Timer_PWM_t)
 			.TIM_ClockDivision = TIM_CKD_DIV1,
 			.TIM_RepetitionCounter = 0,
 		},
-		.Timer_NVIC_InitCfg = __CONST_CAST_VAR(NVIC_InitTypeDef){0},
+		.Timer_NVIC_InitCfg = NULL,
+		.Timer_Enable_ITs = __CONST_ARRAY_CAST_VAR(uint16_t){0}
 	},
 	.Timer_PWM_InitCfg = __CONST_CAST_VAR(TIM_OCInitTypeDef)
 	{
 		.TIM_OCMode = TIM_OCMode_PWM1,
 		.TIM_OutputState = TIM_OutputState_Enable,
 		.TIM_OutputNState = TIM_OutputNState_Disable,
-		.TIM_Pulse = 10, //10/1000=1%
+		.TIM_Pulse = 0, //default duty cycle to 0
 		.TIM_OCPolarity = TIM_OCPolarity_High,//CNT > CCR, output will set high 
 		//.TIM_OCNPolarity = TIM_OCNPolarity_High, TODO: check this value
 		//.TIM_OCIdleState = TIM_OCIdleState_Reset,
@@ -306,12 +307,12 @@ Device_FlashLight_t *FlashLight_Top = &(Device_FlashLight_t)
 {
 	.FlashLight_PWM_Channel = TIMER_PWM_CHANNEL_1,
 	.FlashLight_Timer_PWM = NULL,
-	.FlashLight_PWM_DutyCycle = 100,//default 100/1000 = 10% 
+	.FlashLight_PWM_DutyCycle = 10,//default 10/1000 = 1% 
 };
 
 Device_FlashLight_t *FlashLight_Bottom = &(Device_FlashLight_t)
 {
 	.FlashLight_PWM_Channel = TIMER_PWM_CHANNEL_2,
 	.FlashLight_Timer_PWM = NULL,
-	.FlashLight_PWM_DutyCycle = 100,//default 100/1000 = 10% 
+	.FlashLight_PWM_DutyCycle = 10,//default 10/1000 = 1% 
 };
