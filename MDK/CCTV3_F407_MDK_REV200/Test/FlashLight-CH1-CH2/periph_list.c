@@ -249,7 +249,8 @@ HAL_Timer_PWM_t *Timer_PWM_FlashLight = &(HAL_Timer_PWM_t)
 			.TIM_ClockDivision = TIM_CKD_DIV1,
 			.TIM_RepetitionCounter = 0,
 		},
-		.Timer_NVIC_InitCfg = __CONST_CAST_VAR(NVIC_InitTypeDef){0},
+		.Timer_NVIC_InitCfg = NULL,
+		.Timer_Enable_ITs = __CONST_ARRAY_CAST_VAR(uint16_t){0}
 	},
 	.Timer_PWM_InitCfg = __CONST_CAST_VAR(TIM_OCInitTypeDef)
 	{
