@@ -179,6 +179,14 @@ HAL_USART_Status_t HAL_USART_SwapRxBuffer(HAL_USART_t* usart,
     return HAL_USART_OK;
 }
 
+/**
+ * @brief  Transfer all data in tx queue using DMA.
+ * @details Callback will be invoked when tx finish.
+ *          And tx DMA will be DISABLE, call again for next DMA transfer.
+ * @warning Tx stream will be disabled while DMA ongoing.
+ * @param  usart: usart handle
+ * @retval HAL_USART_Status_t
+ */
 HAL_USART_Status_t HAL_USART_DmaWrite(const HAL_USART_t* usart)
 {
     const HAL_DMA_t *dma_cfg = usart->USART_TxDma_Cfg;
@@ -214,6 +222,15 @@ HAL_USART_Status_t HAL_USART_DmaWrite(const HAL_USART_t* usart)
     return HAL_USART_OK;
 }
 
+/**
+ * @brief  Read data using DMA, data will be stored in rx queue.
+ * @details Callback will be invoked when IDLE or rx count reach len.
+ *          And rx DMA will be DISABLE, call again for next DMA read.
+ * @warning Rx Stream will be disabled while DMA ongoing.
+ * @param  usart: usart handle
+ * @param  len: number of bytes to read, 0 for max capacity of rx queue
+ * @retval HAL_USART_Status_t
+ */
 HAL_USART_Status_t HAL_USART_DmaRead(const HAL_USART_t* usart,uint16_t len)
 {
     Buffer_uint8_t* queue = usart->USART_Rx_Buf;
