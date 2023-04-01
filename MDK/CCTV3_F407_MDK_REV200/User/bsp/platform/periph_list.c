@@ -1,5 +1,9 @@
 #include "bsp/platform/periph_list.h"
 
+#include "bsp/sys/concurrent_queue.h"
+#include "bsp/sys/callback.h"
+#include "bsp/hal/rcc.h"
+
 #define __VAR_CAST_VAR(type) (type*)&(type)
 #define __VAR_ARRAY_CAST_VAR(type,len) (type*)&(type[len])
 #define __CONST_CAST_VAR(type) (type*)&(const type)
@@ -227,5 +231,72 @@ DBG_Serial_t* DBG_Serial= &(DBG_Serial_t)
 	._rx_timeout_cb = __VAR_CAST_VAR(Callback_t){0},
 };
 
-
+HAL_Timer_PWM_t *Timer_PWM_FlashLight = &(HAL_Timer_PWM_t)
+{
+	.Timer = __CONST_CAST_VAR(HAL_Timer_t)
+	{
+		.TIMx = TIM12,
+		.Timer_RCC_Cmd = __CONST_CAST_VAR(HAL_RCC_Cmd_t)
+		{
+			.RCC_APB1Periph = RCC_APB1Periph_TIM12,
+		},
+		.Timer_InitCfg = __CONST_CAST_VAR(TIM_TimeBaseInitTypeDef)
+		{
+			.TIM_Prescaler = 42-1, //APB1 is 42MHz, divide 42 to get 1MHz
+			.TIM_CounterMode = TIM_CounterMode_Up,
+			.TIM_Period = 1000-1, //set duty cycle max to 1000, pwm freq = 1MHz/1000 = 1KHz
+			.TIM_ClockDivision = TIM_CKD_DIV1,
+			.TIM_RepetitionCounter = 0,
+		},
+		.Timer_NVIC_InitCfg = __CONST_CAST_VAR(NVIC_InitTypeDef){0},
+	},
+	.Timer_PWM_InitCfg = __CONST_CAST_VAR(TIM_OCInitTypeDef)
+	{
+		.TIM_OCMode = TIM_OCMode_PWM1,
+		.TIM_OutputState = TIM_OutputState_Enable,
+		.TIM_OutputNState = TIM_OutputNState_Disable,
+		.TIM_Pulse = 100, //PWM default 100/1000 = 10% 
+		.TIM_OCPolarity = TIM_OCPolarity_High,//CNT > CCR, output will set high 
+		//.TIM_OCNPolarity = TIM_OCNPolarity_High, TODO: check this value
+		//.TIM_OCIdleState = TIM_OCIdleState_Reset,
+		//.TIM_OCNIdleState = TIM_OCNIdleState_Reset,
+	},
+	.Timer_PWM_pins = 
+	{
+		__CONST_CAST_VAR(HAL_GPIO_pin_t) //CH0
+		{
+			.GPIOx = GPIOB,
+			.GPIO_RCC_cmd = __CONST_CAST_VAR(HAL_RCC_Cmd_t){
+				.RCC_AHB1Periph = RCC_AHB1Periph_GPIOB,
+			},
+			.GPIO_InitCfg = __CONST_CAST_VAR(GPIO_InitTypeDef){		
+				.GPIO_Pin = GPIO_Pin_14,
+				.GPIO_Mode = GPIO_Mode_AF,
+				.GPIO_Speed = GPIO_Speed_2MHz,
+				.GPIO_OType = GPIO_OType_PP,
+				.GPIO_PuPd = GPIO_PuPd_NOPULL
+			},
+			.GPIO_AF_PinSource = GPIO_PinSource14,
+			.GPIO_AF_Mapping = GPIO_AF_TIM12,
+		},
+		__CONST_CAST_VAR(HAL_GPIO_pin_t) //CH1
+		{
+			.GPIOx = GPIOB,
+			.GPIO_RCC_cmd = __CONST_CAST_VAR(HAL_RCC_Cmd_t){
+				.RCC_AHB1Periph = RCC_AHB1Periph_GPIOB,
+			},
+			.GPIO_InitCfg = __CONST_CAST_VAR(GPIO_InitTypeDef){		
+				.GPIO_Pin = GPIO_Pin_15,
+				.GPIO_Mode = GPIO_Mode_AF,
+				.GPIO_Speed = GPIO_Speed_2MHz,
+				.GPIO_OType = GPIO_OType_PP,
+				.GPIO_PuPd = GPIO_PuPd_NOPULL
+			},
+			.GPIO_AF_PinSource = GPIO_PinSource15,
+			.GPIO_AF_Mapping = GPIO_AF_TIM12,
+		},
+		NULL,//CH3 not available for TIM12
+		NULL,//CH4 not available for TIM12
+	}
+};
 
