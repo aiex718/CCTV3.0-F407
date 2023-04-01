@@ -13,6 +13,8 @@
 
 SysTimer_t blinkTimer;
 SysTimer_t breathLightTimer;
+#define DUTY_MAX 300
+
 int main(void)
 {
 	//SystemInit() is inside system_stm32f4xx.c
@@ -28,8 +30,13 @@ int main(void)
 	HAL_GPIO_InitPin(LED_STAT_pin);
 	HAL_GPIO_InitPin(LED_Load_pin);
 	HAL_GPIO_WritePin(LED_STAT_pin,0);
+
+	//PWM and flashlight
 	HAL_Timer_PWM_Init(Timer_PWM_FlashLight);
-	HAL_Timer_PWM_Cmd(Timer_PWM_FlashLight,true);
+	Device_FlashLight_Attach(FlashLight_Top,Timer_PWM_FlashLight);
+	Device_FlashLight_Attach(FlashLight_Bottom,Timer_PWM_FlashLight);
+	Device_FlashLight_Cmd(FlashLight_Top,true);
+	Device_FlashLight_Cmd(FlashLight_Bottom,true);
 	
 	
 	Timer_Init(&blinkTimer,1000);
@@ -41,6 +48,18 @@ int main(void)
 		{
 			if(strcmp((char*)rxcmd,"hello")==0)
 				printf("hello there\n");
+			else if(strcmp((char*)rxcmd,"on")==0)
+			{
+				Device_FlashLight_Cmd(FlashLight_Top,true);
+				Device_FlashLight_Cmd(FlashLight_Bottom,true);
+				printf("flash light on\n");
+			}
+			else if(strcmp((char*)rxcmd,"off")==0)
+			{
+				Device_FlashLight_Cmd(FlashLight_Top,false);
+				Device_FlashLight_Cmd(FlashLight_Bottom,false);
+				printf("flash light off\n");
+			}
 		}
 
 		HAL_USART_Service(Debug_Usart3);
@@ -60,9 +79,9 @@ int main(void)
 			static uint16_t duty_cycle=0;
 			static int8_t step=1;
 			duty_cycle+=step;
-			if(duty_cycle>=500)
+			if(duty_cycle>=DUTY_MAX)
 			{
-				duty_cycle=500;
+				duty_cycle=DUTY_MAX;
 				step=-1;
 			}
 			else if(duty_cycle<=0)
@@ -70,8 +89,8 @@ int main(void)
 				duty_cycle=0;
 				step=1;
 			}
-			HAL_Timer_PWM_SetDutyCycle(Timer_PWM_FlashLight,TIMER_PWM_CHANNEL_1,duty_cycle);
-			HAL_Timer_PWM_SetDutyCycle(Timer_PWM_FlashLight,TIMER_PWM_CHANNEL_2,duty_cycle);
+			Device_FlashLight_SetDutyCycle(FlashLight_Top,duty_cycle);
+			Device_FlashLight_SetDutyCycle(FlashLight_Bottom,DUTY_MAX-duty_cycle);
 			SysTimer_Reset(&breathLightTimer);
 		}
 	}

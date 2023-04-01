@@ -2,6 +2,7 @@
 
 #include "bsp/sys/concurrent_queue.h"
 #include "bsp/sys/callback.h"
+
 #include "bsp/hal/rcc.h"
 
 #define __VAR_CAST_VAR(type) (type*)&(type)
@@ -255,7 +256,7 @@ HAL_Timer_PWM_t *Timer_PWM_FlashLight = &(HAL_Timer_PWM_t)
 		.TIM_OCMode = TIM_OCMode_PWM1,
 		.TIM_OutputState = TIM_OutputState_Enable,
 		.TIM_OutputNState = TIM_OutputNState_Disable,
-		.TIM_Pulse = 100, //PWM default 100/1000 = 10% 
+		.TIM_Pulse = 10, //10/1000=1%
 		.TIM_OCPolarity = TIM_OCPolarity_High,//CNT > CCR, output will set high 
 		//.TIM_OCNPolarity = TIM_OCNPolarity_High, TODO: check this value
 		//.TIM_OCIdleState = TIM_OCIdleState_Reset,
@@ -300,3 +301,17 @@ HAL_Timer_PWM_t *Timer_PWM_FlashLight = &(HAL_Timer_PWM_t)
 	}
 };
 
+
+Device_FlashLight_t *FlashLight_Top = &(Device_FlashLight_t)
+{
+	.FlashLight_PWM_Channel = TIMER_PWM_CHANNEL_1,
+	.FlashLight_Timer_PWM = NULL,
+	.FlashLight_PWM_DutyCycle = 100,//default 100/1000 = 10% 
+};
+
+Device_FlashLight_t *FlashLight_Bottom = &(Device_FlashLight_t)
+{
+	.FlashLight_PWM_Channel = TIMER_PWM_CHANNEL_2,
+	.FlashLight_Timer_PWM = NULL,
+	.FlashLight_PWM_DutyCycle = 100,//default 100/1000 = 10% 
+};

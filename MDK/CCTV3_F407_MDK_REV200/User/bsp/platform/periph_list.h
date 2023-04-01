@@ -7,6 +7,7 @@
 #include "bsp/sys/dbg_serial.h"
 #include "bsp/hal/timer.h"
 #include "bsp/hal/timer_pwm.h"
+#include "device/flashlight.h"
 
 
 //LEDs active high
@@ -22,8 +23,13 @@ extern const HAL_GPIO_pin_t *Button_Wkup_pin;
 extern HAL_USART_t *Debug_Usart3;
 extern DBG_Serial_t *DBG_Serial;
 
-//Pwm
+//Timer PWM
 extern HAL_Timer_PWM_t *Timer_PWM_FlashLight;
+
+//Device flashlight
+extern Device_FlashLight_t *FlashLight_Top;
+extern Device_FlashLight_t *FlashLight_Bottom;
+
 
 //TODO: MCO 
 

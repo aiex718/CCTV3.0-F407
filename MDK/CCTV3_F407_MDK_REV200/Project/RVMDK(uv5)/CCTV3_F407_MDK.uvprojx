@@ -756,6 +756,16 @@
             </File>
           </Files>
         </Group>
+        <Group>
+          <GroupName>User\device</GroupName>
+          <Files>
+            <File>
+              <FileName>flashlight.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\User\device\flashlight.c</FilePath>
+            </File>
+          </Files>
+        </Group>
       </Groups>
     </Target>
   </Targets>
