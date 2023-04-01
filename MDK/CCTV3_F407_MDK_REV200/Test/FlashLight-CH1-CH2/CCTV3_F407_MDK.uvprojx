@@ -667,7 +667,7 @@
           </Files>
         </Group>
         <Group>
-          <GroupName>BSP-USART3-DMA-Stream-Hybrid</GroupName>
+          <GroupName>FlashLight-CH1-CH2</GroupName>
           <Files>
             <File>
               <FileName>main.c</FileName>
@@ -709,6 +709,16 @@
               <FileType>1</FileType>
               <FilePath>..\..\User\bsp\hal\usart.c</FilePath>
             </File>
+            <File>
+              <FileName>timer.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\User\bsp\hal\timer.c</FilePath>
+            </File>
+            <File>
+              <FileName>timer_pwm.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\User\bsp\hal\timer_pwm.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -723,11 +733,6 @@
               <FilePath>..\..\User\bsp\sys\systime.c</FilePath>
             </File>
             <File>
-              <FileName>dbg_serial.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\User\bsp\sys\dbg_serial.c</FilePath>
-            </File>
-            <File>
               <FileName>sysirq.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\User\bsp\sys\sysirq.c</FilePath>
@@ -736,6 +741,21 @@
               <FileName>concurrent_queue.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\User\bsp\sys\concurrent_queue.c</FilePath>
+            </File>
+            <File>
+              <FileName>dbg_serial.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\User\bsp\sys\dbg_serial.c</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>User\device</GroupName>
+          <Files>
+            <File>
+              <FileName>flashlight.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\User\device\flashlight.c</FilePath>
             </File>
           </Files>
         </Group>
