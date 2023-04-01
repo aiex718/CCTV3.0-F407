@@ -22,7 +22,11 @@ __BUFFER_DECL(Callback_t*,CallbackP_t)
 
 //Macro as function
 #define Callback_Invoke(sender,cb) do{ \
-    if((cb)!=NULL) (cb)->func((sender),(cb)->param); }while(0)   
+    if((cb)!=NULL&&(cb)->func!=NULL) (cb)->func((sender),(cb)->param);}while(0)   
+#define Callback_InvokeIdx(sender,cb_ary,cb_idx) do{\
+    Callback_t* cb = (cb_ary)[(cb_idx)];    \
+    Callback_Invoke((sender),cb);           \
+}while(0)
 #define Callback_TryInvoke_IRq(sender,cb) \
     Callback_TryInvoke((sender),(cb),INVOKE_IN_IRQ)
 #define Callback_InvokeOrQueue_IRq(sender,cb,queue) \

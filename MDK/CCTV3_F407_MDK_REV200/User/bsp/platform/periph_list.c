@@ -149,10 +149,6 @@ HAL_USART_t *Debug_Usart3 = &(HAL_USART_t)
 			.NVIC_IRQChannelSubPriority = 2,
 			.NVIC_IRQChannelCmd = DISABLE,
 		},
-		.DMA_Enable_ITs = __CONST_ARRAY_CAST_VAR(uint16_t)
-		{
-			0
-		},
 	},
 	.USART_RxDma_Cfg = __CONST_CAST_VAR(HAL_DMA_t)
 	{
@@ -185,10 +181,6 @@ HAL_USART_t *Debug_Usart3 = &(HAL_USART_t)
 			.NVIC_IRQChannelPreemptionPriority = 2,
 			.NVIC_IRQChannelSubPriority = 2,
 			.NVIC_IRQChannelCmd = DISABLE,
-		},
-		.DMA_Enable_ITs = __CONST_ARRAY_CAST_VAR(uint16_t)
-		{
-			0
 		},
 	},
 	.USART_Tx_Buf = __VAR_CAST_VAR(Buffer_uint8_t)

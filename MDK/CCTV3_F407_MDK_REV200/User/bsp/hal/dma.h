@@ -2,21 +2,38 @@
 #define DMA_H
 
 #include "bsp/platform/platform_defs.h"
-#include "bsp/sys/array.h"
+#include "bsp/sys/callback.h"
 #include "bsp/hal/rcc.h"
 
 #ifndef HAL_DMA_NUMOFDATA_LEN_T
     #define HAL_DMA_NUMOFDATA_LEN_T uint16_t
 #endif
 
+typedef enum 
+{
+    //DMA callbacks always invoked in ISR
+    DMA_CALLBACK_TRANSFER_HALF =0   ,
+    DMA_CALLBACK_TRANSFER_COMPLETE  ,
+    DMA_CALLBACK_TRANSFER_ERROR     ,
+    DMA_CALLBACK_FIFO_ERROR         ,
+    DMA_CALLBACK_DIRECT_ERROR       ,
+    __NOT_CALLBACK_DMA_MAX
+}HAL_DMA_CallbackIdx_t;
+
 __BSP_STRUCT_ALIGN typedef struct
 {
     DMA_Stream_TypeDef *DMA_Streamx;
 
-    const HAL_RCC_Cmd_t *DMA_RCC_Cmd;
-    const DMA_InitTypeDef *DMA_InitCfg;
-    const NVIC_InitTypeDef *DMA_NVIC_InitCfg;
-    uint16_t *DMA_Enable_ITs;
+    HAL_RCC_Cmd_t *DMA_RCC_Cmd;
+    DMA_InitTypeDef *DMA_InitCfg;
+    NVIC_InitTypeDef *DMA_NVIC_InitCfg;
+
+    Callback_t* DMA_Callbacks[__NOT_CALLBACK_DMA_MAX];
+    //customize data structure
+    void* pExtension;
+
+    //Private data, do not modify
+    uint32_t* __it_status_flags;
 }HAL_DMA_t;
 
 #define HAL_DMA_SetMemAddr(self,addr) \
@@ -27,9 +44,15 @@ __BSP_STRUCT_ALIGN typedef struct
     DMA_SetCurrDataCounter((self)->DMA_Streamx,(ndt))
 #define HAL_DMA_GetNumOfData(self) \
     DMA_GetCurrDataCounter((self)->DMA_Streamx)
+#define HAL_DMA_ClearCallback(dma,cb) HAL_DMA_SetCallback((dma),(cb),NULL)
 
-void HAL_DMA_Init(const HAL_DMA_t *self);
+void HAL_DMA_Init(HAL_DMA_t *self);
 void HAL_DMA_DeInit(const HAL_DMA_t *self);
+void HAL_DMA_ReloadCfg(const HAL_DMA_t *self);
 void HAL_DMA_Cmd(const HAL_DMA_t *self, bool en);
+void HAL_DMA_SetCallback(HAL_DMA_t* self, HAL_DMA_CallbackIdx_t cb_idx, Callback_t* callback); 
+void HAL_DMA_IRQHandler(HAL_DMA_t* self);
+void HAL_DMA_Service(const HAL_DMA_t *dma);
+
 
 #endif
