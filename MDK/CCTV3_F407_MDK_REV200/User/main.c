@@ -1,13 +1,18 @@
 #include "stm32f4xx.h"
+#include "stdio.h"
 
 #include "bsp/platform/periph_list.h"
 #include "bsp/sys/systime.h"
 #include "bsp/sys/systimer.h"
 #include "bsp/sys/sysctrl.h"
 #include "bsp/sys/dbg_serial.h"
-#include "stdio.h"
+#include "bsp/hal/systick.h"
+#include "bsp/hal/timer.h"
+#include "bsp/hal/timer_pwm.h"
+
 
 SysTimer_t blinkTimer;
+
 int main(void)
 {
 	//SystemInit() is inside system_stm32f4xx.c
@@ -23,6 +28,13 @@ int main(void)
 	HAL_GPIO_InitPin(LED_STAT_pin);
 	HAL_GPIO_InitPin(LED_Load_pin);
 	HAL_GPIO_WritePin(LED_STAT_pin,0);
+
+	//PWM and flashlight
+	HAL_Timer_PWM_Init(Timer_PWM_FlashLight);
+	Device_FlashLight_Attach(FlashLight_Top,Timer_PWM_FlashLight);
+	Device_FlashLight_Attach(FlashLight_Bottom,Timer_PWM_FlashLight);
+	Device_FlashLight_Cmd(FlashLight_Top,true);
+	Device_FlashLight_Cmd(FlashLight_Bottom,true);
 	
 	
 	SysTimer_Init(&blinkTimer,1000);
@@ -32,7 +44,19 @@ int main(void)
 		if(DBG_Serial_ReadLine(DBG_Serial,rxcmd,16))
 		{
 			if(strcmp((char*)rxcmd,"hello")==0)
-				printf("hello there\n");
+				printf("Hello there\n");
+			else if(strcmp((char*)rxcmd,"on")==0)
+			{
+				Device_FlashLight_Cmd(FlashLight_Top,true);
+				Device_FlashLight_Cmd(FlashLight_Bottom,true);
+				printf("Flashlight on\n");
+			}
+			else if(strcmp((char*)rxcmd,"off")==0)
+			{
+				Device_FlashLight_Cmd(FlashLight_Top,false);
+				Device_FlashLight_Cmd(FlashLight_Bottom,false);
+				printf("Flashlight off\n");
+			}
 		}
 
 		HAL_USART_Service(Debug_Usart3);
@@ -45,6 +69,7 @@ int main(void)
 			SysTimer_Reset(&blinkTimer);
 				printf("%d:Wkup pin %d\n",Systime_Get(),HAL_GPIO_ReadPin(Button_Wkup_pin));
 		}
+		
 	}
 }
 
