@@ -12,8 +12,6 @@
 
 
 SysTimer_t blinkTimer;
-SysTimer_t breathLightTimer;
-#define DUTY_MAX 300
 
 int main(void)
 {
@@ -40,25 +38,24 @@ int main(void)
 	
 	
 	Timer_Init(&blinkTimer,1000);
-	Timer_Init(&breathLightTimer,10);
 	while(1)
 	{
 		uint8_t rxcmd[Debug_Serial_Rx_Buffer_Size]={0};
 		if(DBG_Serial_ReadLine(DBG_Serial,rxcmd,16))
 		{
 			if(strcmp((char*)rxcmd,"hello")==0)
-				printf("hello there\n");
+				printf("Hello there\n");
 			else if(strcmp((char*)rxcmd,"on")==0)
 			{
 				Device_FlashLight_Cmd(FlashLight_Top,true);
 				Device_FlashLight_Cmd(FlashLight_Bottom,true);
-				printf("flash light on\n");
+				printf("Flashlight on\n");
 			}
 			else if(strcmp((char*)rxcmd,"off")==0)
 			{
 				Device_FlashLight_Cmd(FlashLight_Top,false);
 				Device_FlashLight_Cmd(FlashLight_Bottom,false);
-				printf("flash light off\n");
+				printf("Flashlight off\n");
 			}
 		}
 
@@ -72,27 +69,7 @@ int main(void)
 			SysTimer_Reset(&blinkTimer);
 				printf("%d:Wkup pin %d\n",Systime_Get(),HAL_GPIO_ReadPin(Button_Wkup_pin));
 		}
-
-		//Breath light
-		if(SysTimer_IsElapsed(&breathLightTimer))
-		{
-			static uint16_t duty_cycle=0;
-			static int8_t step=1;
-			duty_cycle+=step;
-			if(duty_cycle>=DUTY_MAX)
-			{
-				duty_cycle=DUTY_MAX;
-				step=-1;
-			}
-			else if(duty_cycle<=0)
-			{
-				duty_cycle=0;
-				step=1;
-			}
-			Device_FlashLight_SetDutyCycle(FlashLight_Top,duty_cycle);
-			Device_FlashLight_SetDutyCycle(FlashLight_Bottom,DUTY_MAX-duty_cycle);
-			SysTimer_Reset(&breathLightTimer);
-		}
+		
 	}
 }
 
