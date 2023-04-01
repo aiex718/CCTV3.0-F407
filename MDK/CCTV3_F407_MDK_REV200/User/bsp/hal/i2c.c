@@ -16,7 +16,7 @@ HAL_I2C_Status_t HAL_I2C_Write_Polling(HAL_I2C_t *self, uint8_t i2c_addr,const u
     SysTimer_t _timeoutTimer,*timeout_tmr=&_timeoutTimer;
     HAL_I2C_Status_t result=HAL_I2C_OK;
 
-    Timer_Init(timeout_tmr,timeout);
+    SysTimer_Init(timeout_tmr,timeout);
     //Wait i2c line idle
     while(I2C_GetFlagStatus(self->I2Cx, I2C_FLAG_BUSY))   
     {
@@ -81,7 +81,7 @@ HAL_I2C_Status_t HAL_I2C_Read_Polling(HAL_I2C_t *self, uint8_t i2c_addr, uint8_t
     SysTimer_t _timeoutTimer,*timeout_tmr=&_timeoutTimer;
     HAL_I2C_Status_t result=HAL_I2C_OK;
 
-    Timer_Init(timeout_tmr,timeout);
+    SysTimer_Init(timeout_tmr,timeout);
     //Wait i2c line idle
     while(I2C_GetFlagStatus(self->I2Cx, I2C_FLAG_BUSY))   
     {
@@ -158,7 +158,7 @@ HAL_I2C_Status_t HAL_I2C_CheckSlaveAck(HAL_I2C_t *self, uint8_t i2c_addr,bool is
     SysTimer_t _timeoutTimer,*timeout_tmr=&_timeoutTimer;
     HAL_I2C_Status_t result=HAL_I2C_OK;    
 
-    Timer_Init(timeout_tmr,timeout);
+    SysTimer_Init(timeout_tmr,timeout);
     //Wait i2c line idle
     while(I2C_GetFlagStatus(self->I2Cx, I2C_FLAG_BUSY))  
     {

@@ -6,7 +6,7 @@
 static HAL_SPI_Status_t __SPI_SendByteRecv(HAL_SPI_t *self,uint8_t tx,uint8_t* rx,uint16_t timeout)
 {
     SysTimer_t timeout_tmr;
-    Timer_Init(&timeout_tmr,timeout);
+    SysTimer_Init(&timeout_tmr,timeout);
 
     if(SPI_I2S_GetFlagStatus(self->SPIx, SPI_I2S_FLAG_BSY) == SET)
         return HAL_SPI_BUSY;
@@ -14,7 +14,7 @@ static HAL_SPI_Status_t __SPI_SendByteRecv(HAL_SPI_t *self,uint8_t tx,uint8_t* r
     if(SPI_I2S_GetFlagStatus(self->SPIx, SPI_I2S_FLAG_RXNE) == SET)
         SPI_I2S_ReceiveData(self->SPIx);//clear previous rx data
 
-    Timer_Init(&timeout_tmr,timeout);
+    SysTimer_Init(&timeout_tmr,timeout);
     while (SPI_I2S_GetFlagStatus(self->SPIx, SPI_I2S_FLAG_TXE) == RESET)
     {
         if(SysTimer_IsElapsed(&timeout_tmr)) 
@@ -40,7 +40,7 @@ static HAL_SPI_Status_t __SPI_SendByteRecv(HAL_SPI_t *self,uint8_t tx,uint8_t* r
 static bool SPI_WaitBusy(HAL_SPI_t *self,uint16_t timeout)
 {
     SysTimer_t timeout_tmr;
-    Timer_Init(&timeout_tmr,timeout);
+    SysTimer_Init(&timeout_tmr,timeout);
 
     while (SPI_I2S_GetFlagStatus(self->SPIx, SPI_I2S_FLAG_BSY) == SET)
     {
