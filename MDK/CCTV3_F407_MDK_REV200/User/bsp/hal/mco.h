@@ -9,7 +9,7 @@ typedef enum {
     MCO1,
     MCO2,
     __NOT_MCO_MAX,
-} MCO_Idx_t;
+}MCO_Idx_t;
 
 __BSP_STRUCT_ALIGN typedef struct
 {

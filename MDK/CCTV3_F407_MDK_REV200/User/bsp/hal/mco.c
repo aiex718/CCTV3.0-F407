@@ -1,4 +1,4 @@
-#include "mco.h"
+#include "bsp/hal/mco.h"
 
 void HAL_MCO_Init(HAL_MCO_t* self)
 {
