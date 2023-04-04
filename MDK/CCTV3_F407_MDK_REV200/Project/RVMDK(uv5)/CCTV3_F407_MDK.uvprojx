@@ -1167,6 +1167,31 @@
           <GroupName>User\eth\apps\mjpeg</GroupName>
         </Group>
         <Group>
+          <GroupName>User\eth\apps\fs_custom</GroupName>
+          <Files>
+            <File>
+              <FileName>fs_custom.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\User\eth\apps\fs_custom\fs_custom.c</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>User\eth\apps\webapi</GroupName>
+          <Files>
+            <File>
+              <FileName>http_builder.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\User\eth\apps\webapi\http_builder.c</FilePath>
+            </File>
+            <File>
+              <FileName>webapi.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\User\eth\apps\webapi\webapi.c</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
           <GroupName>User\device</GroupName>
           <Files>
             <File>

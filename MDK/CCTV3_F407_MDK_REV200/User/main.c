@@ -78,7 +78,7 @@ int main(void)
 		{
 			HAL_GPIO_TogglePin(LED_Load_pin);
 			SysTimer_Reset(&blinkTimer);
-				printf("%d:Wkup pin %d\n",Systime_Get(),HAL_GPIO_ReadPin(Button_Wkup_pin));
+			//printf("%d:Wkup pin %d\n",Systime_Get(),HAL_GPIO_ReadPin(Button_Wkup_pin));
 		}
 		
 		/* process received ethernet packet */
