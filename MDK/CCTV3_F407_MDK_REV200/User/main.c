@@ -10,6 +10,13 @@
 #include "bsp/hal/timer.h"
 #include "bsp/hal/timer_pwm.h"
 
+//eth & lwip
+#include "lwip/timeouts.h"
+#include "lwip/apps/httpd.h"
+#include "eth/stm32f4x7_eth.h"
+#include "eth/stm32f4x7_eth_phy.h"
+#include "eth/netconf.h"
+
 
 SysTimer_t blinkTimer;
 
@@ -36,6 +43,10 @@ int main(void)
 	Device_FlashLight_Cmd(FlashLight_Top,true);
 	Device_FlashLight_Cmd(FlashLight_Bottom,true);
 	
+	//Lwip & ETH & httpd
+	ETH_BSP_Config();	
+	LwIP_Init();
+	httpd_init();
 	
 	SysTimer_Init(&blinkTimer,1000);
 	while(1)
@@ -67,9 +78,14 @@ int main(void)
 		{
 			HAL_GPIO_TogglePin(LED_Load_pin);
 			SysTimer_Reset(&blinkTimer);
-				printf("%d:Wkup pin %d\n",Systime_Get(),HAL_GPIO_ReadPin(Button_Wkup_pin));
+			//printf("%d:Wkup pin %d\n",Systime_Get(),HAL_GPIO_ReadPin(Button_Wkup_pin));
 		}
 		
+		/* process received ethernet packet */
+		while (ETH_CheckFrameReceived())
+			LwIP_Pkt_Handle();
+		/* handle periodic timers for LwIP */
+		sys_check_timeouts();
 	}
 }
 
