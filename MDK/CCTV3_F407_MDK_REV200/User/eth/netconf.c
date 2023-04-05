@@ -31,12 +31,13 @@
 #include "lwip/tcp.h"
 //#include "lwip/tcp_impl.h"
 #include "lwip/udp.h"
-#include "netif/etharp.h"
 #include "lwip/dhcp.h"
-#include "ethernetif.h"
-#include "netconf.h"
-#include <stdio.h>
-#include "stm32f4x7_eth_phy.h"
+#include "netif/etharp.h"
+#include "eth/lwip_port/Standalone/ethernetif.h"
+#include "eth/netconf.h"
+#include "eth/stm32f4x7_eth_phy.h"
+
+#include "stdio.h"
 
 
 /* Private typedef -----------------------------------------------------------*/

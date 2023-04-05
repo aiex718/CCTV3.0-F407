@@ -27,11 +27,11 @@
 
 /* Includes ------------------------------------------------------------------*/
 #include "lwip/opt.h"
-#include "stm32f4x7_eth.h"
-#include "stm32f4x7_eth_phy.h"
-#include "netif.h"
-#include "netconf.h"
 #include "lwip/dhcp.h"
+#include "lwip/netif.h"
+#include "eth/stm32f4x7_eth.h"
+#include "eth/stm32f4x7_eth_phy.h"
+#include "eth/netconf.h"
 
 /* Private typedef -----------------------------------------------------------*/
 /* Private define ------------------------------------------------------------*/

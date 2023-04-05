@@ -12,7 +12,7 @@
 
 //eth & lwip
 #include "lwip/timeouts.h"
-#include "apps/httpd.h"
+#include "lwip/apps/httpd.h"
 #include "eth/stm32f4x7_eth.h"
 #include "eth/stm32f4x7_eth_phy.h"
 #include "eth/netconf.h"

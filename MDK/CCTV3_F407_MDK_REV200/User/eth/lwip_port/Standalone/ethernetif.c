@@ -40,10 +40,10 @@
 #include "lwip/opt.h"
 #include "lwip/mem.h"
 #include "netif/etharp.h"
-#include "ethernetif.h"
-#include "stm32f4x7_eth.h"
-#include "netconf.h"
-#include <string.h>
+#include "eth/lwip_port/Standalone/ethernetif.h"
+#include "eth/stm32f4x7_eth.h"
+#include "eth/netconf.h"
+#include "string.h"
 
 /* Network interface name */
 #define IFNAME0 's'
