@@ -16,7 +16,6 @@
                 "VSCODE_INTELLISENSE",
                 "USE_STDPERIPH_DRIVER",
                 "STM32F40_41xxx",
-                "LWIP_DEBUG",
                 "__MODULE__"
             ],
             
