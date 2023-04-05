@@ -18,9 +18,9 @@ int fs_open_custom(struct fs_file *file, const char *name)
             file->data=(const char*)buf;
             file->index=0;
             file->len=0;//len auto increase when writing using http_builder
-            file->pextension = (void*)buf;
-            file->flags=FS_FILE_FLAGS_HEADER_INCLUDED|FS_FILE_FLAGS_SSI;
-            printf("fs_open_custom: %s, buf:0x%x\n",name,file->pextension);
+            file->pextension=NULL;
+            file->flags=FS_FILE_FLAGS_HEADER_INCLUDED;
+            printf("fs_open_custom: %s, buf:0x%x\n",name,buf);
             return 1;
         }
         else
@@ -31,7 +31,7 @@ int fs_open_custom(struct fs_file *file, const char *name)
     }
     else
     {
-        //TODO: find file in FileSys(fat_fs)
+        //TODO: find file in FileSys(fat_fs) and attach to file->pextension
     }
 
     return 0;
@@ -39,27 +39,27 @@ int fs_open_custom(struct fs_file *file, const char *name)
 
 void fs_close_custom(struct fs_file *file)
 {
-    if(file->pextension != NULL)
+    if(file!=NULL && file->data != NULL && file->is_custom_file)
     {
-        printf("fs_close_custom,buf:0x%x\n",file->pextension);
-        mem_free(file->pextension);
-        file->pextension=NULL;
-        //TODO: release file in FileSys(fat_fs) if dynamic read
+        printf("fs_close_custom,buf:0x%x\n",file->data);
+        mem_free((void*)file->data);
+        file->data=NULL;
     }
+    //TODO: release file in FileSys(fat_fs) if file->pextension is not null
 }
 
-int fs_read_custom(struct fs_file *file, char *buffer, int count)
-{
-    int read;
-    if (file->index == file->len) 
-        return FS_READ_EOF;
+// int fs_read_custom(struct fs_file *file, char *buffer, int count)
+// {
+//     int read;
+//     if (file->index == file->len) 
+//         return FS_READ_EOF;
 
-    read = file->len - file->index;
-    if (read > count) 
-        read = count;
+//     read = file->len - file->index;
+//     if (read > count) 
+//         read = count;
 
-    MEMCPY(buffer, (char*)(file->pextension) + file->index, read);
-    file->index += read;
+//     MEMCPY(buffer, (char*)(file->pextension) + file->index, read);
+//     file->index += read;
 
-    return read;
-}
+//     return read;
+// }

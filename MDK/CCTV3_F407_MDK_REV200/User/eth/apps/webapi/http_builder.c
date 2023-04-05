@@ -50,18 +50,18 @@ static HttpBuilder_Status_t HttpBuilder_ModifyContentLength(struct fs_file *file
     HttpBuilder_Insert(file,http_end_clrf);
 
     //calculate content length
-    str_find = strstr(file->pextension,http_header_end);
+    str_find = strstr(file->data,http_header_end);
     if(str_find==NULL) return HTTP_BUILDER_BAD_CONTENT; 
-    content_len = file->len - ((uint32_t)str_find+4 - (uint32_t)file->pextension);
+    content_len = file->len - ((uint32_t)str_find+4 - (uint32_t)file->data);
 
-    str_find = strstr(file->pextension,header_http_content_length);
+    str_find = strstr(file->data,header_http_content_length);
     if(str_find==NULL) return HTTP_BUILDER_BAD_CONTENT; 
 
     str_find+=16;//offset to numbers        
     overwrite_len = sprintf(buf,"%d",content_len);//len should be less then 4 digits
     strncpy(str_find,buf,overwrite_len);
     
-    //printf("after file->data:%s\r\n",file->pextension);
+    //printf("after file->data:%s\r\n",file->data);
     return HTTP_BUILDER_OK;
 }
 
@@ -72,7 +72,7 @@ HttpBuilder_Status_t HttpBuilder_printf(struct fs_file *file,const char* str,...
 
     va_list argptr;
     va_start(argptr, str);
-    len = vsprintf((char*)(file->pextension)+file->len,str,argptr);    
+    len = vsprintf((char*)(file->data)+file->len,str,argptr);    
     file->len += len;
     va_end(argptr);
 
@@ -86,7 +86,7 @@ HttpBuilder_Status_t HttpBuilder_Insert(struct fs_file *file,const char* str)
     if(file==NULL || str == NULL || len<=0) return HTTP_BUILDER_ERR_ARG;
     if(len>(WEBAPI_RESPONSE_BUFFER_LEN-file->len)) return HTTP_BUILDER_ERR_TOO_MANY;
 
-    MEMCPY((char*)(file->pextension)+file->len,str,len);
+    MEMCPY((char*)(file->data)+file->len,str,len);
     file->len += len;
 
     return HTTP_BUILDER_OK;
