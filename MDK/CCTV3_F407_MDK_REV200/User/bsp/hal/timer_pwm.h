@@ -12,21 +12,29 @@ typedef enum
     TIMER_PWM_CHANNEL_2,
     TIMER_PWM_CHANNEL_3,
     TIMER_PWM_CHANNEL_4,
-    __NOT_PWM_CHANNEL_MAX,
-}HAL_Timer_PWM_Channel_t;
+    __NOT_TIMER_PWM_CHANNEL_MAX,
+}HAL_Timer_PWM_ChannelIdx_t;
 
 typedef struct 
 {
     HAL_Timer_t *Timer;
-    TIM_OCInitTypeDef *Timer_PWM_InitCfg;
-    HAL_GPIO_pin_t *Timer_PWM_pins[__NOT_PWM_CHANNEL_MAX];
+    HAL_Timer_PWM_ChannelIdx_t Timer_PWM_MaxChannelIdx;
 }HAL_Timer_PWM_t;
 
-#define HAL_Timer_PWM_Cmd(self,en) HAL_Timer_Cmd((self)->Timer,en)
+typedef struct 
+{
+    HAL_Timer_PWM_ChannelIdx_t Timer_PWM_ChannelIdx;
+    TIM_OCInitTypeDef *Timer_PWM_Channel_OCInitCfg;
+}HAL_Timer_PWM_Channel_t;
 
-void HAL_Timer_PWM_Init(HAL_Timer_PWM_t *self);
-void HAL_Timer_PWM_SetDutyCycle(HAL_Timer_PWM_t *self,HAL_Timer_PWM_Channel_t ch,uint32_t duty_cycle);
-uint32_t HAL_Timer_PWM_GetDutyCycle(HAL_Timer_PWM_t *self,HAL_Timer_PWM_Channel_t ch);
+#define HAL_Timer_PWM_Cmd(self,en) HAL_Timer_Cmd((self)->Timer,(en))
+
+void HAL_Timer_PWM_Init(const HAL_Timer_PWM_t *self);
+void HAL_Timer_PWM_InitChannel(const HAL_Timer_PWM_t *self,HAL_Timer_PWM_Channel_t *ch);
+void HAL_Timer_PWM_ChannelCmd(const HAL_Timer_PWM_t *self,HAL_Timer_PWM_Channel_t *ch,bool en);
+void HAL_Timer_PWM_SetDutyCycle(const HAL_Timer_PWM_t *self,HAL_Timer_PWM_Channel_t *ch,uint32_t duty_cycle);
+uint32_t HAL_Timer_PWM_GetDutyCycle(const HAL_Timer_PWM_t *self,HAL_Timer_PWM_Channel_t *ch);
+uint32_t HAL_Timer_PWM_GetPeriod(const HAL_Timer_PWM_t *self);
 
 
 

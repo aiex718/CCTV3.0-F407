@@ -232,7 +232,7 @@ DBG_Serial_t* DBG_Serial= &(DBG_Serial_t)
 	._rx_timeout_cb = __VAR_CAST_VAR(Callback_t){0},
 };
 
-HAL_Timer_PWM_t *Timer_PWM_FlashLight = &(HAL_Timer_PWM_t)
+HAL_Timer_PWM_t *Timer_PWM_FlashLight = __CONST_CAST_VAR(HAL_Timer_PWM_t)
 {
 	.Timer = __CONST_CAST_VAR(HAL_Timer_t)
 	{
@@ -245,74 +245,85 @@ HAL_Timer_PWM_t *Timer_PWM_FlashLight = &(HAL_Timer_PWM_t)
 		{
 			.TIM_Prescaler = 42-1, //APB1 is 42MHz, divide 42 to get 1MHz
 			.TIM_CounterMode = TIM_CounterMode_Up,
-			.TIM_Period = 1000-1, //set duty cycle max to 1000, pwm freq = 1MHz/1000 = 1KHz
+			.TIM_Period = (1000000/1000)-1, //pwm switch freq = 1MHz/1000 = 1KHz
 			.TIM_ClockDivision = TIM_CKD_DIV1,
 			.TIM_RepetitionCounter = 0,
 		},
 		.Timer_NVIC_InitCfg = NULL,
 		.Timer_Enable_ITs = __CONST_ARRAY_CAST_VAR(uint16_t){0}
 	},
-	.Timer_PWM_InitCfg = __CONST_CAST_VAR(TIM_OCInitTypeDef)
-	{
-		.TIM_OCMode = TIM_OCMode_PWM1,
-		.TIM_OutputState = TIM_OutputState_Enable,
-		.TIM_OutputNState = TIM_OutputNState_Disable,
-		.TIM_Pulse = 0, //default duty cycle to 0
-		.TIM_OCPolarity = TIM_OCPolarity_High,//CNT > CCR, output will set high 
-		//.TIM_OCNPolarity = TIM_OCNPolarity_High, TODO: check this value
-		//.TIM_OCIdleState = TIM_OCIdleState_Reset,
-		//.TIM_OCNIdleState = TIM_OCNIdleState_Reset,
-	},
-	.Timer_PWM_pins = 
-	{
-		__CONST_CAST_VAR(HAL_GPIO_pin_t) //CH0
-		{
-			.GPIOx = GPIOB,
-			.GPIO_RCC_cmd = __CONST_CAST_VAR(HAL_RCC_Cmd_t){
-				.RCC_AHB1Periph = RCC_AHB1Periph_GPIOB,
-			},
-			.GPIO_InitCfg = __CONST_CAST_VAR(GPIO_InitTypeDef){		
-				.GPIO_Pin = GPIO_Pin_14,
-				.GPIO_Mode = GPIO_Mode_AF,
-				.GPIO_Speed = GPIO_Speed_2MHz,
-				.GPIO_OType = GPIO_OType_PP,
-				.GPIO_PuPd = GPIO_PuPd_NOPULL
-			},
-			.GPIO_AF_PinSource = GPIO_PinSource14,
-			.GPIO_AF_Mapping = GPIO_AF_TIM12,
-		},
-		__CONST_CAST_VAR(HAL_GPIO_pin_t) //CH1
-		{
-			.GPIOx = GPIOB,
-			.GPIO_RCC_cmd = __CONST_CAST_VAR(HAL_RCC_Cmd_t){
-				.RCC_AHB1Periph = RCC_AHB1Periph_GPIOB,
-			},
-			.GPIO_InitCfg = __CONST_CAST_VAR(GPIO_InitTypeDef){		
-				.GPIO_Pin = GPIO_Pin_15,
-				.GPIO_Mode = GPIO_Mode_AF,
-				.GPIO_Speed = GPIO_Speed_2MHz,
-				.GPIO_OType = GPIO_OType_PP,
-				.GPIO_PuPd = GPIO_PuPd_NOPULL
-			},
-			.GPIO_AF_PinSource = GPIO_PinSource15,
-			.GPIO_AF_Mapping = GPIO_AF_TIM12,
-		},
-		NULL,//CH3 not available for TIM12
-		NULL,//CH4 not available for TIM12
-	}
+	.Timer_PWM_MaxChannelIdx = TIMER_PWM_CHANNEL_2,//TIM 12 has 2 channels
 };
 
 
 Device_FlashLight_t *FlashLight_Top = &(Device_FlashLight_t)
 {
-	.FlashLight_PWM_Channel = TIMER_PWM_CHANNEL_1,
 	.FlashLight_Timer_PWM = NULL,
-	.FlashLight_PWM_DutyCycle = 10,//default 10/1000 = 1% 
+	.FlashLight_Timer_PWM_Channel = __CONST_CAST_VAR(HAL_Timer_PWM_Channel_t){
+		.Timer_PWM_ChannelIdx = TIMER_PWM_CHANNEL_1,//CH1
+		.Timer_PWM_Channel_OCInitCfg = __CONST_CAST_VAR(TIM_OCInitTypeDef)
+		{
+			.TIM_OCMode = TIM_OCMode_PWM1,
+			.TIM_OutputState = TIM_OutputState_Enable,
+			.TIM_OutputNState = TIM_OutputNState_Disable,
+			.TIM_Pulse = 0, //default duty cycle to 0
+			.TIM_OCPolarity = TIM_OCPolarity_High,//CNT > CCR, output will set high 
+			//.TIM_OCNPolarity = TIM_OCNPolarity_High, TODO: check this value
+			//.TIM_OCIdleState = TIM_OCIdleState_Reset,
+			//.TIM_OCNIdleState = TIM_OCNIdleState_Reset,
+		}
+	},
+	.FlashLight_GPIO_pin = __CONST_CAST_VAR(HAL_GPIO_pin_t) //PB14
+	{
+		.GPIOx = GPIOB,
+		.GPIO_RCC_cmd = __CONST_CAST_VAR(HAL_RCC_Cmd_t){
+			.RCC_AHB1Periph = RCC_AHB1Periph_GPIOB,
+		},
+		.GPIO_InitCfg = __CONST_CAST_VAR(GPIO_InitTypeDef){		
+			.GPIO_Pin = GPIO_Pin_14,
+			.GPIO_Mode = GPIO_Mode_AF,
+			.GPIO_Speed = GPIO_Speed_2MHz,
+			.GPIO_OType = GPIO_OType_PP,
+			.GPIO_PuPd = GPIO_PuPd_NOPULL
+		},
+		.GPIO_AF_PinSource = GPIO_PinSource14,
+		.GPIO_AF_Mapping = GPIO_AF_TIM12,
+	},
+	.FlashLight_Brightness = 1,//default brightness 1%
 };
 
 Device_FlashLight_t *FlashLight_Bottom = &(Device_FlashLight_t)
 {
-	.FlashLight_PWM_Channel = TIMER_PWM_CHANNEL_2,
 	.FlashLight_Timer_PWM = NULL,
-	.FlashLight_PWM_DutyCycle = 10,//default 10/1000 = 1% 
+	.FlashLight_Timer_PWM_Channel = __CONST_CAST_VAR(HAL_Timer_PWM_Channel_t){
+		.Timer_PWM_ChannelIdx = TIMER_PWM_CHANNEL_2,//CH2
+		.Timer_PWM_Channel_OCInitCfg = __CONST_CAST_VAR(TIM_OCInitTypeDef)
+		{
+			.TIM_OCMode = TIM_OCMode_PWM1,
+			.TIM_OutputState = TIM_OutputState_Enable,
+			.TIM_OutputNState = TIM_OutputNState_Disable,
+			.TIM_Pulse = 0, //default duty cycle to 0
+			.TIM_OCPolarity = TIM_OCPolarity_High,//CNT > CCR, output will set high 
+			//.TIM_OCNPolarity = TIM_OCNPolarity_High, TODO: check this value
+			//.TIM_OCIdleState = TIM_OCIdleState_Reset,
+			//.TIM_OCNIdleState = TIM_OCNIdleState_Reset,
+		}
+	},
+	.FlashLight_GPIO_pin = __CONST_CAST_VAR(HAL_GPIO_pin_t) //PB15
+	{
+		.GPIOx = GPIOB,
+		.GPIO_RCC_cmd = __CONST_CAST_VAR(HAL_RCC_Cmd_t){
+			.RCC_AHB1Periph = RCC_AHB1Periph_GPIOB,
+		},
+		.GPIO_InitCfg = __CONST_CAST_VAR(GPIO_InitTypeDef){		
+			.GPIO_Pin = GPIO_Pin_15,
+			.GPIO_Mode = GPIO_Mode_AF,
+			.GPIO_Speed = GPIO_Speed_2MHz,
+			.GPIO_OType = GPIO_OType_PP,
+			.GPIO_PuPd = GPIO_PuPd_NOPULL
+		},
+		.GPIO_AF_PinSource = GPIO_PinSource15,
+		.GPIO_AF_Mapping = GPIO_AF_TIM12,
+	},
+	.FlashLight_Brightness = 1,//default brightness 1%
 };
