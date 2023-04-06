@@ -11,7 +11,7 @@ void Device_FlashLight_Init(Device_FlashLight_t *self)
     }
 }
 
-void Device_FlashLight_Attach(Device_FlashLight_t *self,const HAL_Timer_PWM_t *timer_PWM)
+void Device_FlashLight_Attach_PWM(Device_FlashLight_t *self,const HAL_Timer_PWM_t *timer_PWM)
 {
     self->FlashLight_Timer_PWM = timer_PWM;
 }

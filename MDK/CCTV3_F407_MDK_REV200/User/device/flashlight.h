@@ -18,7 +18,7 @@ typedef struct
 }Device_FlashLight_t;
 
 void Device_FlashLight_Init(Device_FlashLight_t *self);
-void Device_FlashLight_Attach(Device_FlashLight_t *self,const HAL_Timer_PWM_t *timer_PWM);
+void Device_FlashLight_Attach_PWM(Device_FlashLight_t *self,const HAL_Timer_PWM_t *timer_PWM);
 void Device_FlashLight_Cmd(Device_FlashLight_t *self,bool en);
 void Device_FlashLight_SetBrightness(Device_FlashLight_t *self,uint8_t brightness);
 uint8_t Device_FlashLight_GetBrightness(Device_FlashLight_t *self);

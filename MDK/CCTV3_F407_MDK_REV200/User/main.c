@@ -38,10 +38,10 @@ int main(void)
 
 	//PWM and flashlight
 	HAL_Timer_PWM_Init(Timer_PWM_FlashLight);
-	Device_FlashLight_Attach(FlashLight_Top,Timer_PWM_FlashLight);
+	Device_FlashLight_Attach_PWM(FlashLight_Top,Timer_PWM_FlashLight);
 	Device_FlashLight_Init(FlashLight_Top);
 	Device_FlashLight_Cmd(FlashLight_Top,true);
-	Device_FlashLight_Attach(FlashLight_Bottom,Timer_PWM_FlashLight);
+	Device_FlashLight_Attach_PWM(FlashLight_Bottom,Timer_PWM_FlashLight);
 	Device_FlashLight_Init(FlashLight_Bottom);
 	Device_FlashLight_Cmd(FlashLight_Bottom,true);
 	HAL_Timer_PWM_Cmd(Timer_PWM_FlashLight,true);
