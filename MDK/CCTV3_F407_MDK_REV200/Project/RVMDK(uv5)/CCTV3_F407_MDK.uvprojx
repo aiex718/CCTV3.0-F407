@@ -388,11 +388,6 @@
               <FileType>1</FileType>
               <FilePath>..\..\Libraries\CMSIS\Device\ST\STM32F4xx\Source\Templates\system_stm32f4xx.c</FilePath>
             </File>
-            <File>
-              <FileName>startup_stm32f40xx.s</FileName>
-              <FileType>2</FileType>
-              <FilePath>..\..\Libraries\CMSIS\Device\ST\STM32F4xx\Source\Templates\arm\startup_stm32f40xx.s</FilePath>
-            </File>
           </Files>
         </Group>
         <Group>
@@ -1096,6 +1091,16 @@
               <FileType>1</FileType>
               <FilePath>..\..\User\bsp\hal\timer_pwm.c</FilePath>
             </File>
+            <File>
+              <FileName>dcmi.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\User\bsp\hal\dcmi.c</FilePath>
+            </File>
+            <File>
+              <FileName>i2c.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\User\bsp\hal\i2c.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -1105,6 +1110,16 @@
               <FileName>periph_list.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\User\bsp\platform\periph_list.c</FilePath>
+            </File>
+            <File>
+              <FileName>startup_stm32f40_41xxx.s</FileName>
+              <FileType>2</FileType>
+              <FilePath>..\..\User\bsp\platform\startup_stm32f40_41xxx.s</FilePath>
+            </File>
+            <File>
+              <FileName>periph_its.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\User\bsp\platform\periph_its.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -1127,9 +1142,14 @@
               <FilePath>..\..\User\bsp\sys\concurrent_queue.c</FilePath>
             </File>
             <File>
-              <FileName>sysirq.c</FileName>
+              <FileName>mem_utils.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\..\User\bsp\sys\sysirq.c</FilePath>
+              <FilePath>..\..\User\bsp\sys\mem_utils.c</FilePath>
+            </File>
+            <File>
+              <FileName>system_its.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\User\bsp\sys\system_its.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -1165,6 +1185,94 @@
         </Group>
         <Group>
           <GroupName>User\eth\apps\mjpeg</GroupName>
+          <Files>
+            <File>
+              <FileName>mjpegd.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\User\eth\apps\mjpeg\mjpegd.c</FilePath>
+            </File>
+            <File>
+              <FileName>mjpegd_client.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\User\eth\apps\mjpeg\mjpegd_client.c</FilePath>
+            </File>
+            <File>
+              <FileName>mjpegd_const_string.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\User\eth\apps\mjpeg\mjpegd_const_string.c</FilePath>
+              <FileOption>
+                <CommonProperty>
+                  <UseCPPCompiler>2</UseCPPCompiler>
+                  <RVCTCodeConst>0</RVCTCodeConst>
+                  <RVCTZI>0</RVCTZI>
+                  <RVCTOtherData>0</RVCTOtherData>
+                  <ModuleSelection>0</ModuleSelection>
+                  <IncludeInBuild>0</IncludeInBuild>
+                  <AlwaysBuild>2</AlwaysBuild>
+                  <GenerateAssemblyFile>2</GenerateAssemblyFile>
+                  <AssembleAssemblyFile>2</AssembleAssemblyFile>
+                  <PublicsOnly>2</PublicsOnly>
+                  <StopOnExitCode>11</StopOnExitCode>
+                  <CustomArgument></CustomArgument>
+                  <IncludeLibraryModules></IncludeLibraryModules>
+                  <ComprImg>1</ComprImg>
+                </CommonProperty>
+                <FileArmAds>
+                  <Cads>
+                    <interw>2</interw>
+                    <Optim>0</Optim>
+                    <oTime>2</oTime>
+                    <SplitLS>2</SplitLS>
+                    <OneElfS>2</OneElfS>
+                    <Strict>2</Strict>
+                    <EnumInt>2</EnumInt>
+                    <PlainCh>2</PlainCh>
+                    <Ropi>2</Ropi>
+                    <Rwpi>2</Rwpi>
+                    <wLevel>0</wLevel>
+                    <uThumb>2</uThumb>
+                    <uSurpInc>2</uSurpInc>
+                    <uC99>2</uC99>
+                    <uGnu>2</uGnu>
+                    <useXO>2</useXO>
+                    <v6Lang>0</v6Lang>
+                    <v6LangP>0</v6LangP>
+                    <vShortEn>2</vShortEn>
+                    <vShortWch>2</vShortWch>
+                    <v6Lto>2</v6Lto>
+                    <v6WtE>2</v6WtE>
+                    <v6Rtti>2</v6Rtti>
+                    <VariousControls>
+                      <MiscControls></MiscControls>
+                      <Define></Define>
+                      <Undefine></Undefine>
+                      <IncludePath></IncludePath>
+                    </VariousControls>
+                  </Cads>
+                </FileArmAds>
+              </FileOption>
+            </File>
+            <File>
+              <FileName>mjpegd_frame.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\User\eth\apps\mjpeg\mjpegd_frame.c</FilePath>
+            </File>
+            <File>
+              <FileName>mjpegd_framebuf.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\User\eth\apps\mjpeg\mjpegd_framebuf.c</FilePath>
+            </File>
+            <File>
+              <FileName>mjpegd_snap.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\User\eth\apps\mjpeg\mjpegd_snap.c</FilePath>
+            </File>
+            <File>
+              <FileName>mjpegd_stream.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\User\eth\apps\mjpeg\mjpegd_stream.c</FilePath>
+            </File>
+          </Files>
         </Group>
         <Group>
           <GroupName>User\eth\apps\fs_custom</GroupName>
@@ -1198,6 +1306,21 @@
               <FileName>flashlight.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\User\device\flashlight.c</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>User\device\cam_ov2640</GroupName>
+          <Files>
+            <File>
+              <FileName>cam_ov2640.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\User\device\cam_ov2640\cam_ov2640.c</FilePath>
+            </File>
+            <File>
+              <FileName>cam_ov2640_configs.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\User\device\cam_ov2640\cam_ov2640_configs.c</FilePath>
             </File>
           </Files>
         </Group>
