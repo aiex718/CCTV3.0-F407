@@ -61,18 +61,18 @@
 
 /* MEM_SIZE: the size of the heap memory. If the application will send
 a lot of data that needs to be copied, this should be set high. */
-#define MEM_SIZE                (20*1024)
+#define MEM_SIZE                (10*1024)
 
 /* MEMP_NUM_PBUF: the number of memp struct pbufs. If the application
    sends a lot of data out of ROM (or other static memory), this
    should be set high. */
-#define MEMP_NUM_PBUF           100
+#define MEMP_NUM_PBUF           36
 /* MEMP_NUM_UDP_PCB: the number of UDP protocol control blocks. One
    per active UDP "connection". */
-#define MEMP_NUM_UDP_PCB        6
+#define MEMP_NUM_UDP_PCB        3
 /* MEMP_NUM_TCP_PCB: the number of simulatenously active TCP
    connections. */
-#define MEMP_NUM_TCP_PCB        10
+#define MEMP_NUM_TCP_PCB        12
 /* MEMP_NUM_TCP_PCB_LISTEN: the number of listening TCP
    connections. */
 #define MEMP_NUM_TCP_PCB_LISTEN 6
@@ -81,11 +81,13 @@ a lot of data that needs to be copied, this should be set high. */
 #define MEMP_NUM_TCP_SEG        12
 /* MEMP_NUM_SYS_TIMEOUT: the number of simulateously active
    timeouts. */
-#define MEMP_NUM_SYS_TIMEOUT    10
+#define MEMP_NUM_SYS_TIMEOUT    12
 
 
 /* ---------- Pbuf options ---------- */
 /* PBUF_POOL_SIZE: the number of buffers in the pbuf pool. */
+//Pbuf_Pool mainly for rx, since mjpegd rarely use rx, 
+//we can reduce the size of Pbuf_Pool
 #define PBUF_POOL_SIZE          10
 
 /* PBUF_POOL_BUFSIZE: the size of each pbuf in the pbuf pool. */

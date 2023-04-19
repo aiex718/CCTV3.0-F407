@@ -29,7 +29,7 @@ int main(void)
 	//SystemInit() is inside system_stm32f4xx.c
 	HAL_Systick_Init();
 	delay(500); //wait 500ms for subsystems to be ready
-	//USART3 for debug
+	//USART3 for DBG_Serial
 	DBG_Serial_Init(DBG_Serial);
 	DBG_Serial_Cmd(DBG_Serial,true);
 	DBG_INFO("Built at " __DATE__ " " __TIME__ " ,Booting...\n");
