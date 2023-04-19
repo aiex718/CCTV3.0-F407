@@ -1,12 +1,16 @@
 #ifndef __PLATFORM_DEFS_H__
 #define __PLATFORM_DEFS_H__
 
+#include "bsp/platform/platform_opts.h"
+
 //For test in pc environment
 #if !defined(VSCODE_INTELLISENSE) && (defined(_WIN32) || defined(_WIN64) || defined(__APPLE__) || defined(__linux__))
+#include "stdio.h"
 #include "stdint.h"
 #include "stddef.h"
 #else
 #include "stm32f4xx.h"
+#include "stdio.h"
 #endif
 #if defined  (__GNUC__)
 #define __BSP_STRUCT_ALIGN __attribute__((aligned(4)))
@@ -17,11 +21,8 @@
 #endif
 
 #include "bsp/sys/boolean.h"
+#include "bsp/sys/mem_utils.h"
 #include <string.h>
-
-#define CONCURRENT_QUEUE_ALLOW_PREEMPT 1
-#define DBG_SERIAL_ENABLE_DMA 1
-
 
 #ifndef BSP_MEMCPY 
     #define BSP_MEMCPY memcpy
@@ -32,6 +33,9 @@
 #ifndef BSP_MEMCMP 
     #define BSP_MEMCMP memcmp
 #endif
+#ifndef BSP_MEMSEARCH
+    #define BSP_MEMSEARCH mem_search
+#endif
 #ifndef BSP_MIN 
     #define BSP_MIN(a,b) (((a)<(b))?(a):(b))
 #endif
@@ -41,8 +45,11 @@
 #ifndef BSP_UNUSED_ARG
     #define BSP_UNUSED_ARG(x) (void)(x)
 #endif 
-#ifndef BSP_ARRLEN
-    #define BSP_ARRLEN(arr) (sizeof(arr)/sizeof(arr[0]))
+#ifndef BSP_ARR_LEN
+    #define BSP_ARR_LEN(arr) (sizeof(arr)/sizeof(arr[0]))
+#endif
+#ifndef BSP_ARR_CLEAR
+    #define BSP_ARR_CLEAR(arr) BSP_MEMSET((arr),0,sizeof(arr))
 #endif
 
 #ifndef NULL 

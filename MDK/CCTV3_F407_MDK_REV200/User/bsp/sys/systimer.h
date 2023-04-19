@@ -10,16 +10,16 @@
 
 __BSP_STRUCT_ALIGN typedef struct {
     SYSTIMER_PERIOD_T period;
-    Systime_t last;
+    SysTime_t last;
 } SysTimer_t;
 
-#define SysTimer_IsElapsed(systmr) ((Systime_Get() - (systmr)->last) >= (systmr)->period)
-#define SysTimer_Reset(systmr) ((systmr)->last = Systime_Get())
+#define SysTimer_IsElapsed(systmr) ((SysTime_Get() - (systmr)->last) >= (systmr)->period)
+#define SysTimer_Reset(systmr) ((systmr)->last = SysTime_Get())
 
 __STATIC_INLINE void SysTimer_Init(SysTimer_t* systmr, uint16_t period)
 {
     systmr->period = period;
-    systmr->last = Systime_Get();
+    systmr->last = SysTime_Get();
 }
 
 

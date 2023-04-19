@@ -1,13 +1,13 @@
 #include "systime.h"
 
-static Systime_t systime_tick;
+static __IO SysTime_t systime_tick;
 
-Systime_t Systime_Get(void)
+SysTime_t SysTime_Get(void)
 {
     return systime_tick;
 }
 
-void Systime_Inc(void)
+void SysTime_Inc(void)
 {
     ++systime_tick;
 }
