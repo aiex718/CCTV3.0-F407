@@ -8,7 +8,6 @@
 #include "bsp/sys/semaphore.h"
 #include "bsp/sys/dbg_serial.h"
 #include "bsp/hal/systick.h"
-#include "bsp/sys/stack_guard.h"
 #include "bsp/hal/timer.h"
 #include "bsp/hal/timer_pwm.h"
 
