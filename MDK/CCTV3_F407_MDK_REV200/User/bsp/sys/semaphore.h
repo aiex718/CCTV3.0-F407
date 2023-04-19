@@ -1,7 +1,6 @@
 #ifndef SEMAPHORE_H
 #define SEMAPHORE_H
 
-//TODO:Add to bsp
 #include "bsp/platform/platform_defs.h"
 #include "bsp/sys/atomic.h"
 

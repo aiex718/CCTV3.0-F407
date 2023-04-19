@@ -35,9 +35,6 @@ void DBG_Serial_Cmd(DBG_Serial_t *self,bool en);
 void DBG_Serial_Service(DBG_Serial_t *self);
 uint16_t DBG_Serial_ReadLine(DBG_Serial_t *self,uint8_t* buf, uint16_t buf_len);
 
-//TODO: make all debug use this macro
-// #define DBG_LF(x) ("%s#%d:" x,__MODULE__,__LINE__)
-// #define DBG_ARG(x,...) ("%s#%d:" x,__MODULE__,__LINE__,##__VA_ARGS__)
 
 #define DBG_PRINTF(x,...) printf("%s#%d:" x,__MODULE__,__LINE__,##__VA_ARGS__)
 
