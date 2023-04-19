@@ -41,7 +41,7 @@ void DBG_Serial_UsartRxTimeoutCallback(void *sender,void *arg,void* owner)
             Concurrent_Queue_TryPush(self->rx_con_queue,tmp));
     
     if(Buffer_Queue_IsEmpty(hal_usart->USART_Rx_Buf)==false)
-        printf("DBG_Serial: rx data dropped\n");
+        DBG_INFO("DBG_Serial: rx data dropped\n");
 
 #if DBG_SERIAL_ENABLE_DMA
         HAL_USART_DmaRead(hal_usart,0);
@@ -162,6 +162,7 @@ void DBG_Serial_Service(DBG_Serial_t *self)
     HAL_USART_t *usart = self->hal_usart;
 #if DBG_SERIAL_USING_USART_ISR
     BSP_UNUSED_ARG(self);
+    BSP_UNUSED_ARG(usart);
 #else
     if(usart != NULL && HAL_USART_IsEnabled(usart))
     {
