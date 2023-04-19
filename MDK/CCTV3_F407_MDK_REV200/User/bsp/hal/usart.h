@@ -2,7 +2,6 @@
 #define USART_H
 
 #include "bsp/platform/platform_defs.h"
-#include "bsp/sys/array.h"
 #include "bsp/sys/buffer.h"
 #include "bsp/sys/callback.h"
 #include "bsp/sys/systime.h"
@@ -29,11 +28,10 @@ typedef enum
 typedef enum 
 {
     //IRQ callbacks, always invoked in ISR
-    USART_CALLBACK_IRQ =0           ,
-    USART_CALLBACK_IRQ_RX_DROPPED   ,
+    USART_CALLBACK_IRQ = 0          ,
     USART_CALLBACK_IRQ_RX_FULL      ,
-    //Normal callbacks, invoked in ISR or delay to task/main thread
-    USART_CALLBACK_TX_EMPTY         ,
+    USART_CALLBACK_IRQ_TX_EMPTY     ,
+    //Normal callbacks, invoked in ISR or delay to service call
     USART_CALLBACK_RX_THRSHOLD      ,
     USART_CALLBACK_RX_TIMEOUT       ,
     __NOT_CALLBACK_USART_MAX        ,
@@ -45,13 +43,13 @@ __BSP_STRUCT_ALIGN typedef struct
     USART_TypeDef* USARTx;
     //rcc
     HAL_RCC_Cmd_t* USART_RCC_Cmd;
-    //gpio
-    HAL_GPIO_pin_t* USART_TxPin;
-    HAL_GPIO_pin_t* USART_RxPin;
     USART_InitTypeDef* USART_InitCfg;
     //nvic
     NVIC_InitTypeDef* USART_NVIC_InitCfg;
     uint16_t *USART_Enable_ITs;
+    //gpio
+    HAL_GPIO_pin_t* USART_TxPin;
+    HAL_GPIO_pin_t* USART_RxPin;
     //dma cfg
     HAL_DMA_t* USART_TxDma_Cfg;
     HAL_DMA_t* USART_RxDma_Cfg;
@@ -59,6 +57,9 @@ __BSP_STRUCT_ALIGN typedef struct
     Buffer_uint8_t *USART_Tx_Buf,*USART_Rx_Buf;
     //rx callback settings
     uint16_t USART_Rx_Threshold;
+    //rx software timeout, set to 0 to disable 
+    //if enabled, it's required to call HAL_USART_Service() 
+    //periodically in main thread/task
     uint16_t USART_Rx_Timeout;
     //callbacks
     Callback_t* USART_Callbacks[__NOT_CALLBACK_USART_MAX];
@@ -67,11 +68,12 @@ __BSP_STRUCT_ALIGN typedef struct
 
     //private flags, dont use
     BitFlag_t _callback_pending_flag;
-    Systime_t _last_rx_time;
+    SysTime_t _last_rx_time;
 }HAL_USART_t;
 
 //Macro as functions
 #define HAL_USART_IsEnabled(usart) ((usart)->USARTx->CR1 & USART_CR1_UE)
+
 #define HAL_USART_IsTxEnabled(usart) ((usart)->USARTx->CR1 & USART_Mode_Tx)
 #define HAL_USART_IsTxDmaEnabled(usart) ((usart)->USARTx->CR3 & USART_CR3_DMAT)
 #define HAL_USART_IsTxStreamEnabled(usart) ((usart)->USARTx->CR1 & USART_CR1_TXEIE)
@@ -104,6 +106,8 @@ HAL_USART_Status_t HAL_USART_SwapTxBuffer(HAL_USART_t* usart, Buffer_uint8_t* bu
 HAL_USART_Status_t HAL_USART_SwapRxBuffer(HAL_USART_t* usart, Buffer_uint8_t* buf, Buffer_uint8_t* swap_out);
 HAL_USART_Status_t HAL_USART_DmaWrite(const HAL_USART_t* usart);
 HAL_USART_Status_t HAL_USART_DmaRead(const HAL_USART_t* usart, uint16_t len);
+HAL_USART_Status_t HAL_USART_TxStreamWake(const HAL_USART_t* usart);
+HAL_USART_Status_t HAL_USART_TxDmaWake(const HAL_USART_t* usart);
 void HAL_USART_IRQHandler(HAL_USART_t* usart);
 void HAL_USART_Service(HAL_USART_t* usart);
 

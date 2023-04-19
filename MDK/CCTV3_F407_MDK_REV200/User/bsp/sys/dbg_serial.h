@@ -2,35 +2,43 @@
 #define DBG_SERIAL_H
 
 #include "bsp/platform/platform_defs.h"
+#include "bsp/platform/platform_opts.h"
 #include "bsp/hal/usart.h"
 #include "bsp/sys/concurrent_queue.h"
 #include "bsp/sys/buffer.h"
 #include "bsp/sys/callback.h"
 
+
+
 #ifndef DBG_SERIAL_ENABLE_DMA
-    #define DBG_SERIAL_ENABLE_DMA 1
+    #define DBG_SERIAL_ENABLE_DMA 0
+#endif
+
+#ifndef DBG_SERIAL_USING_USART_ISR
+    #define DBG_SERIAL_USING_USART_ISR 1
 #endif
 
 typedef struct 
 {
-    Concurrent_Queue_uint8_t *tx_con_queue;
-    Buffer_uint8_t *rx_buf;
-    HAL_USART_t *usart;
+    Concurrent_Queue_uint8_t *tx_con_queue,*rx_con_queue;
+    HAL_USART_t *hal_usart;
 
     //callbacks attatch to usart, dont modify
-    Callback_t *_tx_empty_cb, *_rx_timeout_cb;
+    Callback_t _tx_empty_cb, _rx_timeout_cb;
 }DBG_Serial_t;
 
 extern DBG_Serial_t* DBG_Serial;
 
 void DBG_Serial_Init(DBG_Serial_t *self);
-void DBG_Serial_AttachUSART(DBG_Serial_t *self,HAL_USART_t *usart);
+void DBG_Serial_AttachUSART(DBG_Serial_t *self,HAL_USART_t *hal_usart);
+void DBG_Serial_Cmd(DBG_Serial_t *self,bool en);
 void DBG_Serial_Service(DBG_Serial_t *self);
 uint16_t DBG_Serial_ReadLine(DBG_Serial_t *self,uint8_t* buf, uint16_t buf_len);
 
+//TODO: make all debug use this macro
+// #define DBG_LF(x) ("%s#%d:" x,__MODULE__,__LINE__)
+// #define DBG_ARG(x,...) ("%s#%d:" x,__MODULE__,__LINE__,##__VA_ARGS__)
 
-#define DBG_LF(x) ("%s#%d:" x,__MODULE__,__LINE__)
-#define DBG_ARG(x,...) ("%s#%d:" x,__MODULE__,__LINE__,__VA_ARGS__)
-
+#define DBG_PRINTF(x,...) printf("%s#%d:" x,__MODULE__,__LINE__,##__VA_ARGS__)
 
 #endif
