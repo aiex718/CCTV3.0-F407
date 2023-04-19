@@ -1,6 +1,7 @@
 #include "eth/apps/webapi/webapi.h"
 #include "eth/apps/webapi/http_builder.h"
 #include "bsp/sys/systime.h"
+#include "bsp/sys/dbg_serial.h"
 #include "lwip/ip4_addr.h"
 #include "stdio.h"
 #include "string.h"
@@ -73,7 +74,7 @@ void httpd_cgi_handler(struct fs_file *file, const char* uri, int iNumParams,cha
                 if(i != Webapi_cmds_len)
                     HttpBuilder_BuildResponse(file,HTTP_RESPONSE_501_NOT_IMPLEMENTED);
             }
-            printf("api request cmd:%s\r\n",cmd);
+            DBG_INFO("api request cmd:%s\r\n",cmd);
         }
         HttpBuilder_FinishFile(file);
     }

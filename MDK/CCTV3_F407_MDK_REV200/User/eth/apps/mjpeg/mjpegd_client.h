@@ -1,12 +1,13 @@
 #ifndef __MJPEGD_CLIENT_H__
 #define __MJPEGD_CLIENT_H__
 
+#include "bsp/platform/platform_defs.h"
+#include "bsp/sys/systime.h"
 
 #include "eth/apps/mjpeg/mjpegd_fwdecl.h"
 #include "eth/apps/mjpeg/mjpegd_request.h"
 #include "eth/apps/mjpeg/mjpegd_frame.h"
 
-#include "bsp/sys/systime.h"
 
 /** Helper macro as function **/
 #define client_assign_file(_cs,_file,_len) do{  \

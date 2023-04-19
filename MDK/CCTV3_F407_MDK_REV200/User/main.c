@@ -2,11 +2,11 @@
 #include "stdio.h"
 
 #include "bsp/platform/periph_list.h"
+#include "bsp/sys/dbg_serial.h"
 #include "bsp/sys/systime.h"
 #include "bsp/sys/systimer.h"
 #include "bsp/sys/sysctrl.h"
 #include "bsp/sys/semaphore.h"
-#include "bsp/sys/dbg_serial.h"
 #include "bsp/hal/systick.h"
 #include "bsp/hal/timer.h"
 #include "bsp/hal/timer_pwm.h"
@@ -32,7 +32,7 @@ int main(void)
 	//USART3 for debug
 	DBG_Serial_Init(DBG_Serial);
 	DBG_Serial_Cmd(DBG_Serial,true);
-	DBG_PRINTF("Built at " __DATE__ " " __TIME__ " ,Booting...\n");
+	DBG_INFO("Built at " __DATE__ " " __TIME__ " ,Booting...\n");
 	
 	HAL_GPIO_InitPin(Button_Wkup_pin);
 	HAL_GPIO_InitPin(LED_STAT_pin);
@@ -66,18 +66,18 @@ int main(void)
 		if(DBG_Serial_ReadLine(DBG_Serial,rxcmd,sizeof(rxcmd)))
 		{
 			if(strcmp((char*)rxcmd,"hello")==0)
-				printf("Hello there\n");
+				DBG_INFO("Hello there\n");
 			else if(strcmp((char*)rxcmd,"on")==0)
 			{
 				Device_FlashLight_Cmd(FlashLight_Top,true);
 				Device_FlashLight_Cmd(FlashLight_Bottom,true);
-				printf("Flashlight on\n");
+				DBG_INFO("Flashlight on\n");
 			}
 			else if(strcmp((char*)rxcmd,"off")==0)
 			{
 				Device_FlashLight_Cmd(FlashLight_Top,false);
 				Device_FlashLight_Cmd(FlashLight_Bottom,false);
-				printf("Flashlight off\n");
+				DBG_INFO("Flashlight off\n");
 			}
 		}
 
@@ -86,7 +86,7 @@ int main(void)
 		{
 			HAL_GPIO_TogglePin(LED_Load_pin);
 			SysTimer_Reset(&blinkTimer);
-			//printf("%d:Wkup pin %d\n",SysTime_Get(),HAL_GPIO_ReadPin(Button_Wkup_pin));
+			//DBG_INFO("%d:Wkup pin %d\n",SysTime_Get(),HAL_GPIO_ReadPin(Button_Wkup_pin));
 		}
 
 		//do mjpegd service

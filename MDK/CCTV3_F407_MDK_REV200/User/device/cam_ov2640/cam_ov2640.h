@@ -15,9 +15,6 @@
     #define DEVICE_CAM_OV2640_DEBUG 0
 #endif
 
-#ifndef DEVICE_CAM_OV2640_WARNING
-    #define DEVICE_CAM_OV2640_WARNING 1
-#endif
 
 typedef enum 
 {

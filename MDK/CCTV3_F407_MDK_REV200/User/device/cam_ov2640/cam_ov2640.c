@@ -1,6 +1,7 @@
 #include "device/cam_ov2640/cam_ov2640.h"
 #include "device/cam_ov2640/cam_ov2640_regs.h"
 
+#include "bsp/sys/dbg_serial.h"
 #include "bsp/hal/i2c.h"
 #include "bsp/hal/dcmi.h"
 #include "bsp/sys/systime.h"
@@ -63,24 +64,22 @@ void Device_CamOV2640_DcmiRxDmaTcCallback(void *sender,void *arg,void *owner)
 #if DEVICE_CAM_OV2640_DEBUG || DEVICE_CAM_OV2640_WARNING
     if(frame_len){
 #if DEVICE_CAM_OV2640_DEBUG
-        printf("%6d:Snaped len:%u ,trimmed len:%u\n",
+        DBG_INFO("%6d:Snaped len:%u ,trimmed len:%u\n",
             SysTime_Get(),rxlen,frame_len);
 #endif
     }
-#if DEVICE_CAM_OV2640_WARNING
     else{
-        printf("Bad frame\n");
+        DBG_WARNING("Bad frame\n");
     }
-#endif
 
 #endif
 
     BSP_UNUSED_ARG(arg);
+    //uncomment this if self loop mode is needed
     //Device_CamOV2640_SnapCmd(self,true);
 }
 
 //common function
-//TODO: edit all init to return bool?
 void Device_CamOV2640_Init(Device_CamOV2640_t* self)
 {
     CAM_OV2640_ID_t id;
@@ -97,7 +96,7 @@ void Device_CamOV2640_Init(Device_CamOV2640_t* self)
     HAL_I2C_Cmd(self->CamOV2640_I2C, true);
 
     Device_CamOV2640_ReadID(self,&id);
-    printf("OV2640 ID: %x %x %x %x\n", id.Manufacturer_ID1, id.Manufacturer_ID2, id.PIDH, id.PIDL);
+    DBG_INFO("OV2640 ID: %x %x %x %x\n", id.Manufacturer_ID1, id.Manufacturer_ID2, id.PIDH, id.PIDL);
     Device_CamOV2640_SetJpegFormat(self,JPEG_320x240);
 
     BSP_ARR_CLEAR(self->CamOV2640_Callbacks);

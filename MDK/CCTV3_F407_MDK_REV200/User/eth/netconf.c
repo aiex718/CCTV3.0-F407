@@ -26,6 +26,7 @@
   */
 
 /* Includes ------------------------------------------------------------------*/
+#include "bsp/sys/dbg_serial.h"
 #include "lwip/mem.h"
 #include "lwip/memp.h"
 #include "lwip/tcp.h"
@@ -37,7 +38,6 @@
 #include "eth/netconf.h"
 #include "eth/stm32f4x7_eth_phy.h"
 
-#include "stdio.h"
 
 
 /* Private typedef -----------------------------------------------------------*/
@@ -111,15 +111,15 @@ void LwIP_Init(void)
 
     /* When the netif is fully configured this function must be called.*/
     netif_set_up(&gnetif);
-    printf("Connected, setting IP address.\n");
+    DBG_INFO("Connected, setting IP address.\n");
 #ifdef USE_DHCP
-    printf("using dhcp...\n");
+    DBG_INFO("using dhcp...\n");
     DHCP_state = DHCP_START;
 #else
-    printf("Static IP address.\n");
-		printf("IP: %d.%d.%d.%d\n",IP_ADDR0,IP_ADDR1,IP_ADDR2,IP_ADDR3);
-		printf("NETMASK: %d.%d.%d.%d\n",NETMASK_ADDR0,NETMASK_ADDR1,NETMASK_ADDR2,NETMASK_ADDR3);
-		printf("Gateway: %d.%d.%d.%d\n",GW_ADDR0,GW_ADDR1,GW_ADDR2,GW_ADDR3);
+    DBG_INFO("Static IP address.\n");
+		DBG_INFO("IP: %d.%d.%d.%d\n",IP_ADDR0,IP_ADDR1,IP_ADDR2,IP_ADDR3);
+		DBG_INFO("NETMASK: %d.%d.%d.%d\n",NETMASK_ADDR0,NETMASK_ADDR1,NETMASK_ADDR2,NETMASK_ADDR3);
+		DBG_INFO("Gateway: %d.%d.%d.%d\n",GW_ADDR0,GW_ADDR1,GW_ADDR2,GW_ADDR3);
 #endif /* USE_DHCP */
   }
   else
@@ -129,7 +129,7 @@ void LwIP_Init(void)
 #ifdef USE_DHCP
     DHCP_state = DHCP_LINK_DOWN;
 #endif /* USE_DHCP */
-		printf("Network Cable not connected\n");
+		DBG_INFO("Network Cable not connected\n");
   }
 
   /* Set the link callback function, this function is called on change of link status*/
@@ -216,7 +216,7 @@ void LwIP_DHCP_Process_Handle()
       /* IP address should be set to 0 
          every time we want to assign a new DHCP address */
       IPaddress = 0;
-			printf("Looking for DHCP server...\n");
+			DBG_INFO("Looking for DHCP server...\n");
     }
     break;
 
@@ -232,11 +232,11 @@ void LwIP_DHCP_Process_Handle()
         /* Stop DHCP */
         dhcp_stop(&gnetif);
 
-      	printf("IP address assigned by a DHCP server\n");
-		    printf("IP: %d.%d.%d.%d\n",(uint8_t)(IPaddress),(uint8_t)(IPaddress >> 8),
+      	DBG_INFO("IP address assigned by a DHCP server\n");
+		    DBG_INFO("IP: %d.%d.%d.%d\n",(uint8_t)(IPaddress),(uint8_t)(IPaddress >> 8),
 				                       (uint8_t)(IPaddress >> 16),(uint8_t)(IPaddress >> 24));
-				printf("NETMASK: %d.%d.%d.%d\n",NETMASK_ADDR0,NETMASK_ADDR1,NETMASK_ADDR2,NETMASK_ADDR3);
-				printf("Gateway: %d.%d.%d.%d\n",GW_ADDR0,GW_ADDR1,GW_ADDR2,GW_ADDR3);
+				DBG_INFO("NETMASK: %d.%d.%d.%d\n",NETMASK_ADDR0,NETMASK_ADDR1,NETMASK_ADDR2,NETMASK_ADDR3);
+				DBG_INFO("Gateway: %d.%d.%d.%d\n",GW_ADDR0,GW_ADDR1,GW_ADDR2,GW_ADDR3);
       }
       else
       {
@@ -254,11 +254,11 @@ void LwIP_DHCP_Process_Handle()
           IP4_ADDR(&gw, GW_ADDR0, GW_ADDR1, GW_ADDR2, GW_ADDR3);
           netif_set_addr(&gnetif, &ipaddr , &netmask, &gw);
 
-          printf("DHCP timeout\n");
-          printf("Using static IP address\n");
-		      printf("IP: %d.%d.%d.%d\n",IP_ADDR0,IP_ADDR1,IP_ADDR2,IP_ADDR3);
-					printf("NETMASK: %d.%d.%d.%d\n",NETMASK_ADDR0,NETMASK_ADDR1,NETMASK_ADDR2,NETMASK_ADDR3);
-					printf("Gateway: %d.%d.%d.%d\n",GW_ADDR0,GW_ADDR1,GW_ADDR2,GW_ADDR3);
+          DBG_INFO("DHCP timeout\n");
+          DBG_INFO("Using static IP address\n");
+		      DBG_INFO("IP: %d.%d.%d.%d\n",IP_ADDR0,IP_ADDR1,IP_ADDR2,IP_ADDR3);
+					DBG_INFO("NETMASK: %d.%d.%d.%d\n",NETMASK_ADDR0,NETMASK_ADDR1,NETMASK_ADDR2,NETMASK_ADDR3);
+					DBG_INFO("Gateway: %d.%d.%d.%d\n",GW_ADDR0,GW_ADDR1,GW_ADDR2,GW_ADDR3);
         }
       }
     }

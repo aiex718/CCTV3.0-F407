@@ -26,6 +26,7 @@
 	*/
 
 /* Includes ------------------------------------------------------------------*/
+#include "bsp/sys/dbg_serial.h"
 #include "lwip/opt.h"
 #include "lwip/dhcp.h"
 #include "lwip/netif.h"
@@ -352,11 +353,11 @@ void ETH_link_callback(struct netif *netif)
 		/* When the netif is fully configured this function must be called.*/
 		netif_set_up(&gnetif);    
 
-		printf("Network Cable connected\n");
+		DBG_INFO("Network Cable connected\n");
 
 	#ifndef USE_DHCP
 		/* Display static IP address */
-		printf("DHCP IP address %d.%d.%d.%d\n", IP_ADDR0, IP_ADDR1, IP_ADDR2, IP_ADDR3);
+		DBG_INFO("DHCP IP address %d.%d.%d.%d\n", IP_ADDR0, IP_ADDR1, IP_ADDR2, IP_ADDR3);
 
 	#endif /* USE_DHCP */
 	}
@@ -371,7 +372,7 @@ void ETH_link_callback(struct netif *netif)
 		/*  When the netif link is down this function must be called.*/
 		netif_set_down(&gnetif);
 
-		printf("Network Cable disconnected\r\n");
+		DBG_INFO("Network Cable disconnected\r\n");
 
 	}
 }
