@@ -11,12 +11,12 @@
 
 typedef enum 
 {
-    //DMA callbacks always invoked in ISR
-    DMA_CALLBACK_TRANSFER_HALF =0   ,
-    DMA_CALLBACK_TRANSFER_COMPLETE  ,
-    DMA_CALLBACK_TRANSFER_ERROR     ,
-    DMA_CALLBACK_FIFO_ERROR         ,
-    DMA_CALLBACK_DIRECT_ERROR       ,
+    //IRQ callbacks always invoked in ISR
+    DMA_CALLBACK_IRQ_HT = 0 ,//Half Transfer
+    DMA_CALLBACK_IRQ_TC     ,//Transfer Complete
+    DMA_CALLBACK_IRQ_TE     ,//Transfer Error
+    DMA_CALLBACK_IRQ_FE     ,//FIFO Error
+    DMA_CALLBACK_IRQ_DME    ,//Direct Mode Error
     __NOT_CALLBACK_DMA_MAX
 }HAL_DMA_CallbackIdx_t;
 
