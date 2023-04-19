@@ -267,7 +267,7 @@ void ETH_GPIO_Config(void)
 void ETH_link_callback(struct netif *netif)
 {
 	__IO uint32_t timeout = 0;
- uint32_t tmpreg,RegValue;
+ 	uint32_t tmpreg,RegValue;
 	ip_addr_t ipaddr;
 	ip_addr_t netmask;
 	ip_addr_t gw;
@@ -282,6 +282,9 @@ void ETH_link_callback(struct netif *netif)
 
 			/* Enable Auto-Negotiation */
 			ETH_WritePHYRegister(ETHERNET_PHY_ADDRESS, PHY_BCR, PHY_AutoNegotiation);
+
+			/* Restart Auto-Negotiation, not necessary(some phy need restart manually) */
+			//ETH_WritePHYRegister(ETHERNET_PHY_ADDRESS, PHY_BCR, PHY_Restart_AutoNegotiation);
 
 			/* Wait until the auto-negotiation will be completed */
 			do
@@ -357,7 +360,7 @@ void ETH_link_callback(struct netif *netif)
 
 	#ifndef USE_DHCP
 		/* Display static IP address */
-		DBG_INFO("DHCP IP address %d.%d.%d.%d\n", IP_ADDR0, IP_ADDR1, IP_ADDR2, IP_ADDR3);
+		DBG_INFO("Static IP address %d.%d.%d.%d\n", IP_ADDR0, IP_ADDR1, IP_ADDR2, IP_ADDR3);
 
 	#endif /* USE_DHCP */
 	}
@@ -371,32 +374,30 @@ void ETH_link_callback(struct netif *netif)
 
 		/*  When the netif link is down this function must be called.*/
 		netif_set_down(&gnetif);
-
 		DBG_INFO("Network Cable disconnected\r\n");
-
 	}
 }
 
 
 /**
- * @brief This function is called periodically each second
- *        It checks link status for ethernet controller
+ * @brief This function should be called periodically.
+ *        It checks link status for ethernet controller.
  * @param PHYAddress 
  */
-void ETH_CheckLinkStatus(uint16_t PHYAddress) 
+void ETH_CheckLinkStatus(void)
 {
 	static uint8_t status = 0;
-	uint32_t t = GET_PHY_LINK_STATUS();
+	uint32_t link = GET_PHY_LINK_STATUS();
 	
 	/* If we have link and previous check was not yet */
-	if (t && !status) {
+	if (link && !status) {
 		/* Set link up */
 		netif_set_link_up(&gnetif);
 		
 		status = 1;
 	}	
 	/* If we don't have link and it was on previous check */
-	if (!t && status) {
+	if (!link && status) {
 		/* Set link down */
 		netif_set_link_down(&gnetif);
 			

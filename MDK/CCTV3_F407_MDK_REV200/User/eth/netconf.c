@@ -1,36 +1,38 @@
 /**
-  ******************************************************************************
-  * @file    netconf.c
-  * @author  MCD Application Team
-  * @version V1.1.0
-  * @date    31-July-2013
-  * @brief   Network connection configuration
-  ******************************************************************************
-  * @attention
-  *
-  * <h2><center>&copy; COPYRIGHT 2013 STMicroelectronics</center></h2>
-  *
-  * Licensed under MCD-ST Liberty SW License Agreement V2, (the "License");
-  * You may not use this file except in compliance with the License.
-  * You may obtain a copy of the License at:
-  *
-  *        http://www.st.com/software_license_agreement_liberty_v2
-  *
-  * Unless required by applicable law or agreed to in writing, software 
-  * distributed under the License is distributed on an "AS IS" BASIS, 
-  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-  * See the License for the specific language governing permissions and
-  * limitations under the License.
-  *
-  ******************************************************************************
-  */
+ ******************************************************************************
+ * @file    netconf.c
+ * @author  MCD Application Team
+ * @version V1.1.0
+ * @date    31-July-2013
+ * @brief   Network connection configuration
+ ******************************************************************************
+ * @attention
+ *
+ * <h2><center>&copy; COPYRIGHT 2013 STMicroelectronics</center></h2>
+ *
+ * Licensed under MCD-ST Liberty SW License Agreement V2, (the "License");
+ * You may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at:
+ *
+ *        http://www.st.com/software_license_agreement_liberty_v2
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ ******************************************************************************
+ */
 
 /* Includes ------------------------------------------------------------------*/
 #include "bsp/sys/dbg_serial.h"
+
 #include "lwip/mem.h"
 #include "lwip/memp.h"
 #include "lwip/tcp.h"
-//#include "lwip/tcp_impl.h"
+#include "lwip/timeouts.h"
+// #include "lwip/tcp_impl.h"
 #include "lwip/udp.h"
 #include "lwip/dhcp.h"
 #include "netif/etharp.h"
@@ -38,113 +40,122 @@
 #include "eth/netconf.h"
 #include "eth/stm32f4x7_eth_phy.h"
 
-
-
 /* Private typedef -----------------------------------------------------------*/
-#define MAX_DHCP_TRIES        4
+#define MAX_DHCP_TRIES 4
+#define CHECK_LINK_PERIOD 250
 
 /* Private define ------------------------------------------------------------*/
 /* Private macro -------------------------------------------------------------*/
 /* Private variables ---------------------------------------------------------*/
 struct netif gnetif;
-uint32_t TCPTimer = 0;
-uint32_t ARPTimer = 0;
-uint32_t IPaddress = 0;
+//uint32_t TCPTimer = 0;
+//uint32_t ARPTimer = 0;
+//uint32_t IPaddress = 0;
 
 #ifdef USE_DHCP
-uint32_t DHCPfineTimer = 0;
-uint32_t DHCPcoarseTimer = 0;
+//uint32_t DHCPfineTimer = 0;
+//uint32_t DHCPcoarseTimer = 0;
 __IO uint8_t DHCP_state;
 #endif
-extern __IO uint32_t  EthStatus;
+extern __IO uint32_t EthStatus;
 
 /* Private functions ---------------------------------------------------------*/
 void LwIP_DHCP_Process_Handle(void);
-/**
-* @brief  Initializes the lwIP stack
-* @param  None
-* @retval None
-*/
-void LwIP_Init(void)
+
+//CheckLink callback handler registed to LwIP timeouts
+void CheckLink_Timeout_Handler(void* arg)
 {
-  ip_addr_t ipaddr;
-  ip_addr_t netmask;
-  ip_addr_t gw;
-
-  /* Initializes the dynamic memory heap defined by MEM_SIZE.*/
-  mem_init();
-  
-  /* Initializes the memory pools defined by MEMP_NUM_x.*/
-  memp_init();
-  
-#ifdef USE_DHCP
-  ipaddr.addr = 0;
-  netmask.addr = 0;
-  gw.addr = 0;
-#else
-  IP4_ADDR(&ipaddr, IP_ADDR0, IP_ADDR1, IP_ADDR2, IP_ADDR3);
-  IP4_ADDR(&netmask, NETMASK_ADDR0, NETMASK_ADDR1 , NETMASK_ADDR2, NETMASK_ADDR3);
-  IP4_ADDR(&gw, GW_ADDR0, GW_ADDR1, GW_ADDR2, GW_ADDR3);
-#endif  
-
-  /* - netif_add(struct netif *netif, ip_addr_t *ipaddr,
-  ip_addr_t *netmask, ip_addr_t *gw,
-  void *state, err_t (* init)(struct netif *netif),
-  err_t (* input)(struct pbuf *p, struct netif *netif))
-
-  Adds your network interface to the netif_list. Allocate a struct
-  netif and pass a pointer to this structure as the first argument.
-  Give pointers to cleared ip_addr structures when using DHCP,
-  or fill them with sane numbers otherwise. The state pointer may be NULL.
-
-  The init function pointer must point to a initialization function for
-  your ethernet netif interface. The following code illustrates it's use.*/
-  netif_add(&gnetif, &ipaddr, &netmask, &gw, NULL, &ethernetif_init, &ethernet_input);
-
-  /*  Registers the default network interface.*/
-  netif_set_default(&gnetif);
-
-  if (EthStatus == (ETH_INIT_FLAG | ETH_LINK_FLAG))
-  { 
-    /* Set Ethernet link flag */
-    gnetif.flags |= NETIF_FLAG_LINK_UP;
-
-    /* When the netif is fully configured this function must be called.*/
-    netif_set_up(&gnetif);
-    DBG_INFO("Connected, setting IP address.\n");
-#ifdef USE_DHCP
-    DBG_INFO("using dhcp...\n");
-    DHCP_state = DHCP_START;
-#else
-    DBG_INFO("Static IP address.\n");
-		DBG_INFO("IP: %d.%d.%d.%d\n",IP_ADDR0,IP_ADDR1,IP_ADDR2,IP_ADDR3);
-		DBG_INFO("NETMASK: %d.%d.%d.%d\n",NETMASK_ADDR0,NETMASK_ADDR1,NETMASK_ADDR2,NETMASK_ADDR3);
-		DBG_INFO("Gateway: %d.%d.%d.%d\n",GW_ADDR0,GW_ADDR1,GW_ADDR2,GW_ADDR3);
-#endif /* USE_DHCP */
-  }
-  else
-  {
-    /*  When the netif link is down this function must be called.*/
-    netif_set_down(&gnetif);
-#ifdef USE_DHCP
-    DHCP_state = DHCP_LINK_DOWN;
-#endif /* USE_DHCP */
-		DBG_INFO("Network Cable not connected\n");
-  }
-
-  /* Set the link callback function, this function is called on change of link status*/
-  netif_set_link_callback(&gnetif, ETH_link_callback);
+	ETH_CheckLinkStatus();
+	sys_timeout(CHECK_LINK_PERIOD, CheckLink_Timeout_Handler, NULL);
 }
 
 /**
-* @brief  Called when a frame is received
-* @param  None
-* @retval None
-*/
+ * @brief  Initializes the lwIP stack
+ * @param  None
+ * @retval None
+ */
+void LwIP_Init(void)
+{
+	ip_addr_t ipaddr;
+	ip_addr_t netmask;
+	ip_addr_t gw;
+
+	/* Initializes the dynamic memory heap defined by MEM_SIZE.*/
+	mem_init();
+
+	/* Initializes the memory pools defined by MEMP_NUM_x.*/
+	memp_init();
+
+#ifdef USE_DHCP
+	ipaddr.addr = 0;
+	netmask.addr = 0;
+	gw.addr = 0;
+#else
+	IP4_ADDR(&ipaddr, IP_ADDR0, IP_ADDR1, IP_ADDR2, IP_ADDR3);
+	IP4_ADDR(&netmask, NETMASK_ADDR0, NETMASK_ADDR1, NETMASK_ADDR2, NETMASK_ADDR3);
+	IP4_ADDR(&gw, GW_ADDR0, GW_ADDR1, GW_ADDR2, GW_ADDR3);
+#endif
+
+	/* - netif_add(struct netif *netif, ip_addr_t *ipaddr,
+	ip_addr_t *netmask, ip_addr_t *gw,
+	void *state, err_t (* init)(struct netif *netif),
+	err_t (* input)(struct pbuf *p, struct netif *netif))
+
+	Adds your network interface to the netif_list. Allocate a struct
+	netif and pass a pointer to this structure as the first argument.
+	Give pointers to cleared ip_addr structures when using DHCP,
+	or fill them with sane numbers otherwise. The state pointer may be NULL.
+
+	The init function pointer must point to a initialization function for
+	your ethernet netif interface. The following code illustrates it's use.*/
+	netif_add(&gnetif, &ipaddr, &netmask, &gw, NULL, &ethernetif_init, &ethernet_input);
+
+	/*  Registers the default network interface.*/
+	netif_set_default(&gnetif);
+
+	if (EthStatus == (ETH_INIT_FLAG | ETH_LINK_FLAG))
+	{
+		/* Set Ethernet link flag */
+		gnetif.flags |= NETIF_FLAG_LINK_UP;
+
+		/* When the netif is fully configured this function must be called.*/
+		netif_set_up(&gnetif);
+		DBG_INFO("Connected, setting IP address.\n");
+#ifdef USE_DHCP
+		DBG_INFO("using dhcp...\n");
+		DHCP_state = DHCP_START;
+#else
+		DBG_INFO("Static IP address.\n");
+		DBG_INFO("IP: %d.%d.%d.%d\n", IP_ADDR0, IP_ADDR1, IP_ADDR2, IP_ADDR3);
+		DBG_INFO("NETMASK: %d.%d.%d.%d\n", NETMASK_ADDR0, NETMASK_ADDR1, NETMASK_ADDR2, NETMASK_ADDR3);
+		DBG_INFO("Gateway: %d.%d.%d.%d\n", GW_ADDR0, GW_ADDR1, GW_ADDR2, GW_ADDR3);
+#endif /* USE_DHCP */
+	}
+	else
+	{
+		/*  When the netif link is down this function must be called.*/
+		netif_set_down(&gnetif);
+#ifdef USE_DHCP
+		DHCP_state = DHCP_LINK_DOWN;
+#endif /* USE_DHCP */
+		DBG_INFO("Network Cable not connected\n");
+	}
+
+	/* Set the link callback function, this function is called on change of link status*/
+	netif_set_link_callback(&gnetif, ETH_link_callback);
+	//create a timeout to check the link status handled by lwip
+	sys_timeout(CHECK_LINK_PERIOD, CheckLink_Timeout_Handler, NULL);
+}
+
+/**
+ * @brief  Called when a frame is received
+ * @param  None
+ * @retval None
+ */
 void LwIP_Pkt_Handle(void)
 {
-  /* Read a received packet from the Ethernet buffers and send it to the lwIP for handling */
-  ethernetif_input(&gnetif);
+	/* Read a received packet from the Ethernet buffers and send it to the lwIP for handling */
+	ethernetif_input(&gnetif);
 }
 
 // /**
@@ -162,26 +173,26 @@ void LwIP_Pkt_Handle(void)
 //     tcp_tmr();
 //   }
 // #endif
-  
+
 //   /* ARP periodic process every 5s */
 //   if ((localtime - ARPTimer) >= ARP_TMR_INTERVAL)
 //   {
 //     ARPTimer =  localtime;
 //     etharp_tmr();
 //   }
-  
+
 // #ifdef USE_DHCP
 //   /* Fine DHCP periodic process every 500ms */
 //   if (localtime - DHCPfineTimer >= DHCP_FINE_TIMER_MSECS)
 //   {
 //     DHCPfineTimer =  localtime;
 //     dhcp_fine_tmr();
-//     if ((DHCP_state != DHCP_ADDRESS_ASSIGNED) && 
+//     if ((DHCP_state != DHCP_ADDRESS_ASSIGNED) &&
 //         (DHCP_state != DHCP_TIMEOUT) &&
 //           (DHCP_state != DHCP_LINK_DOWN))
-//     { 
+//     {
 //       /* process DHCP state machine */
-//       LwIP_DHCP_Process_Handle();    
+//       LwIP_DHCP_Process_Handle();
 //     }
 //   }
 
@@ -197,75 +208,78 @@ void LwIP_Pkt_Handle(void)
 
 #ifdef USE_DHCP
 /**
-* @brief  LwIP_DHCP_Process_Handle
-* @param  None
-* @retval None
-*/
+ * @brief  LwIP_DHCP_Process_Handle
+ * @param  None
+ * @retval None
+ */
 void LwIP_DHCP_Process_Handle()
 {
-  ip_addr_t ipaddr;
-  ip_addr_t netmask;
-  ip_addr_t gw;
+	ip_addr_t ipaddr;
+	ip_addr_t netmask;
+	ip_addr_t gw;
 
-  switch (DHCP_state)
-  {
-  case DHCP_START:
-    {
-      DHCP_state = DHCP_WAIT_ADDRESS;
-      dhcp_start(&gnetif);
-      /* IP address should be set to 0 
-         every time we want to assign a new DHCP address */
-      IPaddress = 0;
-			DBG_INFO("Looking for DHCP server...\n");
-    }
-    break;
+	switch (DHCP_state)
+	{
+	case DHCP_START:
+	{
+		DHCP_state = DHCP_WAIT_ADDRESS;
+		dhcp_start(&gnetif);
+		/* IP address should be set to 0
+		   every time we want to assign a new DHCP address */
+		IPaddress = 0;
+		DBG_INFO("Looking for DHCP server...\n");
+	}
+	break;
 
-  case DHCP_WAIT_ADDRESS:
-    {
-      /* Read the new IP address */
-      IPaddress = gnetif.ip_addr.addr;
+	case DHCP_WAIT_ADDRESS:
+	{
+		/* Read the new IP address */
+		IPaddress = gnetif.ip_addr.addr;
 
-      if (IPaddress!=0) 
-      {
-        DHCP_state = DHCP_ADDRESS_ASSIGNED;	
+		if (IPaddress != 0)
+		{
+			DHCP_state = DHCP_ADDRESS_ASSIGNED;
 
-        /* Stop DHCP */
-        dhcp_stop(&gnetif);
+			/* Stop DHCP */
+			dhcp_stop(&gnetif);
 
-      	DBG_INFO("IP address assigned by a DHCP server\n");
-		    DBG_INFO("IP: %d.%d.%d.%d\n",(uint8_t)(IPaddress),(uint8_t)(IPaddress >> 8),
-				                       (uint8_t)(IPaddress >> 16),(uint8_t)(IPaddress >> 24));
-				DBG_INFO("NETMASK: %d.%d.%d.%d\n",NETMASK_ADDR0,NETMASK_ADDR1,NETMASK_ADDR2,NETMASK_ADDR3);
-				DBG_INFO("Gateway: %d.%d.%d.%d\n",GW_ADDR0,GW_ADDR1,GW_ADDR2,GW_ADDR3);
-      }
-      else
-      {
-        /* DHCP timeout */
-        if (gnetif.dhcp->tries > MAX_DHCP_TRIES)
-        {
-          DHCP_state = DHCP_TIMEOUT;
+			DBG_INFO("IP address assigned by a DHCP server\n");
+			DBG_INFO("IP: %d.%d.%d.%d\n", (uint8_t)(IPaddress), (uint8_t)(IPaddress >> 8),
+					 (uint8_t)(IPaddress >> 16), (uint8_t)(IPaddress >> 24));
+			DBG_INFO("NETMASK: %d.%d.%d.%d\n", NETMASK_ADDR0, NETMASK_ADDR1, NETMASK_ADDR2, NETMASK_ADDR3);
+			DBG_INFO("Gateway: %d.%d.%d.%d\n", GW_ADDR0, GW_ADDR1, GW_ADDR2, GW_ADDR3);
+		}
+		else
+		{
+			/* DHCP timeout */
+			if (gnetif.dhcp->tries > MAX_DHCP_TRIES)
+			{
+				DHCP_state = DHCP_TIMEOUT;
 
-          /* Stop DHCP */
-          dhcp_stop(&gnetif);
+				/* Stop DHCP */
+				dhcp_stop(&gnetif);
 
-          /* Static address used */
-          IP4_ADDR(&ipaddr, IP_ADDR0 ,IP_ADDR1 , IP_ADDR2 , IP_ADDR3 );
-          IP4_ADDR(&netmask, NETMASK_ADDR0, NETMASK_ADDR1, NETMASK_ADDR2, NETMASK_ADDR3);
-          IP4_ADDR(&gw, GW_ADDR0, GW_ADDR1, GW_ADDR2, GW_ADDR3);
-          netif_set_addr(&gnetif, &ipaddr , &netmask, &gw);
+				/* Static address used */
+				IP4_ADDR(&ipaddr, IP_ADDR0, IP_ADDR1, IP_ADDR2, IP_ADDR3);
+				IP4_ADDR(&netmask, NETMASK_ADDR0, NETMASK_ADDR1, NETMASK_ADDR2, NETMASK_ADDR3);
+				IP4_ADDR(&gw, GW_ADDR0, GW_ADDR1, GW_ADDR2, GW_ADDR3);
+				netif_set_addr(&gnetif, &ipaddr, &netmask, &gw);
 
-          DBG_INFO("DHCP timeout\n");
-          DBG_INFO("Using static IP address\n");
-		      DBG_INFO("IP: %d.%d.%d.%d\n",IP_ADDR0,IP_ADDR1,IP_ADDR2,IP_ADDR3);
-					DBG_INFO("NETMASK: %d.%d.%d.%d\n",NETMASK_ADDR0,NETMASK_ADDR1,NETMASK_ADDR2,NETMASK_ADDR3);
-					DBG_INFO("Gateway: %d.%d.%d.%d\n",GW_ADDR0,GW_ADDR1,GW_ADDR2,GW_ADDR3);
-        }
-      }
-    }
-    break;
-  default: break;
-  }
+				DBG_INFO("DHCP timeout\n");
+				DBG_INFO("Using static IP address\n");
+				DBG_INFO("IP: %d.%d.%d.%d\n", IP_ADDR0, IP_ADDR1, IP_ADDR2, IP_ADDR3);
+				DBG_INFO("NETMASK: %d.%d.%d.%d\n", NETMASK_ADDR0, NETMASK_ADDR1, NETMASK_ADDR2, NETMASK_ADDR3);
+				DBG_INFO("Gateway: %d.%d.%d.%d\n", GW_ADDR0, GW_ADDR1, GW_ADDR2, GW_ADDR3);
+			}
+		}
+	}
+	break;
+	default:
+		break;
+	}
 }
 #endif
+
+
 
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/
