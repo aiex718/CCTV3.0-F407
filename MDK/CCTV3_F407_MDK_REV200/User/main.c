@@ -88,9 +88,6 @@ int main(void)
 			SysTimer_Reset(&blinkTimer);
 			//DBG_INFO("%d:Wkup pin %d\n",SysTime_Get(),HAL_GPIO_ReadPin(Button_Wkup_pin));
 		}
-
-		//do mjpegd service
-		mjpegd_service();
 		
 		/* process received ethernet packet */
 		while (ETH_CheckFrameReceived())
@@ -99,5 +96,3 @@ int main(void)
 		sys_check_timeouts();
 	}
 }
-
-

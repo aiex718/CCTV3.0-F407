@@ -4,6 +4,7 @@
 #include "trycatch_while.h"
 
 #include "lwip/opt.h"
+#include "lwip/timeouts.h"
 #include "lwip/tcp.h"
 #include "lwip/err.h"
 #include "lwip/pbuf.h"
@@ -33,6 +34,7 @@
 #include "eth/apps/mjpeg/mjpegd_const_string.c"
 
 /** Parameter defines **/
+#define MJPEGD_SERVICE_PERIOD 10//10ms
 //poll interval is x*2*TCP_TMR_INTERVAL
 #define MJPEGD_POLL_INTERVAL 2 //2*2*250=1000ms
 //retry limit is x*(poll interval)
@@ -53,6 +55,9 @@ static err_t mjpegd_sent_handler(void *arg, struct tcp_pcb *pcb, u16_t len);
 static err_t mjpegd_poll_handler(void *arg, struct tcp_pcb *pcb);
 static void  mjpegd_err_handler(void *arg, err_t err);
 
+/** Lwip timeout callbacks **/
+static void mjpegd_timeout_handler(void* arg);
+
 /** mjpegd functions **/
 static void  mjpegd_close_conn(struct tcp_pcb *pcb, client_state_t *cs);
 static err_t mjpegd_parse_request(struct tcp_pcb *pcb, client_state_t *cs,struct pbuf *p);
@@ -62,7 +67,7 @@ static err_t mjpegd_send_data(struct tcp_pcb *pcb, client_state_t *cs);
 /** helper funcitons **/
 static char* strnstr(const char* buffer, const char* token, size_t n);
 
-/** events **/
+/** callbacks **/
 static void mjpegd_proc_rawframe_handler(void *sender, void *arg, void *owner);
 static void mjpegd_send_newframe_handler(void *sender, void *arg, void *owner);
 
@@ -176,8 +181,10 @@ err_t mjpegd_init(u16_t port)
         Framebuf_RecvNew_cb.owner = NULL;
         Mjpegd_FrameBuf_SetCallback(Mjpegd_FrameBuf,FRAMEBUF_CALLBACK_RX_NEWFRAME,&Framebuf_RecvNew_cb);
 
-        //TODO: remove this callback invoke?
+        //invoke newframe handler to start snap TODO: remove this callback invoke?
         Cam2640_NewFrame_Handler(Cam_OV2640,NULL,NULL);
+        //invoke timeout handler to start timeout
+        mjpegd_timeout_handler(NULL);
         err=ERR_OK;
     }
     catch(NEW_PCB_FAIL)
@@ -207,12 +214,17 @@ err_t mjpegd_init(u16_t port)
     return err;
 }
 
-//this service should called inside lwip thread
-void mjpegd_service(void)
+/**
+ * @brief MJPEGD service loop, regist to lwip timeout to execute periodically   
+ * @param arg 
+ */
+void mjpegd_timeout_handler(void* arg)
 {
     Mjpegd_FrameBuf_Service(Mjpegd_FrameBuf);
     mjpegd_stream_output();
     //TODO: restart capture if it's stopped
+
+    sys_timeout(MJPEGD_SERVICE_PERIOD, mjpegd_timeout_handler, NULL);
 }
 
 static err_t mjpegd_accept_handler(void *arg, struct tcp_pcb *newpcb, err_t err)

@@ -34,6 +34,7 @@ void Mjpegd_FrameBuf_SetCallback(Mjpegd_FrameBuf_t* self, Mjpegd_FrameBuf_Callba
 void Mjpegd_FrameBuf_Service(Mjpegd_FrameBuf_t* self)
 {
     SysTime_t now = SysTime_Get();
+    //take pending frame to local and process it
     Mjpegd_Frame_t* pending_frame = (Mjpegd_Frame_t*)
             Atomic_Exchange((__IO uint32_t *)&self->_pending_frame,NULL);
     if(pending_frame!=NULL)
