@@ -1,7 +1,6 @@
 #include "bsp/hal/i2c.h"
 #include "bsp/sys/systimer.h"
 
-//TODO: Test i2c all
 void HAL_I2C_Init(HAL_I2C_t *self)
 {
     HAL_RCC_Cmd(self->I2C_RCC_Cmd,ENABLE);

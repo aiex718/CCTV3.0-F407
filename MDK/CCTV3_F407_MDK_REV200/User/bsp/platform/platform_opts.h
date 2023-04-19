@@ -3,4 +3,6 @@
 
 #define DBG_SERIAL_ENABLE_DMA 1
 
+#define DEVICE_CAM_OV2640_DEBUG 0
+
 #endif
