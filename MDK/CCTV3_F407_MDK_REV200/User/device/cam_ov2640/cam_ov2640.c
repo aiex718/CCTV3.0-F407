@@ -61,7 +61,7 @@ void Device_CamOV2640_DcmiRxDmaTcCallback(void *sender,void *arg,void *owner)
     Callback_InvokeNowOrPending_Idx(self ,&frame_len, self->CamOV2640_Callbacks,
         CAMOV2640_CALLBACK_NEWFRAME,self->_callback_pending_flag);
 
-#if DEVICE_CAM_OV2640_DEBUG || DEVICE_CAM_OV2640_WARNING
+
     if(frame_len){
 #if DEVICE_CAM_OV2640_DEBUG
         DBG_INFO("%6d:Snaped len:%u ,trimmed len:%u\n",
@@ -71,8 +71,6 @@ void Device_CamOV2640_DcmiRxDmaTcCallback(void *sender,void *arg,void *owner)
     else{
         DBG_WARNING("Bad frame\n");
     }
-
-#endif
 
     BSP_UNUSED_ARG(arg);
     //uncomment this if self loop mode is needed
