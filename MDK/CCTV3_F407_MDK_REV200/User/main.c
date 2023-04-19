@@ -5,17 +5,22 @@
 #include "bsp/sys/systime.h"
 #include "bsp/sys/systimer.h"
 #include "bsp/sys/sysctrl.h"
+#include "bsp/sys/semaphore.h"
 #include "bsp/sys/dbg_serial.h"
 #include "bsp/hal/systick.h"
+#include "bsp/sys/stack_guard.h"
 #include "bsp/hal/timer.h"
 #include "bsp/hal/timer_pwm.h"
 
 //eth & lwip
 #include "lwip/timeouts.h"
-#include "lwip/apps/httpd.h"
 #include "eth/stm32f4x7_eth.h"
 #include "eth/stm32f4x7_eth_phy.h"
 #include "eth/netconf.h"
+
+//apps
+#include "lwip/apps/httpd.h"
+#include "eth/apps/mjpeg/mjpegd.h"
 
 
 SysTimer_t blinkTimer;
@@ -24,13 +29,12 @@ int main(void)
 {
 	//SystemInit() is inside system_stm32f4xx.c
 	HAL_Systick_Init();
+	delay(500); //wait 500ms for subsystems to be ready
 	//USART3 for debug
-	HAL_USART_Init(Debug_Usart3);
 	DBG_Serial_Init(DBG_Serial);
-	DBG_Serial_AttachUSART(DBG_Serial,Debug_Usart3);
-	HAL_USART_Cmd(Debug_Usart3,true);
-	printf("Built at " __DATE__ " " __TIME__ " ,Booting...\n");
-
+	DBG_Serial_Cmd(DBG_Serial,true);
+	DBG_PRINTF("Built at " __DATE__ " " __TIME__ " ,Booting...\n");
+	
 	HAL_GPIO_InitPin(Button_Wkup_pin);
 	HAL_GPIO_InitPin(LED_STAT_pin);
 	HAL_GPIO_InitPin(LED_Load_pin);
@@ -45,17 +49,22 @@ int main(void)
 	Device_FlashLight_Init(FlashLight_Bottom);
 	Device_FlashLight_Cmd(FlashLight_Bottom,true);
 	HAL_Timer_PWM_Cmd(Timer_PWM_FlashLight,true);
+
+	//Camera init
+	HAL_MCO_Init(MCO2_Cam);
+	Device_CamOV2640_Init(Cam_OV2640);
 	
 	//Lwip & ETH & httpd
 	ETH_BSP_Config();	
 	LwIP_Init();
 	httpd_init();
+	mjpegd_init(MJPEGD_PORT);
 	
 	SysTimer_Init(&blinkTimer,1000);
 	while(1)
 	{
-		uint8_t rxcmd[Debug_Serial_Rx_Buffer_Size]={0};
-		if(DBG_Serial_ReadLine(DBG_Serial,rxcmd,16))
+		uint8_t rxcmd[DEBUG_SERIAL_RX_BUFFER_SIZE]={0};
+		if(DBG_Serial_ReadLine(DBG_Serial,rxcmd,sizeof(rxcmd)))
 		{
 			if(strcmp((char*)rxcmd,"hello")==0)
 				printf("Hello there\n");
@@ -73,16 +82,16 @@ int main(void)
 			}
 		}
 
-		HAL_USART_Service(Debug_Usart3);
-		DBG_Serial_Service(DBG_Serial);
-
 		//blink Load LED
 		if(SysTimer_IsElapsed(&blinkTimer))
 		{
 			HAL_GPIO_TogglePin(LED_Load_pin);
 			SysTimer_Reset(&blinkTimer);
-			//printf("%d:Wkup pin %d\n",Systime_Get(),HAL_GPIO_ReadPin(Button_Wkup_pin));
+			//printf("%d:Wkup pin %d\n",SysTime_Get(),HAL_GPIO_ReadPin(Button_Wkup_pin));
 		}
+
+		//do mjpegd service
+		mjpegd_service();
 		
 		/* process received ethernet packet */
 		while (ETH_CheckFrameReceived())
