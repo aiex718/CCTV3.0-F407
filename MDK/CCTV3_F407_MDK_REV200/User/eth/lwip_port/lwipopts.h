@@ -30,6 +30,8 @@
 #ifndef __LWIPOPTS_H__
 #define __LWIPOPTS_H__
 
+#include "bsp/platform/platform_opts.h"
+
 /**
  * SYS_LIGHTWEIGHT_PROT==1: if you want inter-task protection for certain
  * critical regions during buffer allocation, deallocation and memory
@@ -49,7 +51,7 @@
  */
 #define NO_SYS_NO_TIMERS        0
 
-#define sys_now Systime_Get
+#define sys_now SysTime_Get
 
 /* ---------- Memory options ---------- */
 /* MEM_ALIGNMENT: should be set to the alignment of the CPU for which
@@ -59,7 +61,7 @@
 
 /* MEM_SIZE: the size of the heap memory. If the application will send
 a lot of data that needs to be copied, this should be set high. */
-#define MEM_SIZE                (10*1024)
+#define MEM_SIZE                (20*1024)
 
 /* MEMP_NUM_PBUF: the number of memp struct pbufs. If the application
    sends a lot of data out of ROM (or other static memory), this
@@ -242,11 +244,16 @@ The STM32F4x7 allows computing and verifying the IP, UDP, TCP and ICMP checksums
 
 // #define TCP_INPUT_DEBUG                LWIP_DBG_ON
 // #define IP_DEBUG                       LWIP_DBG_ON
-
+#define MJPEGD_DEBUG                      LWIP_DBG_ON
+#define MJPEGD_FRAMEBUF_DEBUG             LWIP_DBG_ON
 
 #define LWIP_DBG_MIN_LEVEL       LWIP_DBG_LEVEL_ALL//LWIP_DBG_LEVEL_WARNING //LWIP_DBG_LEVEL_SEVERE 
-#define LWIP_DBG_TYPES_ON        (LWIP_DBG_ON|LWIP_DBG_STATE)//|LWIP_DBG_TRACE)
+#define LWIP_DBG_TYPES_ON        (LWIP_DBG_LEVEL_SEVERE|LWIP_DBG_STATE)//(LWIP_DBG_ON|LWIP_DBG_STATE)//|LWIP_DBG_TRACE)
 
+
+
+#define MJPEGD_TOTAL_CLEINT_LIMIT 3
+#define MJPEGD_PORT 8080
 
 #endif /* __LWIPOPTS_H__ */
 
