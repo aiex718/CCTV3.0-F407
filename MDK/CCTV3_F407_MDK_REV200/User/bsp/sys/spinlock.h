@@ -1,7 +1,6 @@
 #ifndef SPINLOCK_H
 #define SPINLOCK_H
 
-//TODO:Add to bsp
 #include "bsp/platform/platform_defs.h"
 #include "bsp/sys/atomic.h"
 
