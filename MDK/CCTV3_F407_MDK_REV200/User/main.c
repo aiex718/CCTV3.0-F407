@@ -1,6 +1,7 @@
 #include "stm32f4xx.h"
 
 #include "bsp/platform/periph_list.h"
+#include "bsp/hal/systick.h"
 #include "bsp/sys/systime.h"
 #include "bsp/sys/systimer.h"
 #include "bsp/sys/sysctrl.h"
@@ -12,12 +13,10 @@ int main(void)
 {
 	//SystemInit() is inside system_stm32f4xx.c
 	HAL_Systick_Init();
-	//USART3 for debug
-	HAL_USART_Init(Debug_Usart3);
+	//DBG_Serial
 	DBG_Serial_Init(DBG_Serial);
-	DBG_Serial_AttachUSART(DBG_Serial,Debug_Usart3);
-	HAL_USART_Cmd(Debug_Usart3,true);
-	printf("Built at " __DATE__ " " __TIME__ " ,Booting...\n");
+	DBG_Serial_Cmd(DBG_Serial,true);
+	DBG_PRINTF("Built at " __DATE__ " " __TIME__ " ,Booting...\n");
 
 	HAL_GPIO_InitPin(Button_Wkup_pin);
 	HAL_GPIO_InitPin(LED_STAT_pin);
@@ -28,14 +27,13 @@ int main(void)
 	SysTimer_Init(&blinkTimer,1000);
 	while(1)
 	{
-		uint8_t rxcmd[Debug_Serial_Rx_Buffer_Size]={0};
-		if(DBG_Serial_ReadLine(DBG_Serial,rxcmd,16))
+		uint8_t rxcmd[DEBUG_SERIAL_RX_BUFFER_SIZE]={0};
+		if(DBG_Serial_ReadLine(DBG_Serial,rxcmd,BSP_ARR_LEN(rxcmd)))
 		{
 			if(strcmp((char*)rxcmd,"hello")==0)
-				printf("hello there\n");
+				DBG_PRINTF("hello there\n");
 		}
 
-		HAL_USART_Service(Debug_Usart3);
 		DBG_Serial_Service(DBG_Serial);
 
 		//blink Load LED
@@ -43,7 +41,7 @@ int main(void)
 		{
 			HAL_GPIO_TogglePin(LED_Load_pin);
 			SysTimer_Reset(&blinkTimer);
-				printf("%d:Wkup pin %d\n",Systime_Get(),HAL_GPIO_ReadPin(Button_Wkup_pin));
+				DBG_PRINTF("%d:Wkup pin %d\n",SysTime_Get(),HAL_GPIO_ReadPin(Button_Wkup_pin));
 		}
 	}
 }

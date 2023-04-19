@@ -339,7 +339,7 @@
               <MiscControls></MiscControls>
               <Define>USE_STDPERIPH_DRIVER,STM32F40_41xxx,</Define>
               <Undefine></Undefine>
-              <IncludePath>..\..\Libraries\CMSIS\Include;..\..\Libraries\CMSIS\Device\ST\STM32F4xx\Include;..\..\Libraries\STM32F4xx_StdPeriph_Driver\inc;..\..\User</IncludePath>
+              <IncludePath>..\..\Libraries\CMSIS\Include;..\..\Libraries\CMSIS\Device\ST\STM32F4xx\Include;..\..\Libraries\STM32F4xx_StdPeriph_Driver\inc;..\..\Libraries\lwip\src\include;..\..\User\eth\lwip_port;..\..\User</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
@@ -387,11 +387,6 @@
               <FileName>system_stm32f4xx.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Libraries\CMSIS\Device\ST\STM32F4xx\Source\Templates\system_stm32f4xx.c</FilePath>
-            </File>
-            <File>
-              <FileName>startup_stm32f40xx.s</FileName>
-              <FileType>2</FileType>
-              <FilePath>..\..\Libraries\CMSIS\Device\ST\STM32F4xx\Source\Templates\arm\startup_stm32f40xx.s</FilePath>
             </File>
           </Files>
         </Group>
@@ -667,16 +662,6 @@
           </Files>
         </Group>
         <Group>
-          <GroupName>User</GroupName>
-          <Files>
-            <File>
-              <FileName>main.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\User\main.c</FilePath>
-            </File>
-          </Files>
-        </Group>
-        <Group>
           <GroupName>User\bsp\hal</GroupName>
           <Files>
             <File>
@@ -714,6 +699,16 @@
               <FileType>1</FileType>
               <FilePath>..\..\User\bsp\platform\periph_list.c</FilePath>
             </File>
+            <File>
+              <FileName>startup_stm32f40_41xxx.s</FileName>
+              <FileType>2</FileType>
+              <FilePath>..\..\User\bsp\platform\startup_stm32f40_41xxx.s</FilePath>
+            </File>
+            <File>
+              <FileName>periph_its.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\User\bsp\platform\periph_its.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -735,9 +730,24 @@
               <FilePath>..\..\User\bsp\sys\concurrent_queue.c</FilePath>
             </File>
             <File>
-              <FileName>sysirq.c</FileName>
+              <FileName>mem_utils.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\..\User\bsp\sys\sysirq.c</FilePath>
+              <FilePath>..\..\User\bsp\sys\mem_utils.c</FilePath>
+            </File>
+            <File>
+              <FileName>system_its.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\User\bsp\sys\system_its.c</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>User</GroupName>
+          <Files>
+            <File>
+              <FileName>main.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\User\main.c</FilePath>
             </File>
           </Files>
         </Group>
