@@ -1,7 +1,6 @@
 #include "bsp/hal/dcmi.h"
 #include "bsp/hal/dma.h"
 
-//TODO: test dcmi ALL
 static const uint16_t DCMI_CBidx_to_ITFlag_Tbl[__NOT_CALLBACK_DCMI_MAX] = {
     DCMI_IT_FRAME   ,
     DCMI_IT_OVF     ,

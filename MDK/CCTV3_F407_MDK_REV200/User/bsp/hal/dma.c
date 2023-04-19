@@ -39,7 +39,6 @@ const DMA_Stream_to_ITStatusFlags_Map_t DMA_Stream_to_ITStatusFlags_Tbl[] = {
     {DMA2_Stream7_BASE, {DMA_IT_HTIF7, DMA_IT_TCIF7, DMA_IT_TEIF7, DMA_IT_FEIF7, DMA_IT_DMEIF7}},
 };
 
-//TODO: Test dma all
 //Public functions
 void HAL_DMA_Init(HAL_DMA_t *self)
 {
