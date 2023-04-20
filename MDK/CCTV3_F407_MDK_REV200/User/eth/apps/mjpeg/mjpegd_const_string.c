@@ -68,19 +68,7 @@ Keep-Alive: timeout=10   \r\n\
 static const char Http_Mjpeg_Boundary[]="--myboundary";
 static const char Http_Mjpeg_ContentType[]="Content-Type: image/jpg \r\n";
 static const char Http_Mjpeg_ContentLength[]="Content-Length: %5d   \r\n\r\n";
-
 static const char Http_CLRF[]="\r\n";
-
-const u16_t Mjpeg_Jpeg_Comment_wlen = 12;
-const u8_t Mjpeg_Jpeg_Comment[Mjpeg_Jpeg_Comment_wlen+6] =
-{
-    0xFF,0xD8,0xFF,0xFE,0x00,Mjpeg_Jpeg_Comment_wlen+2, //comment len indicator
-    //8 byte for RTC
-    //0,0,0,0,0,0,0,0, 
-    //4 byte for frame time
-    //0,0,0,0
-};
-const u16_t Mjpeg_Jpeg_Comment_len = sizeof(Mjpeg_Jpeg_Comment);
 
 //content-len= total - 101
 static const char Http_ViewFps_Response[]= "\
@@ -169,7 +157,7 @@ Connection: close\r\n\
                                 if (imageBuffer[com_idx] === JPEG_COM[0] && imageBuffer[com_idx+1] === JPEG_COM[1])\r\n\
                                 {\r\n\
                                     let comment_len = imageBuffer[com_idx+2] * 256 + imageBuffer[com_idx+3];\r\n\
-                                    if(comment_len!=14)\r\n\
+                                    if(comment_len<=14)\r\n\
                                     {\r\n\
                                         console.log('comment_len error');\r\n\
                                         break;\r\n\
