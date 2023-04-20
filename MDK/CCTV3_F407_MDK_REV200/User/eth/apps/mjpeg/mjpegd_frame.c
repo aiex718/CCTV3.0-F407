@@ -25,7 +25,7 @@ void Mjpegd_Frame_CaptureFinish(Mjpegd_Frame_t* self,uint16_t len)
 }
 
 /**
- * @brief insert comment into frame header
+ * @brief insert comment into frame 
  * @warning this function must be called before Mjpegd_Frame_WriteHeader
  *          if header has been written, no comment allowed
  * @param self frame object

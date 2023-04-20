@@ -17,7 +17,7 @@ err_t mjpegd_nextframe_snap_start(void* client_state)
         u8_t w_len=0;
         throwif(cs==NULL,NULL_CS);
 
-        //release old frmae
+        //release old frame if any, should not happen
         Mjpegd_FrameBuf_Release(Mjpegd_FrameBuf,cs->frame);
         cs->frame = NULL;
 
@@ -155,7 +155,7 @@ err_t mjpegd_nextframe_snap_finish(void *client_state)
         LWIP_DEBUGF(MJPEGD_DEBUG | LWIP_DBG_TRACE,
             DBG_ARG("snap_finish sending %d bytes\n", cs->file_len));
 
-        //unregist nextfile, we're all done sending snap 
+        //clear nextfile, we're all done sending snap 
         cs->get_nextfile_func=NULL;
         err=ERR_OK;
     }

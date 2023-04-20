@@ -1,8 +1,6 @@
 #ifndef MJPEGD_FRAME_H
 #define MJPEGD_FRAME_H
 
-#include "bsp/platform/platform_defs.h"
-
 #include "bsp/sys/semaphore.h"
 #include "bsp/sys/systime.h"
 #include "lwip/opt.h"

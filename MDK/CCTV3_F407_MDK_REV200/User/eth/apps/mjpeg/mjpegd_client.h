@@ -1,9 +1,7 @@
 #ifndef __MJPEGD_CLIENT_H__
 #define __MJPEGD_CLIENT_H__
 
-#include "bsp/platform/platform_defs.h"
-#include "bsp/sys/systime.h"
-
+#include "eth/apps/mjpeg/mjpegd_typedef.h"
 #include "eth/apps/mjpeg/mjpegd_request.h"
 #include "eth/apps/mjpeg/mjpegd_frame.h"
 
@@ -47,7 +45,7 @@ struct client_state_struct
     err_t (*get_nextfile_func)(void* client_state);
 
     Mjpegd_Frame_t* frame;
-    SysTime_t previous_frame_time;
+    Mjpegd_Systime_t previous_frame_time;
 
     u8_t retries;
 

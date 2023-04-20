@@ -778,7 +778,7 @@ static void mjpegd_proc_rawframe_handler(void *sender, void *arg, void *owner)
             Mjpegd_Frame_InsertComment(frame,comment,sizeof(comment));
         }
 
-        //insert mjpeg header
+        //write mjpeg header
         w_len = sprintf((char*)buf,Http_Mjpeg_ContentLength,frame->payload_len);
         Mjpegd_Frame_WriteHeader(frame,buf,w_len);
         Mjpegd_Frame_WriteHeader(frame,(u8_t*)Http_Mjpeg_ContentType,MJPEGD_STRLEN(Http_Mjpeg_ContentType));
@@ -786,6 +786,7 @@ static void mjpegd_proc_rawframe_handler(void *sender, void *arg, void *owner)
         w_len = sprintf((char*)buf,"%x\r\n", Mjpegd_Frame_HeaderSize(frame) + frame->payload_len);
         Mjpegd_Frame_WriteHeader(frame,buf,w_len);
 
+        //write mjpegd tail, chunked block end
         Mjpegd_Frame_WriteTail(frame,(u8_t*)Http_CLRF,MJPEGD_STRLEN(Http_CLRF));
     }
     catch(NULL_FRAME)

@@ -1,17 +1,16 @@
 #ifndef MJPEGD_FRAMEBUF_H
 #define MJPEGD_FRAMEBUF_H
 
-#include "bsp/platform/platform_defs.h"
 #include "eth/apps/mjpeg/mjpegd_frame.h"
 #include "bsp/sys/systime.h"
 #include "bsp/sys/callback.h"
-#include "bsp/sys/bitflag.h"
 
 
 typedef enum 
 {
     //all callbacks are invoked in Mjpegd_FrameBuf_Service
-    //sender is new Mjpegd_Frame_t* frame, not Mjpegd_FrameBuf_t*
+    //sender is frame_buf Mjpegd_FrameBuf_t*
+    //arg is new frame Mjpegd_Frame_t* 
     FRAMEBUF_CALLBACK_RX_RAWFRAME = 0   ,
     FRAMEBUF_CALLBACK_RX_NEWFRAME       ,
     __NOT_CALLBACK_FRAMEBUF_MAX         ,
