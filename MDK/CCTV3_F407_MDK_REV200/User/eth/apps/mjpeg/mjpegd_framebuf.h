@@ -23,10 +23,10 @@ typedef struct
     Callback_t* Mjpegd_FrameBuf_Callbacks[__NOT_CALLBACK_FRAMEBUF_MAX];
     //private, dont use
     Mjpegd_Frame_t *_frames;
-    uint8_t _frames_len;
+    u8_t _frames_len;
     Mjpegd_Frame_t *_pending_frame;
     SysTime_t _fps_timer;
-    uint16_t _fps_counter;
+    u16_t _fps_counter;
 }Mjpegd_FrameBuf_t;
 
 //TODO: find a location to put Mjpegd_FrameBuf instance

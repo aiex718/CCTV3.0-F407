@@ -4,7 +4,7 @@
 #include "lwip/err.h"
 #include "eth/apps/mjpeg/mjpegd_client.h"
 
-uint8_t mjpegd_stream_get_client_count(void);
+u8_t mjpegd_stream_get_client_count(void);
 void mjpegd_stream_output(void);
 err_t mjpegd_nextframe_stream(client_state_t* cs);
 err_t mjpegd_stream_recv_request(client_state_t* cs);

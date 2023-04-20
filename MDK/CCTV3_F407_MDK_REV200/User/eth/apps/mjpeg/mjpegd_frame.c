@@ -16,16 +16,16 @@ void Mjpegd_Frame_Clear(Mjpegd_Frame_t* self)
     self->capture_time=0;
 }
 
-uint16_t Mjpegd_Frame_WriteComment(Mjpegd_Frame_t* self,const uint8_t *data, uint16_t len)
+u16_t Mjpegd_Frame_WriteComment(Mjpegd_Frame_t* self,const u8_t *data, u16_t len)
 {
-    const static uint8_t Jpeg_Comment_Tag[]={0xFF,0xFE};
-    uint8_t* wptr = BSP_MEMSEARCH(self->payload,self->payload_len,
+    const static u8_t Jpeg_Comment_Tag[]={0xFF,0xFE};
+    u8_t* wptr = BSP_MEMSEARCH(self->payload,self->payload_len,
                             Jpeg_Comment_Tag,BSP_ARR_LEN(Jpeg_Comment_Tag),false);
-    uint16_t wlen=0;
+    u16_t wlen=0;
     if(wptr!=NULL)
     {   
         //find next 0xff, calculate the available length for comment
-        uint8_t* wptr_end;
+        u8_t* wptr_end;
         wptr+=BSP_ARR_LEN(Jpeg_Comment_Tag);
         wptr_end = wptr;
         while(wptr_end<self->payload+self->payload_len)
@@ -41,7 +41,7 @@ uint16_t Mjpegd_Frame_WriteComment(Mjpegd_Frame_t* self,const uint8_t *data, uin
     return wlen;
 }
 
-uint16_t Mjpegd_Frame_WriteHeader(Mjpegd_Frame_t* self, const uint8_t *data, uint16_t w_len)
+u16_t Mjpegd_Frame_WriteHeader(Mjpegd_Frame_t* self, const u8_t *data, u16_t w_len)
 {
     if(w_len<Mjpegd_Frame_HeaderAvailable(self))
     {
@@ -58,7 +58,7 @@ uint16_t Mjpegd_Frame_WriteHeader(Mjpegd_Frame_t* self, const uint8_t *data, uin
     return 0;
 }
 
-uint16_t Mjpegd_Frame_WriteTail(Mjpegd_Frame_t* self, const uint8_t *data, uint16_t w_len)
+u16_t Mjpegd_Frame_WriteTail(Mjpegd_Frame_t* self, const u8_t *data, u16_t w_len)
 {
     if (w_len < Mjpegd_Frame_TailAvailable(self))
     {

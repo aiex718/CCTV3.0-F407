@@ -4,7 +4,7 @@
 #include "trycatch_while.h"
 
 #include "eth/apps/mjpeg/mjpegd_snap.h"
-#include "eth/apps/mjpeg/mjpegd_macro.h"
+#include "eth/apps/mjpeg/mjpegd_memutils.h"
 
 #include "eth/apps/mjpeg/mjpegd_framebuf.h"
 
@@ -15,7 +15,7 @@ err_t mjpegd_nextframe_snap_start(client_state_t* cs)
     err_t err;
     try
     {
-        uint8_t w_len=0;
+        u8_t w_len=0;
         throwif(cs==NULL,NULL_CS);
 
         //release old frmae
@@ -48,7 +48,7 @@ err_t mjpegd_nextframe_snap_start(client_state_t* cs)
     catch(NULL_CS)
     {
         LWIP_DEBUGF(MJPEGD_DEBUG | LWIP_DBG_LEVEL_SERIOUS,
-            DBG_LF("snap_start NULL_CLIENT\n"));
+            DBG_ARG("snap_start NULL_CLIENT\n"));
         err=ERR_ARG;
     }
     catch(GET_FRAME_FAIL)
@@ -56,7 +56,7 @@ err_t mjpegd_nextframe_snap_start(client_state_t* cs)
         //frame not available, maybe camera not started yet
         //try again later
         LWIP_DEBUGF(MJPEGD_DEBUG | LWIP_DBG_LEVEL_WARNING,
-            DBG_LF("snap_start GET_FRAME_FAIL, try later\n"));
+            DBG_ARG("snap_start GET_FRAME_FAIL, try later\n"));
 
         err=ERR_INPROGRESS;
     }
@@ -67,14 +67,14 @@ err_t mjpegd_nextframe_snap_start(client_state_t* cs)
         cs->frame = NULL;
 
         LWIP_DEBUGF(MJPEGD_DEBUG | LWIP_DBG_LEVEL_SERIOUS,
-            DBG_LF("snap_start BAD_FRAME, try later\n"));
+            DBG_ARG("snap_start BAD_FRAME, try later\n"));
 
         err=ERR_INPROGRESS;
     }
     catch(BUFFER_ALLOC_FAIL)
     {
         LWIP_DEBUGF(MJPEGD_DEBUG | LWIP_DBG_LEVEL_SERIOUS,
-            DBG_LF("snap_start BUFFER_ALLOC_FAIL\n"));
+            DBG_ARG("snap_start BUFFER_ALLOC_FAIL\n"));
         err=ERR_BUF;
     }
     finally
@@ -112,20 +112,20 @@ err_t mjpegd_nextframe_snap_body(client_state_t* cs)
     catch(NULL_CS)
     {
         LWIP_DEBUGF(MJPEGD_DEBUG | LWIP_DBG_LEVEL_SERIOUS,
-            DBG_LF("snap_body NULL_CLIENT\n"));
+            DBG_ARG("snap_body NULL_CLIENT\n"));
         err=ERR_ARG;
     }
     catch(NULL_FRAME)
     {
         LWIP_DEBUGF(MJPEGD_DEBUG | LWIP_DBG_LEVEL_SERIOUS,
-            DBG_LF("snap_body NULL_FRAME\n"));
+            DBG_ARG("snap_body NULL_FRAME\n"));
 
         err=ERR_ARG;
     }
     catch(NULL_BUFFER)
     {
         LWIP_DEBUGF(MJPEGD_DEBUG | LWIP_DBG_LEVEL_SERIOUS,
-            DBG_LF("snap_body NULL_BUFFER\n"));
+            DBG_ARG("snap_body NULL_BUFFER\n"));
 
         err=ERR_BUF;
     }
@@ -148,7 +148,7 @@ err_t mjpegd_nextframe_snap_finish(client_state_t* cs)
         cs->frame = NULL;
 
         //write chunked end
-        client_assign_file(cs,(u8_t*)Http_ChunkedEOF,STRLEN(Http_ChunkedEOF));
+        client_assign_file(cs,(u8_t*)Http_ChunkedEOF,MJPEGD_STRLEN(Http_ChunkedEOF));
 
         LWIP_DEBUGF(MJPEGD_DEBUG | LWIP_DBG_TRACE,
             DBG_ARG("snap_finish sending %d bytes\n", cs->file_len));
@@ -160,13 +160,13 @@ err_t mjpegd_nextframe_snap_finish(client_state_t* cs)
     catch(NULL_CS)
     {
         LWIP_DEBUGF(MJPEGD_DEBUG | LWIP_DBG_LEVEL_SERIOUS,
-            DBG_LF("snap_finish NULL_CLIENT\n"));
+            DBG_ARG("snap_finish NULL_CLIENT\n"));
         err=ERR_ARG;
     }
     catch(NULL_FRAME)
     {
         LWIP_DEBUGF(MJPEGD_DEBUG | LWIP_DBG_LEVEL_SERIOUS,
-            DBG_LF("snap_finish NULL_FRAME\n"));
+            DBG_ARG("snap_finish NULL_FRAME\n"));
         err=ERR_ARG;
     }
     finally

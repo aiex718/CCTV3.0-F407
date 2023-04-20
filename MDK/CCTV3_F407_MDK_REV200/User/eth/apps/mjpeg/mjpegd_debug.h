@@ -11,8 +11,6 @@
     #define MJPEGD_FRAMEBUF_DEBUG LWIP_DBG_OFF
 #endif
 
-//TODO: change LF to ARG
-#define DBG_LF DBG_ARG
 #define DBG_ARG(x,...) ("%s#%d:" x,__MODULE__,__LINE__,##__VA_ARGS__)
 #define DBG_PRINT(x,...) LWIP_PLATFORM_DIAG((x ,##__VA_ARGS__))
 

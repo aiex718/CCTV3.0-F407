@@ -10,9 +10,9 @@
 
 #define MJPEGD_STREAM_LIMIT MJPEGD_TOTAL_CLEINT_LIMIT
 
-volatile static uint8_t stream_client_count=0;
+volatile static u8_t stream_client_count=0;
 
-uint8_t mjpegd_stream_get_client_count(void)
+u8_t mjpegd_stream_get_client_count(void)
 {
     return stream_client_count;
 }
@@ -22,16 +22,16 @@ void mjpegd_stream_output(void)
     typedef struct client_time_pair_struct
     {
         client_state_t *client;
-        uint32_t transfer_time_diff;
+        u32_t transfer_time_diff;
     }client_time_pair_t;
 
     //order by transfer_time_diff, descending
     SysTime_t now = SysTime_Get();
-    uint8_t client_count = mjpegd_get_client_count();
+    u8_t client_count = mjpegd_get_client_count();
     client_time_pair_t *client_time_pairs = (client_time_pair_t*)alloca(sizeof(client_time_pair_t)*client_count);
     client_time_pair_t temp;
     client_state_t* cs;
-    uint8_t i,j;
+    u8_t i,j;
     err_t err;
 
     for (i=0,cs=mjpegd_get_clients(); cs!=NULL; i++,cs=cs->_next)
@@ -99,7 +99,7 @@ err_t mjpegd_nextframe_stream(client_state_t* cs)
     catch(NULL_CS)
     {
         LWIP_DEBUGF(MJPEGD_DEBUG | LWIP_DBG_LEVEL_SERIOUS,
-            DBG_LF("stream NULL_CLIENT\n"));
+            DBG_ARG("stream NULL_CLIENT\n"));
         err=ERR_ARG;
     }
     finally
@@ -125,19 +125,19 @@ err_t mjpegd_stream_recv_request(client_state_t* cs)
     catch(NULL_CS)
     {
         LWIP_DEBUGF(MJPEGD_DEBUG | LWIP_DBG_LEVEL_SERIOUS,
-            DBG_LF("stream_recv_request NULL_CS"));
+            DBG_ARG("stream_recv_request NULL_CS"));
         err = ERR_ARG;
     }
     catch(NULL_REQUEST)
     {
         LWIP_DEBUGF(MJPEGD_DEBUG | LWIP_DBG_LEVEL_SERIOUS,
-            DBG_LF("stream_recv_request NULL_REQUEST"));
+            DBG_ARG("stream_recv_request NULL_REQUEST"));
         err = ERR_ARG;
     }
     catch(REQUEST_NOT_MATCH)
     {
         LWIP_DEBUGF(MJPEGD_DEBUG | LWIP_DBG_LEVEL_SERIOUS,
-            DBG_LF("stream_recv_request REQUEST_NOT_MATCH"));
+            DBG_ARG("stream_recv_request REQUEST_NOT_MATCH"));
         err = ERR_ARG;
     }
     catch(TOO_MANY_CLIENTS)
@@ -170,25 +170,25 @@ err_t mjpegd_stream_clsd_request(client_state_t* cs)
     catch(NULL_CS)
     {
         LWIP_DEBUGF(MJPEGD_DEBUG | LWIP_DBG_LEVEL_SERIOUS,
-            DBG_LF("stream_clsd_request NULL_CS"));
+            DBG_ARG("stream_clsd_request NULL_CS"));
         err = ERR_ARG;
     }
     catch(NULL_REQUEST)
     {
         LWIP_DEBUGF(MJPEGD_DEBUG | LWIP_DBG_LEVEL_SERIOUS,
-            DBG_LF("stream_clsd_request NULL_REQUEST"));
+            DBG_ARG("stream_clsd_request NULL_REQUEST"));
         err = ERR_ARG;
     }
     catch(REQUEST_NOT_MATCH)
     {
         LWIP_DEBUGF(MJPEGD_DEBUG | LWIP_DBG_LEVEL_SERIOUS,
-            DBG_LF("stream_clsd_request REQUEST_NOT_MATCH"));
+            DBG_ARG("stream_clsd_request REQUEST_NOT_MATCH"));
         err = ERR_ARG;
     }
     catch(CLIENT_COUNT_ZERO)
     {
         LWIP_DEBUGF(MJPEGD_DEBUG | LWIP_DBG_LEVEL_SERIOUS,
-            DBG_LF("stream_clsd_request CLIENT_COUNT_ZERO"));
+            DBG_ARG("stream_clsd_request CLIENT_COUNT_ZERO"));
         err = ERR_ARG;
     }
     finally

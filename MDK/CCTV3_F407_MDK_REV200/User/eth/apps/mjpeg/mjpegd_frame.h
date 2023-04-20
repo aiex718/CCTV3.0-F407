@@ -24,16 +24,16 @@
 typedef struct Mjpegd_Frame_struct Mjpegd_Frame_t;
 struct Mjpegd_Frame_struct
 {
-    uint8_t* head;
-    uint8_t* payload;
-    uint16_t payload_len;
-    uint8_t* tail;
+    u8_t* head;
+    u8_t* payload;
+    u16_t payload_len;
+    u8_t* tail;
     SysTime_t capture_time;
 
     //dont modify these private member
     Semaphore_t _sem;
 
-    uint8_t _mem[MJPEGD_FRAME_MEM_SPACE];
+    u8_t _mem[MJPEGD_FRAME_MEM_SPACE];
 };
 
 #define Mjpegd_Frame_HeaderSize(frame) ((frame)->payload - (frame)->head)
@@ -47,9 +47,9 @@ struct Mjpegd_Frame_struct
 
 void Mjpegd_Frame_Init(Mjpegd_Frame_t* self);
 void Mjpegd_Frame_Clear(Mjpegd_Frame_t* self);
-uint16_t Mjpegd_Frame_WriteComment(Mjpegd_Frame_t* self,const uint8_t *data, uint16_t len);
-uint16_t Mjpegd_Frame_WriteHeader(Mjpegd_Frame_t* self, const uint8_t *data, uint16_t w_len);
-uint16_t Mjpegd_Frame_WriteTail(Mjpegd_Frame_t* self, const uint8_t *data, uint16_t w_len);
+u16_t Mjpegd_Frame_WriteComment(Mjpegd_Frame_t* self,const u8_t *data, u16_t len);
+u16_t Mjpegd_Frame_WriteHeader(Mjpegd_Frame_t* self, const u8_t *data, u16_t w_len);
+u16_t Mjpegd_Frame_WriteTail(Mjpegd_Frame_t* self, const u8_t *data, u16_t w_len);
 
 #define Mjpegd_Frame_TryAcquire(frame) Semaphore_TryDown(&frame->_sem)
 #define Mjpegd_Frame_Release(frame) Semaphore_Up(&frame->_sem);

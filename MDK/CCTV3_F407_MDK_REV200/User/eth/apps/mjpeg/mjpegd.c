@@ -24,7 +24,7 @@
 
 /** Sub modules **/
 #include "eth/apps/mjpeg/mjpegd_framebuf.h"
-#include "eth/apps/mjpeg/mjpegd_macro.h"
+#include "eth/apps/mjpeg/mjpegd_memutils.h"
 #include "eth/apps/mjpeg/mjpegd_request.h"
 #include "eth/apps/mjpeg/mjpegd_client.h"
 #include "eth/apps/mjpeg/mjpegd_snap.h"
@@ -64,9 +64,6 @@ static err_t mjpegd_parse_request(struct tcp_pcb *pcb, client_state_t *cs,struct
 static err_t mjpegd_build_response(client_state_t *cs);
 static err_t mjpegd_send_data(struct tcp_pcb *pcb, client_state_t *cs);
 
-/** helper funcitons **/
-static char* strnstr(const char* buffer, const char* token, size_t n);
-
 /** callbacks **/
 static void mjpegd_proc_rawframe_handler(void *sender, void *arg, void *owner);
 static void mjpegd_send_newframe_handler(void *sender, void *arg, void *owner);
@@ -74,13 +71,14 @@ static void mjpegd_send_newframe_handler(void *sender, void *arg, void *owner);
 /** http request handlers **/
 const request_handler_t request_handlers[]=
 {
-    {REQUEST_NOTFOUND   ,"/404"         ,Http_Notfound_Response     ,STRLEN(Http_Notfound_Response)     ,NULL                       ,NULL                           ,NULL                       },
-    {REQUEST_TOOMANY    ,"/429"         ,HTTP_TooMany_Response      ,STRLEN(HTTP_TooMany_Response)      ,NULL                       ,NULL                           ,NULL                       },
-    {REQUEST_HANDSHAKE  ,"/handshake"   ,Http_Handshake_Response    ,STRLEN(Http_Handshake_Response)    ,NULL                       ,NULL                           ,NULL                       },
-    {REQUEST_VIEW_SNAP  ,"/view/snap"   ,Http_ViewSnap_Response     ,STRLEN(Http_ViewSnap_Response)     ,NULL                       ,NULL                           ,NULL                       },
-    {REQUEST_VIEW_STREAM,"/view/stream" ,Http_ViewStream_Response   ,STRLEN(Http_ViewStream_Response)   ,NULL                       ,NULL                           ,NULL                       },
-    {REQUEST_SNAP       ,"/snap"        ,Http_Snap_Response         ,STRLEN(Http_Snap_Response)         ,mjpegd_nextframe_snap_start,NULL                           ,NULL                       },
-    {REQUEST_STREAM     ,"/stream"      ,Http_Stream_Response       ,STRLEN(Http_Stream_Response)       ,mjpegd_nextframe_stream    ,mjpegd_stream_recv_request     ,mjpegd_stream_clsd_request },
+    {REQUEST_NOTFOUND   ,"/404"         ,Http_Notfound_Response     ,MJPEGD_STRLEN(Http_Notfound_Response)      ,NULL                       ,NULL                           ,NULL                       },
+    {REQUEST_TOOMANY    ,"/429"         ,HTTP_TooMany_Response      ,MJPEGD_STRLEN(HTTP_TooMany_Response)       ,NULL                       ,NULL                           ,NULL                       },
+    {REQUEST_HANDSHAKE  ,"/handshake"   ,Http_Handshake_Response    ,MJPEGD_STRLEN(Http_Handshake_Response)     ,NULL                       ,NULL                           ,NULL                       },
+    {REQUEST_VIEW_SNAP  ,"/view/snap"   ,Http_ViewSnap_Response     ,MJPEGD_STRLEN(Http_ViewSnap_Response)      ,NULL                       ,NULL                           ,NULL                       },
+    {REQUEST_VIEW_STREAM,"/view/stream" ,Http_ViewStream_Response   ,MJPEGD_STRLEN(Http_ViewStream_Response)    ,NULL                       ,NULL                           ,NULL                       },
+    {REQUEST_VIEW_FPS   ,"/view/fps"    ,Http_ViewFps_Response      ,MJPEGD_STRLEN(Http_ViewFps_Response)       ,NULL                       ,NULL                           ,NULL                       },
+    {REQUEST_SNAP       ,"/snap"        ,Http_Snap_Response         ,MJPEGD_STRLEN(Http_Snap_Response)          ,mjpegd_nextframe_snap_start,NULL                           ,NULL                       },
+    {REQUEST_STREAM     ,"/stream"      ,Http_Stream_Response       ,MJPEGD_STRLEN(Http_Stream_Response)        ,mjpegd_nextframe_stream    ,mjpegd_stream_recv_request     ,mjpegd_stream_clsd_request },
 };
 
 
@@ -102,7 +100,7 @@ Mjpegd_FrameBuf_t *Mjpegd_FrameBuf = (Mjpegd_FrameBuf_t*)&(Mjpegd_FrameBuf_t){
 void Cam2640_NewFrame_Handler(void *sender, void *arg, void *owner)
 {
     Device_CamOV2640_t *cam = (Device_CamOV2640_t*)sender;
-    uint16_t *frame_len = (uint16_t *)arg;
+    u16_t *frame_len = (u16_t *)arg;
     Mjpegd_Frame_t *frame = (Mjpegd_Frame_t*)cam->pExtension;
 
     //TODO:need a function to end frame
@@ -116,7 +114,7 @@ void Cam2640_NewFrame_Handler(void *sender, void *arg, void *owner)
     else
     {
         LWIP_DEBUGF(MJPEGD_DEBUG | LWIP_DBG_LEVEL_SERIOUS , 
-            DBG_LF("Mjpegd: Cam2640_NewFrame NULL\n"));
+            DBG_ARG("Mjpegd: Cam2640_NewFrame NULL\n"));
     }
 
 
@@ -137,7 +135,7 @@ void Cam2640_NewFrame_Handler(void *sender, void *arg, void *owner)
         cam->CamOV2640_FrameBuf = NULL;
         cam->CamOV2640_FrameBuf_Len = 0;
         LWIP_DEBUGF(MJPEGD_DEBUG | LWIP_DBG_LEVEL_SERIOUS , 
-            DBG_LF("Mjpegd: No idle frame\n"));
+            DBG_ARG("Mjpegd: No idle frame\n"));
     }
 }
 
@@ -190,24 +188,24 @@ err_t mjpegd_init(u16_t port)
     catch(NEW_PCB_FAIL)
     {
         err = ERR_MEM;
-        LWIP_DEBUGF(MJPEGD_DEBUG | LWIP_DBG_LEVEL_SERIOUS , DBG_LF("new pcb fail\n"));
+        LWIP_DEBUGF(MJPEGD_DEBUG | LWIP_DBG_LEVEL_SERIOUS , DBG_ARG("new pcb fail\n"));
     }
     catch(BIND_FAIL)
     {
         err = ERR_USE;
-        LWIP_DEBUGF(MJPEGD_DEBUG | LWIP_DBG_LEVEL_SERIOUS , DBG_LF("pcb bind fail\n"));
+        LWIP_DEBUGF(MJPEGD_DEBUG | LWIP_DBG_LEVEL_SERIOUS , DBG_ARG("pcb bind fail\n"));
     }
     catch(LISTEN_FAIL)
     {
         err = ERR_MEM;
-        LWIP_DEBUGF(MJPEGD_DEBUG | LWIP_DBG_LEVEL_SERIOUS , DBG_LF("pcb listen fail\n"));
+        LWIP_DEBUGF(MJPEGD_DEBUG | LWIP_DBG_LEVEL_SERIOUS , DBG_ARG("pcb listen fail\n"));
     }
     finally
     {
         if(mjpegd_pcb==NULL && pcb!=NULL)
         {
             memp_free(MEMP_TCP_PCB, pcb);
-            LWIP_DEBUGF(MJPEGD_DEBUG | LWIP_DBG_LEVEL_SERIOUS , DBG_LF("init failed, free orig pcb\n"));
+            LWIP_DEBUGF(MJPEGD_DEBUG | LWIP_DBG_LEVEL_SERIOUS , DBG_ARG("init failed, free orig pcb\n"));
         }
     }
 
@@ -262,19 +260,19 @@ static err_t mjpegd_accept_handler(void *arg, struct tcp_pcb *newpcb, err_t err)
     catch(ERR_ACCEPT_HANDLER_ERROR)
     {
         LWIP_DEBUGF(MJPEGD_DEBUG | LWIP_DBG_LEVEL_SERIOUS , 
-            DBG_LF("accept ERR_ACCEPT_HANDLER_ERROR\n"));
+            DBG_ARG("accept ERR_ACCEPT_HANDLER_ERROR\n"));
     }
     catch(FATAL_ERROR_NULL_PCB)
     {
         err = ERR_MEM;
         LWIP_DEBUGF(MJPEGD_DEBUG | LWIP_DBG_LEVEL_SERIOUS , 
-            DBG_LF("accept Main or accept pcb NULL\n"));
+            DBG_ARG("accept Main or accept pcb NULL\n"));
     }
     catch(NEW_CLIENT_ERROR)
     {
         err = ERR_MEM;
         LWIP_DEBUGF(MJPEGD_DEBUG | LWIP_DBG_LEVEL_SERIOUS , 
-            DBG_LF("accept New client fail\n"));
+            DBG_ARG("accept New client fail\n"));
     }
     finally
     {
@@ -341,7 +339,7 @@ static err_t mjpegd_recv_handler(void *arg, struct tcp_pcb *pcb, struct pbuf *p,
     catch(BAD_CLIENT_NULL)
     {
         LWIP_DEBUGF(MJPEGD_DEBUG | LWIP_DBG_LEVEL_SERIOUS,
-            DBG_LF("recv BAD_CLIENT_NULL\n"));
+            DBG_ARG("recv BAD_CLIENT_NULL\n"));
         err=ERR_ARG;
     }
     catch(BAD_CLIENT_MULTI_REQUEST)
@@ -402,7 +400,7 @@ static err_t mjpegd_sent_handler(void *arg, struct tcp_pcb *pcb, u16_t len)
     catch(BAD_CLIENT_NULL)
     {
         LWIP_DEBUGF(MJPEGD_DEBUG | LWIP_DBG_LEVEL_SERIOUS,
-            DBG_LF("sent BAD_CLIENT_NULL\n"));
+            DBG_ARG("sent BAD_CLIENT_NULL\n"));
         err = ERR_ARG;
     }
     catch(ERR_SEND)
@@ -411,7 +409,7 @@ static err_t mjpegd_sent_handler(void *arg, struct tcp_pcb *pcb, u16_t len)
         {
             //ERR_MEM happen quite often when lots stream clients connecting
             LWIP_DEBUGF(MJPEGD_DEBUG | LWIP_DBG_TRACE,
-                DBG_LF("sent ERR_SEND out of ram\n"));
+                DBG_ARG("sent ERR_SEND out of ram\n"));
         }
         else
         {
@@ -437,7 +435,7 @@ static err_t mjpegd_poll_handler(void *arg, struct tcp_pcb *pcb)
         // if(cs->conn_state == CS_RECEIVED)
         // {
             //LWIP_DEBUGF(MJPEGD_DEBUG | LWIP_DBG_TRACE,
-            //    DBG_LF("poll try to send more data\n"));
+            //    DBG_ARG("poll try to send more data\n"));
             //err = mjpegd_send_data(pcb, cs);
 
             //throwif(err!=ERR_OK,ERR_SEND_DATA_FAIL);
@@ -449,7 +447,7 @@ static err_t mjpegd_poll_handler(void *arg, struct tcp_pcb *pcb)
     catch(NULL_CLIENT)
     {
         LWIP_DEBUGF(MJPEGD_DEBUG | LWIP_DBG_LEVEL_SERIOUS,
-            DBG_LF("poll NULL_CLIENT\n"));
+            DBG_ARG("poll NULL_CLIENT\n"));
         err = ERR_ARG;
     }
     catch(CLIENT_TIMEOUT)
@@ -499,7 +497,7 @@ static err_t mjpegd_parse_request(struct tcp_pcb *pcb, client_state_t *cs,struct
     if (p->len != p->tot_len) 
     {
         LWIP_DEBUGF(MJPEGD_DEBUG | LWIP_DBG_LEVEL_WARNING,
-            DBG_LF("incomplete requset\n"));
+            DBG_ARG("incomplete requset\n"));
     }
 
     try
@@ -508,17 +506,17 @@ static err_t mjpegd_parse_request(struct tcp_pcb *pcb, client_state_t *cs,struct
         u8_t i;
         throwif (cs==NULL,NULL_CLIENT);
 
-        line_end=strnstr(data, "\r\n",data_len);
+        line_end=MJPEGD_STRNSTR(data, "\r\n",data_len);
         throwif (data_len < MIN_REQ_LEN || line_end==NULL, REQUEST_NOT_COMPLETE);
-        throwif (strncmp(data, "GET ", 4) , NOT_HTTP_GET);
+        throwif (MJPEGD_STRNCMP(data, "GET ", 4) , NOT_HTTP_GET);
 
         data+=4;
         cs->request_handler = &request_handlers[REQUEST_NOTFOUND];
 
-        for ( i = 0; i < ARRLEN(request_handlers); i++)
+        for ( i = 0; i < MJPEGD_ARRLEN(request_handlers); i++)
         {
             const request_handler_t* handler = &request_handlers[i];
-            if (!strncmp(data, handler->url, strlen(handler->url)))
+            if (!MJPEGD_STRNCMP(data, handler->url, strlen(handler->url)))
             {
                 cs->request_handler = handler;
                 break;
@@ -529,7 +527,7 @@ static err_t mjpegd_parse_request(struct tcp_pcb *pcb, client_state_t *cs,struct
     catch(NULL_CLIENT)
     {
         LWIP_DEBUGF(MJPEGD_DEBUG | LWIP_DBG_LEVEL_SERIOUS,
-            DBG_LF("parse NULL_CLIENT\n"));
+            DBG_ARG("parse NULL_CLIENT\n"));
         err=ERR_ARG;
     }
     catch(REQUEST_NOT_COMPLETE)
@@ -573,13 +571,13 @@ static err_t mjpegd_build_response(client_state_t *cs)
     catch(NULL_CS)
     {
         LWIP_DEBUGF(MJPEGD_DEBUG | LWIP_DBG_LEVEL_SERIOUS,
-            DBG_LF("response NULL_CLIENT\n"));
+            DBG_ARG("response NULL_CLIENT\n"));
         err=ERR_ARG;
     }
     catch(NULL_REQUEST_HANDLER)
     {
         LWIP_DEBUGF(MJPEGD_DEBUG | LWIP_DBG_LEVEL_SERIOUS,
-            DBG_LF("response NULL_REQUEST_HANDLER\n"));
+            DBG_ARG("response NULL_REQUEST_HANDLER\n"));
 
         err=ERR_ARG;
     }
@@ -621,8 +619,8 @@ static err_t mjpegd_send_data(struct tcp_pcb *pcb, client_state_t *cs)
         }
 
         //start sending
-        w_len = MIN(left_len,tcp_sndbuf(pcb));
-        w_len = MIN(w_len,2*tcp_mss(pcb));
+        w_len = MJPEGD_MIN(left_len,tcp_sndbuf(pcb));
+        w_len = MJPEGD_MIN(w_len,2*tcp_mss(pcb));
         
         do
         {
@@ -653,13 +651,13 @@ static err_t mjpegd_send_data(struct tcp_pcb *pcb, client_state_t *cs)
     catch(NULL_CS)
     {
         LWIP_DEBUGF(MJPEGD_DEBUG | LWIP_DBG_LEVEL_SERIOUS,
-            DBG_LF("send NULL_CLIENT\n"));
+            DBG_ARG("send NULL_CLIENT\n"));
         err=ERR_ARG;
     }
     catch(NULL_REQUEST_HANDLER)
     {
         LWIP_DEBUGF(MJPEGD_DEBUG | LWIP_DBG_LEVEL_SERIOUS,
-            DBG_LF("send NULL_REQUEST_HANDLER\n"));
+            DBG_ARG("send NULL_REQUEST_HANDLER\n"));
         err=ERR_ARG;
     }
     catch(BAD_FILE)
@@ -689,7 +687,7 @@ static err_t mjpegd_send_data(struct tcp_pcb *pcb, client_state_t *cs)
         {
             //no enough ram, try again later
             //LWIP_DEBUGF(MJPEGD_DEBUG | LWIP_DBG_LEVEL_WARNING,
-            //    DBG_LF("send TCP_WRITE_ERROR out of ram\n"));
+            //    DBG_ARG("send TCP_WRITE_ERROR out of ram\n"));
         }
         else
         {
@@ -762,47 +760,50 @@ static void mjpegd_proc_rawframe_handler(void *sender, void *arg, void *owner)
         throwif(frame->payload_len==0,EMPTY_FRAME);
         throwif(frame->head!=frame->payload,ALREADY_PROCESSED);
         
-        //insert comment section
-        //TODO:USE comment write helper
+        //insert jpeg comment section
+        //this will overwrite old frame SOI(FF D8) from frame->head
         {
-            uint8_t* comment_wptr;
+            u8_t* comment_wptr;
             frame->payload -= (Mjpeg_Jpeg_Comment_len-2);
             frame->head -= (Mjpeg_Jpeg_Comment_len-2);
             frame->payload_len +=(Mjpeg_Jpeg_Comment_len-2);
-            memcpy(frame->payload,Mjpeg_Jpeg_Comment,Mjpeg_Jpeg_Comment_len);
+            
+            MJPEGD_MEMCPY(frame->payload,Mjpeg_Jpeg_Comment,Mjpeg_Jpeg_Comment_len);
             comment_wptr = frame->head+6;
         
-            //TODO:insert RTC time 16 byte
-            comment_wptr+=16;
+            //TODO:insert RTC time 8 byte
+            u8_t FakeRTC[8]={0,1,2,3,4,5,6,7};
+            MJPEGD_MEMCPY(comment_wptr,FakeRTC,sizeof(FakeRTC));
+            comment_wptr+=8;
 
             //insert frame time 4byte
-            memcpy(comment_wptr,&frame->capture_time,sizeof(frame->capture_time));
+            MJPEGD_MEMCPY(comment_wptr,&frame->capture_time,sizeof(frame->capture_time));
             comment_wptr+=sizeof(frame->capture_time);
         }
         //insert mjpeg header
         w_len = sprintf((char*)buf,Http_Mjpeg_ContentLength,frame->payload_len);
         Mjpegd_Frame_WriteHeader(frame,buf,w_len);
-        Mjpegd_Frame_WriteHeader(frame,(u8_t*)Http_Mjpeg_ContentType,STRLEN(Http_Mjpeg_ContentType));
-        Mjpegd_Frame_WriteHeader(frame,(u8_t*)Http_Mjpeg_Boundary,STRLEN(Http_Mjpeg_Boundary));
+        Mjpegd_Frame_WriteHeader(frame,(u8_t*)Http_Mjpeg_ContentType,MJPEGD_STRLEN(Http_Mjpeg_ContentType));
+        Mjpegd_Frame_WriteHeader(frame,(u8_t*)Http_Mjpeg_Boundary,MJPEGD_STRLEN(Http_Mjpeg_Boundary));
         w_len = sprintf((char*)buf,"%x\r\n", Mjpegd_Frame_HeaderSize(frame) + frame->payload_len);
         Mjpegd_Frame_WriteHeader(frame,buf,w_len);
 
-        Mjpegd_Frame_WriteTail(frame,(u8_t*)Http_CLRF,STRLEN(Http_CLRF));
+        Mjpegd_Frame_WriteTail(frame,(u8_t*)Http_CLRF,MJPEGD_STRLEN(Http_CLRF));
     }
     catch(NULL_FRAME)
     {
         LWIP_DEBUGF(MJPEGD_DEBUG | LWIP_DBG_LEVEL_SERIOUS,
-            DBG_LF("RawFrame_Handler NULL_FRAME\n"));
+            DBG_ARG("RawFrame_Handler NULL_FRAME\n"));
     }
     catch(EMPTY_FRAME)
     {
         LWIP_DEBUGF(MJPEGD_DEBUG | LWIP_DBG_LEVEL_WARNING,
-            DBG_LF("RawFrame_Handler EMPTY_FRAME\n"));
+            DBG_ARG("RawFrame_Handler EMPTY_FRAME\n"));
     }
     catch(ALREADY_PROCESSED)
     {
         LWIP_DEBUGF(MJPEGD_DEBUG | LWIP_DBG_LEVEL_WARNING,
-            DBG_LF("RawFrame_Handler ALREADY_PROCESSED\n"));
+            DBG_ARG("RawFrame_Handler ALREADY_PROCESSED\n"));
     }
     finally
     {
@@ -849,7 +850,7 @@ static void mjpegd_send_newframe_handler(void *sender, void *arg, void *owner)
             {
                 //frame not available, try again later
                 LWIP_DEBUGF(MJPEGD_DEBUG | LWIP_DBG_LEVEL_WARNING,
-                    DBG_LF("newframe_handler GET_FRAME_FAIL\n"));
+                    DBG_ARG("newframe_handler GET_FRAME_FAIL\n"));
             }
             catch(BAD_FRAME)
             {
@@ -875,17 +876,3 @@ static void mjpegd_send_newframe_handler(void *sender, void *arg, void *owner)
     }
 }
 
-static char* strnstr(const char* buffer, const char* token, size_t n)
-{
-    const char* p;
-    int tokenlen = (int)strlen(token);
-    if (tokenlen == 0) {
-        return (char *)buffer;
-    }
-    for (p = buffer; *p && (p + tokenlen <= buffer + n); p++) {
-        if ((*p == *token) && (strncmp(p, token, tokenlen) == 0)) {
-            return (char *)p;
-        }
-    }
-    return NULL;
-} 

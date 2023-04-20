@@ -10,11 +10,11 @@
 // }while(0)
 // #define LINKLIST_GET_LAST(p,list) LINKLIST_GET_UNTIL(p,list,NULL)
 
-static void Mjpegd_FrameBuf_Sort(Mjpegd_FrameBuf_t* self,uint8_t* order_out,SysTime_t time);
+static void Mjpegd_FrameBuf_Sort(Mjpegd_FrameBuf_t* self,u8_t* order_out,SysTime_t time);
 
 void Mjpegd_FrameBuf_Init(Mjpegd_FrameBuf_t* self)
 {
-    uint8_t i;
+    u8_t i;
     
     BSP_ARR_CLEAR(self->Mjpegd_FrameBuf_Callbacks);
 
@@ -36,7 +36,7 @@ void Mjpegd_FrameBuf_Service(Mjpegd_FrameBuf_t* self)
     SysTime_t now = SysTime_Get();
     //take pending frame to local and process it
     Mjpegd_Frame_t* pending_frame = (Mjpegd_Frame_t*)
-            Atomic_Exchange((__IO uint32_t *)&self->_pending_frame,NULL);
+            Atomic_Exchange((__IO u32_t *)&self->_pending_frame,NULL);
     if(pending_frame!=NULL)
     {
         //invoke callback
@@ -64,7 +64,7 @@ void Mjpegd_FrameBuf_Service(Mjpegd_FrameBuf_t* self)
 
 Mjpegd_Frame_t* Mjpegd_FrameBuf_GetLatest(Mjpegd_FrameBuf_t* self,SysTime_t last_frame_time)
 {
-    uint8_t i,sorted_idx[self->_frames_len];
+    u8_t i,sorted_idx[self->_frames_len];
     SysTime_t now = SysTime_Get();
     Mjpegd_Frame_t* frame;
 
@@ -119,7 +119,7 @@ void Mjpegd_FrameBuf_Release(Mjpegd_FrameBuf_t* self,Mjpegd_Frame_t* frame)
 
 Mjpegd_Frame_t* Mjpegd_FrameBuf_GetIdle(Mjpegd_FrameBuf_t* self)
 {
-    uint8_t i,sorted_idx[self->_frames_len];
+    u8_t i,sorted_idx[self->_frames_len];
     SysTime_t now = SysTime_Get();
     Mjpegd_Frame_t* frame;
 
@@ -165,13 +165,13 @@ void Mjpegd_FrameBuf_ReturnIdle(Mjpegd_FrameBuf_t* self,Mjpegd_Frame_t* frame)
         else 
         {
             drop_frame = (Mjpegd_Frame_t*)
-                Atomic_Exchange((__IO uint32_t *)&self->_pending_frame,(uint32_t)frame);
+                Atomic_Exchange((__IO u32_t *)&self->_pending_frame,(u32_t)frame);
         }
             
         if(drop_frame!=NULL)
         {
-            LWIP_DEBUGF(MJPEGD_FRAMEBUF_DEBUG | LWIP_DBG_LEVEL_WARNING, 
-                DBG_ARG("Frame dropped %p, service too slow?\n",drop_frame));
+            //LWIP_DEBUGF(MJPEGD_FRAMEBUF_DEBUG | LWIP_DBG_LEVEL_WARNING, 
+            //    DBG_ARG("Frame dropped %p, service too slow?\n",drop_frame));
             Mjpegd_Frame_Clear(drop_frame);
             Mjpegd_Frame_Unlock(drop_frame);
         }
@@ -189,11 +189,11 @@ void Mjpegd_FrameBuf_ReturnIdle(Mjpegd_FrameBuf_t* self,Mjpegd_Frame_t* frame)
 }
 
 //sort by frame's time diff (capture_time-now),order from small to big(new to old)
-static void Mjpegd_FrameBuf_Sort(Mjpegd_FrameBuf_t* self,uint8_t* order_out,SysTime_t time)
+static void Mjpegd_FrameBuf_Sort(Mjpegd_FrameBuf_t* self,u8_t* order_out,SysTime_t time)
 {
     //notice:vla on armcc alloc at heap
     SysTime_t tmp,time_diffs[self->_frames_len];
-    uint8_t tmp2,i,j;
+    u8_t tmp2,i,j;
     for (i = 0; i < self->_frames_len; i++)
     {
         time_diffs[i] = time - self->_frames[i].capture_time;

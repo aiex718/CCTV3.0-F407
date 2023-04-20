@@ -8,6 +8,7 @@
 #include "lwip/tcp.h"
 #include "eth/apps/mjpeg/mjpegd_framebuf.h"
 
+//TODO:Collect this
 static volatile u8_t mjpegd_client_count=0;
 static client_state_t *clients_list=NULL;
 
@@ -42,7 +43,7 @@ client_state_t* mjpegd_new_client(struct tcp_pcb *pcb)
     catch(CLIENT_STATE_OOM)
     {
         LWIP_DEBUGF(MJPEGD_DEBUG | LWIP_DBG_LEVEL_SERIOUS,
-            DBG_LF("No mem for new client\n"));
+            DBG_ARG("No mem for new client\n"));
     }
     finally
     {
@@ -54,7 +55,7 @@ err_t mjpegd_free_client(struct tcp_pcb *pcb,client_state_t *cs)
 {
     if(cs!=NULL)
     {
-        uint32_t client_addr=(uint32_t)cs;
+        u32_t client_addr=(u32_t)cs;
         client_state_t **prev_ptr=NULL;
         client_state_t *prev;
         

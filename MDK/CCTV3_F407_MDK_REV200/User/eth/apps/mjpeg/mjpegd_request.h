@@ -11,6 +11,7 @@ typedef enum
     REQUEST_HANDSHAKE,
     REQUEST_VIEW_SNAP,
     REQUEST_VIEW_STREAM,
+    REQUEST_VIEW_FPS,
     REQUEST_SNAP,
     REQUEST_STREAM,
     
@@ -26,8 +27,9 @@ static const char *request_strreq[] = {
     "REQUEST_HANDSHAKE",
     "REQUEST_VIEW_SNAP",
     "REQUEST_VIEW_STREAM",
+    "REQUEST_VIEW_FPS",
     "REQUEST_SNAP",
-    "REQUEST_STREAM"
+    "REQUEST_STREAM",
 };
 #else
 #define mjpegd_strreq(x) ""
