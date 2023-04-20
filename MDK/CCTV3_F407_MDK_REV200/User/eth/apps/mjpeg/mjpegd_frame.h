@@ -30,6 +30,7 @@ struct Mjpegd_Frame_struct
     u8_t* payload;
     u16_t payload_len;
     u8_t* tail;
+    u8_t* eof;
     SysTime_t capture_time;
 
     //dont modify these private member
@@ -42,7 +43,11 @@ struct Mjpegd_Frame_struct
 #define Mjpegd_Frame_HeaderAvailable(frame) ((frame)->head - frame->_mem)
 #define Mjpegd_Frame_TailSize(frame) ((frame)->tail - ((frame)->payload+(frame)->payload_len))
 #define Mjpegd_Frame_TailAvailable(frame) (frame->_mem + sizeof(frame->_mem) - (frame)->tail)
-#define Mjpegd_Frame_TotalSize(frame) ((frame)->tail - (frame)->head)
+#define Mjpegd_Frame_EofSize(frame) ((frame)->eof - (frame)->tail)
+#define Mjpegd_Frame_EofAvailable(frame) (frame->_mem + sizeof(frame->_mem) - (frame)->eof)
+
+#define Mjpegd_Frame_StreamSize(frame) ((frame)->tail - (frame)->head)
+#define Mjpegd_Frame_SnapSize(frame) ((frame)->eof - (frame)->head)
 
 #define Mjpegd_Frame_IsValid(frame) ((frame)!=NULL && (frame)->payload_len!=0)
 
@@ -53,6 +58,8 @@ void Mjpegd_Frame_CaptureFinish(Mjpegd_Frame_t* self,uint16_t len);
 u16_t Mjpegd_Frame_InsertComment(Mjpegd_Frame_t* self,const u8_t *data, u16_t w_len);
 u16_t Mjpegd_Frame_WriteHeader(Mjpegd_Frame_t* self, const u8_t *data, u16_t w_len);
 u16_t Mjpegd_Frame_WriteTail(Mjpegd_Frame_t* self, const u8_t *data, u16_t w_len);
+u16_t Mjpegd_Frame_WriteEOF(Mjpegd_Frame_t* self, const u8_t *data, u16_t w_len);
+
 
 #define Mjpegd_Frame_TryAcquire(frame) Semaphore_TryDown(&frame->_sem)
 #define Mjpegd_Frame_Release(frame) Semaphore_Up(&frame->_sem);

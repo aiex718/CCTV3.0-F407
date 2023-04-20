@@ -13,6 +13,7 @@ void Mjpegd_Frame_Clear(Mjpegd_Frame_t* self)
     self->payload = self->_mem+MJPEGD_FRAME_HEADER_SPACE;
     self->head = self->payload;
     self->tail = self->payload;
+    self->eof = self->payload;
     self->payload_len=0;
     self->capture_time=0;
 }
@@ -22,6 +23,7 @@ void Mjpegd_Frame_CaptureFinish(Mjpegd_Frame_t* self,uint16_t len)
     self->capture_time = SysTime_Get();
     self->payload_len = len;
     self->tail = self->payload+self->payload_len;
+    self->eof = self->tail;
 }
 
 /**
@@ -46,8 +48,18 @@ u16_t Mjpegd_Frame_InsertComment(Mjpegd_Frame_t* self,const u8_t *data, u16_t w_
         (MJPEGD_FRAME_COMMENT_SPACE+2)&0xff,
     };
 
-    if( self->payload==self->head &&
-        Mjpegd_Frame_HeaderAvailable(self)>sizeof(Jpeg_Comment_Section))
+    if( self->payload!=self->head)
+    {
+        LWIP_DEBUGF(MJPEGD_DEBUG | LWIP_DBG_LEVEL_SERIOUS,
+            DBG_ARG("Header exist\n"));
+    }
+    else if(sizeof(Jpeg_Comment_Section)>= Mjpegd_Frame_HeaderAvailable(self))
+    {
+        LWIP_DEBUGF(MJPEGD_DEBUG | LWIP_DBG_LEVEL_SERIOUS,
+            DBG_ARG("InsertComment out of space %d>=%d\n",
+                sizeof(Jpeg_Comment_Section),Mjpegd_Frame_HeaderAvailable(self)));
+    }
+    else
     {
         u8_t* comment_wptr;
         w_len = MJPEGD_MIN(w_len,MJPEGD_FRAME_COMMENT_SPACE);
@@ -70,33 +82,66 @@ u16_t Mjpegd_Frame_InsertComment(Mjpegd_Frame_t* self,const u8_t *data, u16_t w_
 
 u16_t Mjpegd_Frame_WriteHeader(Mjpegd_Frame_t* self, const u8_t *data, u16_t w_len)
 {
-    if(w_len<Mjpegd_Frame_HeaderAvailable(self))
+    if(w_len>=Mjpegd_Frame_HeaderAvailable(self))
+    {
+        LWIP_DEBUGF(MJPEGD_DEBUG | LWIP_DBG_LEVEL_SERIOUS,
+            DBG_ARG("WriteHeader out of space %d>=%d\n",w_len,Mjpegd_Frame_HeaderAvailable(self)));
+    }
+    else
     {
         self->head-=w_len;
         MJPEGD_MEMCPY(self->head,data,w_len);
         return w_len;
     }
-    else
-    {
-        LWIP_DEBUGF(MJPEGD_DEBUG | LWIP_DBG_LEVEL_SERIOUS,
-            DBG_ARG("WriteHeader out of space %d<%d\n",w_len,Mjpegd_Frame_HeaderAvailable(self)));
-    }
     
     return 0;
 }
 
+/**
+ * @brief write tail to frame 
+ * @warning this function must be called before Mjpegd_Frame_WriteEOF
+ *          if EOF has been written, write tail not allowed
+ * @param self frame object
+ * @param data tail data
+ * @param w_len tail data length
+ * @return actual written length
+ */
 u16_t Mjpegd_Frame_WriteTail(Mjpegd_Frame_t* self, const u8_t *data, u16_t w_len)
 {
-    if (w_len < Mjpegd_Frame_TailAvailable(self))
+    if(self->eof!=self->tail)
     {
-        MJPEGD_MEMCPY(self->tail,data,w_len);
-        self->tail+=w_len;
-        return w_len;
+        LWIP_DEBUGF(MJPEGD_DEBUG | LWIP_DBG_LEVEL_SERIOUS,
+            DBG_ARG("EOF exist\n"));
+    }
+    else if(w_len>=Mjpegd_Frame_TailAvailable(self))
+    {
+        LWIP_DEBUGF(MJPEGD_DEBUG | LWIP_DBG_LEVEL_SERIOUS,
+            DBG_ARG("WriteTail out of space %d>=%d\n",w_len,Mjpegd_Frame_TailAvailable(self)));
     }
     else
     {
-        LWIP_DEBUGF(MJPEGD_DEBUG | LWIP_DBG_LEVEL_SERIOUS,
-            DBG_ARG("WriteTail out of space %d<%d\n",w_len,Mjpegd_Frame_TailAvailable(self)));
+        MJPEGD_MEMCPY(self->tail,data,w_len);
+        self->tail+=w_len;
+        self->eof=self->tail;
+        return w_len;
     }
+
+    return 0;
+}
+
+u16_t Mjpegd_Frame_WriteEOF(Mjpegd_Frame_t* self, const u8_t *data, u16_t w_len)
+{
+    if(w_len>=Mjpegd_Frame_EofAvailable(self))
+    {
+        LWIP_DEBUGF(MJPEGD_DEBUG | LWIP_DBG_LEVEL_SERIOUS,
+            DBG_ARG("WriteEOF out of space %d>=%d\n",w_len,Mjpegd_Frame_EofAvailable(self)));
+    }
+    else
+    {
+        MJPEGD_MEMCPY(self->eof,data,w_len);
+        self->eof+=w_len;
+        return w_len;
+    }
+
     return 0;
 }

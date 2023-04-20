@@ -76,29 +76,45 @@ Mjpegd_Frame_t* Mjpegd_FrameBuf_GetLatest(Mjpegd_FrameBuf_t* self,SysTime_t last
         frame = &self->_frames[sorted_idx[i]];
         if( Mjpegd_Frame_IsValid(frame) && frame->capture_time!=0 )
         {   
-            //how much time has passed since last frame
-            SysTime_t last_frame_diff = now - last_frame_time;
-            //how much time has passed since this frame
-            SysTime_t new_frame_diff = now - frame->capture_time;
-            //if this frame is newer than last frame
-            if( last_frame_diff>new_frame_diff && 
-                Mjpegd_Frame_TryAcquire(frame) )
-            {                
-                LWIP_DEBUGF(MJPEGD_FRAMEBUF_DEBUG | LWIP_DBG_TRACE , 
-                    DBG_ARG("acquired frame %p\n",frame));
-                return frame;
+            //no last frame, just get the newest frame
+            if(last_frame_time==0)
+            {
+                if(Mjpegd_Frame_TryAcquire(frame))
+                    break;
             }
             else
             {
-                //if frame is outdated, other frames are also outdated
-                //no need to check other frames
-                LWIP_DEBUGF(MJPEGD_FRAMEBUF_DEBUG | LWIP_DBG_LEVEL_SERIOUS , 
-                    DBG_ARG("all frame outdated\n"));
-                break;
+                //how much time has passed since last frame
+                SysTime_t last_frame_diff = now - last_frame_time;
+                //how much time has passed since this frame
+                SysTime_t new_frame_diff = now - frame->capture_time;
+                //if this frame is newer than last frame
+                if(last_frame_diff>new_frame_diff)
+                {
+                    if(Mjpegd_Frame_TryAcquire(frame))
+                        break;
+                }
+                else
+                {
+                    //if newest frame is outdated, other frames are also outdated
+                    //no need to check other frames
+                    LWIP_DEBUGF(MJPEGD_FRAMEBUF_DEBUG | LWIP_DBG_LEVEL_SERIOUS , 
+                        DBG_ARG("all frame outdated\n"));
+                    frame = NULL;
+                    break;
+                }
             }
         }
+        frame = NULL;
     }
-    return NULL;
+
+    if(frame!=NULL)
+    {
+        LWIP_DEBUGF(MJPEGD_FRAMEBUF_DEBUG | LWIP_DBG_TRACE , 
+            DBG_ARG("acquired frame %p\n",frame));
+    }
+    
+    return frame;
 }
 
 void Mjpegd_FrameBuf_Release(Mjpegd_FrameBuf_t* self,Mjpegd_Frame_t* frame)

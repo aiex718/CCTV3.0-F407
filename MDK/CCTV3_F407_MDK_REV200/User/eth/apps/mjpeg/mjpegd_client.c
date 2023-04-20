@@ -69,12 +69,6 @@ err_t mjpegd_free_client(struct tcp_pcb *pcb,client_state_t *cs)
 
         Mjpegd_FrameBuf_Release(Mjpegd_FrameBuf,cs->frame);
         cs->frame = NULL;
-        
-        if(cs->buffer != NULL)
-        {
-            mem_free(cs->buffer);
-            cs->buffer=NULL;
-        }
 
         mem_free(cs);
 

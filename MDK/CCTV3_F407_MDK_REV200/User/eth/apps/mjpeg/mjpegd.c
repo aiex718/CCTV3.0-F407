@@ -75,8 +75,8 @@ const request_handler_t request_handlers[__NOT_REQUEST_MAX]=
     {REQUEST_VIEW_SNAP  ,"/view/snap"   ,Http_ViewSnap_Response     ,MJPEGD_STRLEN(Http_ViewSnap_Response)      ,NULL                       ,NULL                           ,NULL                       },
     {REQUEST_VIEW_STREAM,"/view/stream" ,Http_ViewStream_Response   ,MJPEGD_STRLEN(Http_ViewStream_Response)    ,NULL                       ,NULL                           ,NULL                       },
     {REQUEST_VIEW_FPS   ,"/view/fps"    ,Http_ViewFps_Response      ,MJPEGD_STRLEN(Http_ViewFps_Response)       ,NULL                       ,NULL                           ,NULL                       },
-    {REQUEST_SNAP       ,"/snap"        ,Http_Snap_Response         ,MJPEGD_STRLEN(Http_Snap_Response)          ,mjpegd_nextframe_snap_start,NULL                           ,NULL                       },
-    {REQUEST_STREAM     ,"/stream"      ,Http_Stream_Response       ,MJPEGD_STRLEN(Http_Stream_Response)        ,mjpegd_nextframe_stream    ,mjpegd_stream_recv_request     ,mjpegd_stream_clsd_request },
+    {REQUEST_SNAP       ,"/snap"        ,Http_MjpegChunked_Response ,MJPEGD_STRLEN(Http_MjpegChunked_Response)  ,mjpegd_nextframe_snap      ,NULL                           ,NULL                       },
+    {REQUEST_STREAM     ,"/stream"      ,Http_MjpegChunked_Response ,MJPEGD_STRLEN(Http_MjpegChunked_Response)  ,mjpegd_nextframe_stream    ,mjpegd_stream_recv_request     ,mjpegd_stream_clsd_request },
 };
 
 #define MJPEGD_FRAMEBUF_LEN (MJPEGD_TOTAL_CLEINT_LIMIT+2)
@@ -788,6 +788,8 @@ static void mjpegd_proc_rawframe_handler(void *sender, void *arg, void *owner)
 
         //write mjpegd tail, chunked block end
         Mjpegd_Frame_WriteTail(frame,(u8_t*)Http_CLRF,MJPEGD_STRLEN(Http_CLRF));
+        //write mjpegd tail, chunked EOF, only used by snap mode
+        Mjpegd_Frame_WriteEOF(frame,(u8_t*)Http_ChunkedEOF,MJPEGD_STRLEN(Http_ChunkedEOF));
     }
     catch(NULL_FRAME)
     {
@@ -839,7 +841,7 @@ static void mjpegd_send_newframe_handler(void *sender, void *arg, void *owner)
                 throwif(!Mjpegd_Frame_IsValid(cs->frame),BAD_FRAME);
 
                 //record frame time
-                client_assign_file(cs,cs->frame->head, Mjpegd_Frame_TotalSize(cs->frame));
+                client_assign_file(cs,cs->frame->head, Mjpegd_Frame_StreamSize(cs->frame));
                 cs->previous_frame_time = cs->frame->capture_time;
 
                 err = mjpegd_send_data(cs->pcb,cs);

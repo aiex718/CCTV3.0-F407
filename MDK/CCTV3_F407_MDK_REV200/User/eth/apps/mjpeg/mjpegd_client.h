@@ -32,9 +32,6 @@ struct client_state_struct
     struct tcp_pcb* pcb;
     const request_handler_t* request_handler;
     conn_state_t conn_state;
-    
-    //buffer for dynamic content
-    u8_t *buffer;
 
     u8_t *file;
     u8_t *file_wptr;

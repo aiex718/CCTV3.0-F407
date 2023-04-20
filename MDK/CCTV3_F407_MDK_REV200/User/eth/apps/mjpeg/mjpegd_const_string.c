@@ -46,16 +46,7 @@ Connection: close\r\n\
 \r\n\
 <img src=\"/stream\" />";
 
-static const char Http_Snap_Response[]= "\
-HTTP/1.1 200 OK\r\n\
-Content-Type: image/jpeg\r\n\
-Transfer-Encoding: chunked\r\n\
-Cache-Control: no-cache\r\n\
-Connection: close  \r\n\
-\r\n\
-";
-
-static const char Http_Stream_Response[]= "\
+static const char Http_MjpegChunked_Response[]= "\
 HTTP/1.1 200 OK\r\n\
 Content-Type: multipart/x-mixed-replace;boundary=myboundary\r\n\
 Transfer-Encoding: chunked\r\n\
@@ -69,6 +60,7 @@ static const char Http_Mjpeg_Boundary[]="--myboundary";
 static const char Http_Mjpeg_ContentType[]="Content-Type: image/jpg \r\n";
 static const char Http_Mjpeg_ContentLength[]="Content-Length: %5d   \r\n\r\n";
 static const char Http_CLRF[]="\r\n";
+static const char Http_ChunkedEOF[]="0\r\n\r\n";
 
 //content-len= total - 101
 static const char Http_ViewFps_Response[]= "\
