@@ -68,14 +68,14 @@ static void mjpegd_send_newframe_handler(void *sender, void *arg, void *owner);
 /** http request handlers **/
 const request_handler_t request_handlers[__NOT_REQUEST_MAX]=
 {
-    {REQUEST_NOTFOUND   ,"/404"         ,Http_Notfound_Response     ,MJPEGD_STRLEN(Http_Notfound_Response)      ,NULL                       ,NULL                           ,NULL                       },
-    {REQUEST_TOOMANY    ,"/429"         ,HTTP_TooMany_Response      ,MJPEGD_STRLEN(HTTP_TooMany_Response)       ,NULL                       ,NULL                           ,NULL                       },
-    {REQUEST_HANDSHAKE  ,"/handshake"   ,Http_Handshake_Response    ,MJPEGD_STRLEN(Http_Handshake_Response)     ,NULL                       ,NULL                           ,NULL                       },
-    {REQUEST_VIEW_SNAP  ,"/view/snap"   ,Http_ViewSnap_Response     ,MJPEGD_STRLEN(Http_ViewSnap_Response)      ,NULL                       ,NULL                           ,NULL                       },
-    {REQUEST_VIEW_STREAM,"/view/stream" ,Http_ViewStream_Response   ,MJPEGD_STRLEN(Http_ViewStream_Response)    ,NULL                       ,NULL                           ,NULL                       },
-    {REQUEST_VIEW_FPS   ,"/view/fps"    ,Http_ViewFps_Response      ,MJPEGD_STRLEN(Http_ViewFps_Response)       ,NULL                       ,NULL                           ,NULL                       },
-    {REQUEST_SNAP       ,"/snap"        ,Http_MjpegChunked_Response ,MJPEGD_STRLEN(Http_MjpegChunked_Response)  ,mjpegd_nextframe_snap      ,NULL                           ,NULL                       },
-    {REQUEST_STREAM     ,"/stream"      ,Http_MjpegChunked_Response ,MJPEGD_STRLEN(Http_MjpegChunked_Response)  ,mjpegd_nextframe_stream    ,mjpegd_stream_recv_request     ,mjpegd_stream_clsd_request },
+    {REQUEST_NOTFOUND   ,"/404"         ,Http_Notfound_Response     ,MJPEGD_CHRARR_STRLEN(Http_Notfound_Response)       ,NULL                       ,NULL                           ,NULL                       },
+    {REQUEST_TOOMANY    ,"/429"         ,HTTP_TooMany_Response      ,MJPEGD_CHRARR_STRLEN(HTTP_TooMany_Response)        ,NULL                       ,NULL                           ,NULL                       },
+    {REQUEST_HANDSHAKE  ,"/handshake"   ,Http_Handshake_Response    ,MJPEGD_CHRARR_STRLEN(Http_Handshake_Response)      ,NULL                       ,NULL                           ,NULL                       },
+    {REQUEST_VIEW_SNAP  ,"/view/snap"   ,Http_ViewSnap_Response     ,MJPEGD_CHRARR_STRLEN(Http_ViewSnap_Response)       ,NULL                       ,NULL                           ,NULL                       },
+    {REQUEST_VIEW_STREAM,"/view/stream" ,Http_ViewStream_Response   ,MJPEGD_CHRARR_STRLEN(Http_ViewStream_Response)     ,NULL                       ,NULL                           ,NULL                       },
+    {REQUEST_VIEW_FPS   ,"/view/fps"    ,Http_ViewFps_Response      ,MJPEGD_CHRARR_STRLEN(Http_ViewFps_Response)        ,NULL                       ,NULL                           ,NULL                       },
+    {REQUEST_SNAP       ,"/snap"        ,Http_MjpegChunked_Response ,MJPEGD_CHRARR_STRLEN(Http_MjpegChunked_Response)   ,mjpegd_nextframe_snap      ,NULL                           ,NULL                       },
+    {REQUEST_STREAM     ,"/stream"      ,Http_MjpegChunked_Response ,MJPEGD_CHRARR_STRLEN(Http_MjpegChunked_Response)   ,mjpegd_nextframe_stream    ,mjpegd_stream_recv_request     ,mjpegd_stream_clsd_request },
 };
 
 #define MJPEGD_FRAMEBUF_LEN (MJPEGD_TOTAL_CLEINT_LIMIT+2)
@@ -784,15 +784,15 @@ static void mjpegd_proc_rawframe_handler(void *sender, void *arg, void *owner)
         //write mjpeg header
         w_len = sprintf((char*)buf,Http_Mjpeg_ContentLength,frame->payload_len);
         Mjpegd_Frame_WriteHeader(frame,buf,w_len);
-        Mjpegd_Frame_WriteHeader(frame,(u8_t*)Http_Mjpeg_ContentType,MJPEGD_STRLEN(Http_Mjpeg_ContentType));
-        Mjpegd_Frame_WriteHeader(frame,(u8_t*)Http_Mjpeg_Boundary,MJPEGD_STRLEN(Http_Mjpeg_Boundary));
+        Mjpegd_Frame_WriteHeader(frame,(u8_t*)Http_Mjpeg_ContentType,MJPEGD_CHRARR_STRLEN(Http_Mjpeg_ContentType));
+        Mjpegd_Frame_WriteHeader(frame,(u8_t*)Http_Mjpeg_Boundary,MJPEGD_CHRARR_STRLEN(Http_Mjpeg_Boundary));
         w_len = sprintf((char*)buf,"%x\r\n", Mjpegd_Frame_HeaderSize(frame) + frame->payload_len);
         Mjpegd_Frame_WriteHeader(frame,buf,w_len);
 
         //write mjpegd tail, chunked block end
-        Mjpegd_Frame_WriteTail(frame,(u8_t*)Http_CLRF,MJPEGD_STRLEN(Http_CLRF));
+        Mjpegd_Frame_WriteTail(frame,(u8_t*)Http_CLRF,MJPEGD_CHRARR_STRLEN(Http_CLRF));
         //write mjpegd eof, only used by snap mode
-        Mjpegd_Frame_WriteEOF(frame,(u8_t*)Http_ChunkedEOF,MJPEGD_STRLEN(Http_ChunkedEOF));
+        Mjpegd_Frame_WriteEOF(frame,(u8_t*)Http_ChunkedEOF,MJPEGD_CHRARR_STRLEN(Http_ChunkedEOF));
     }
     catch(NULL_FRAME)
     {

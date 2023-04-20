@@ -4,7 +4,7 @@
 #define MJPEGD_MIN(a,b) (((a)<(b))?(a):(b))
 #define MJPEGD_MAX(a,b) (((a)>(b))?(a):(b))
 #define MJPEGD_ARRLEN(s) (sizeof(s)/sizeof(s[0]))
-#define MJPEGD_STRLEN(s) (sizeof(s)/sizeof(s[0])-1)
+#define MJPEGD_CHRARR_STRLEN(s) (MJPEGD_ARRLEN(s)-1)
 #define MJPEGD_MEMCPY MEMCPY
 #define MJPEGD_STRNCMP strncmp
 #define MJPEGD_STRNSTR strnstr
