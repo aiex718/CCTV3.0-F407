@@ -313,9 +313,9 @@ static err_t mjpegd_recv_handler(void *arg, struct tcp_pcb *pcb, struct pbuf *p,
             DBG_ARG("Received request:%s\n",mjpegd_strreq(cs->request_handler->req)));
 
 
-        if(cs->request_handler->recv_request!=NULL)
+        if(cs->request_handler->recv_request_func!=NULL)
         {
-            err = cs->request_handler->recv_request(cs);
+            err = cs->request_handler->recv_request_func(cs);
             if(err==ERR_USE)//too many connection
                 cs->request_handler = &request_handlers[REQUEST_TOOMANY];
             else
@@ -398,7 +398,6 @@ static err_t mjpegd_sent_handler(void *arg, struct tcp_pcb *pcb, u16_t len)
         cs->retries=0;
         err = mjpegd_send_data(pcb,cs);//try send more data
         throwif(err != ERR_OK,ERR_SEND);
-        cs->previous_transfer_time = SysTime_Get();
     }
     catch(BAD_CLIENT_NULL)
     {
@@ -567,7 +566,7 @@ static err_t mjpegd_build_response(client_state_t *cs)
             (u8_t*)cs->request_handler->response,
             cs->request_handler->response_len);
 
-        cs->get_nextfile = cs->request_handler->get_nextfile;
+        cs->get_nextfile_func = cs->request_handler->get_nextfile_func;
         err=ERR_OK;
     }
     catch(NULL_CS)
@@ -606,13 +605,13 @@ static err_t mjpegd_send_data(struct tcp_pcb *pcb, client_state_t *cs)
         left_len = client_file_bytestosend(cs);
         if(left_len <= 0)
         {
-            if(cs->get_nextfile!=NULL)
+            if(cs->get_nextfile_func!=NULL)
             {
                 //try to get next file
-                err = cs->get_nextfile(cs);
+                err = cs->get_nextfile_func(cs);
                 throwif(err==ERR_INPROGRESS ,ERR_GET_NEXTFILE_INPROGRESS);
                 throwif(err!=ERR_OK ,ERR_GET_NEXTFILE_FAIL);
-                //check again in case something went wrong in get_nextfile
+                //check again in case something went wrong in get_nextfile_func
                 throwif(!client_file_isvalid(cs),BAD_NEXT_FILE);
                 left_len = client_file_bytestosend(cs);
             }
@@ -720,8 +719,8 @@ static void mjpegd_close_conn(struct tcp_pcb *pcb, client_state_t *cs)
     if(cs!=NULL)
     {
         cs->conn_state = CS_CLOSING;
-        if(cs->request_handler->clsd_request!=NULL)
-            cs->request_handler->clsd_request(cs);
+        if(cs->request_handler->clsd_request_func!=NULL)
+            cs->request_handler->clsd_request_func(cs);
     }
 
     if(pcb!=NULL)

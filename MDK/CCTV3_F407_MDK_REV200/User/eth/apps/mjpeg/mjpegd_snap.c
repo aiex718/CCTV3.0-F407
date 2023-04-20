@@ -41,7 +41,7 @@ err_t mjpegd_nextframe_snap_start(void* client_state)
             DBG_ARG("snap_start sending %d bytes\n", cs->file_len));
 
         //regist next file for sending chunked body(jpeg file content)
-        cs->get_nextfile=mjpegd_nextframe_snap_body;
+        cs->get_nextfile_func=mjpegd_nextframe_snap_body;
         err=ERR_OK;
     }
     catch(NULL_CS)
@@ -106,7 +106,7 @@ err_t mjpegd_nextframe_snap_body(void *client_state)
             DBG_ARG("snap_body sending %d bytes\n", cs->file_len));
 
         //regist next file for sending chunked eof
-        cs->get_nextfile=mjpegd_nextframe_snap_finish;
+        cs->get_nextfile_func=mjpegd_nextframe_snap_finish;
         err=ERR_OK;
     }
     catch(NULL_CS)
@@ -156,7 +156,7 @@ err_t mjpegd_nextframe_snap_finish(void *client_state)
             DBG_ARG("snap_finish sending %d bytes\n", cs->file_len));
 
         //unregist nextfile, we're all done sending snap 
-        cs->get_nextfile=NULL;
+        cs->get_nextfile_func=NULL;
         err=ERR_OK;
     }
     catch(NULL_CS)

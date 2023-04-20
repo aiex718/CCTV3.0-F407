@@ -41,9 +41,9 @@ typedef struct request_handler_struct
     const char      *response;
     const u16_t     response_len;
 
-    err_t (* const get_nextfile)(void *client_state);
-    err_t (* const recv_request)(void *client_state);
-    err_t (* const clsd_request)(void *client_state);
+    err_t (* const get_nextfile_func)(void *client_state);
+    err_t (* const recv_request_func)(void *client_state);
+    err_t (* const clsd_request_func)(void *client_state);
 }request_handler_t;
 
 #endif // __MJPEGD_REQUEST_H__

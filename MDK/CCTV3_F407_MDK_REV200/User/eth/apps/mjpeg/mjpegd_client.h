@@ -42,12 +42,12 @@ struct client_state_struct
     u8_t *file_wptr;
     u16_t file_len;
 
-    //callback when eof reached
-    err_t (*get_nextfile)(void* client_state);
+    //callback when eof reached to get next file
+    //if NULL, client will be closed
+    err_t (*get_nextfile_func)(void* client_state);
 
     Mjpegd_Frame_t* frame;
     SysTime_t previous_frame_time;
-    SysTime_t previous_transfer_time;
 
     u8_t retries;
 

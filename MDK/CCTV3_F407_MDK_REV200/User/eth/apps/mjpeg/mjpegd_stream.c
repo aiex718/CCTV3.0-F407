@@ -18,56 +18,24 @@ u8_t mjpegd_stream_get_client_count(void)
     return stream_client_count;
 }
 
-//TODO:dont use alloca?
+/**
+ * @brief Force output to all stream clients
+ * @return err_t ERR_OK
+ */
 void mjpegd_stream_output(void)
 {
-    typedef struct client_time_pair_struct
-    {
-        client_state_t *client;
-        u32_t transfer_time_diff;
-    }client_time_pair_t;
-
-    //order by transfer_time_diff, descending
-    SysTime_t now = SysTime_Get();
-    u8_t client_count = mjpegd_get_client_count();
-    client_time_pair_t *client_time_pairs = (client_time_pair_t*)alloca(sizeof(client_time_pair_t)*client_count);
-    client_time_pair_t temp;
     client_state_t* cs;
-    u8_t i,j;
     err_t err;
 
-    for (i=0,cs=mjpegd_get_clients(); cs!=NULL; i++,cs=cs->_next)
+    for (cs=mjpegd_get_clients(); cs!=NULL; cs=cs->_next)
     {
-        client_time_pairs[i].client = cs;
-        client_time_pairs[i].transfer_time_diff = now - cs->previous_transfer_time;
-    }
-
-    //order by desc
-    for (i = 0; i < client_count; ++i) 
-    {
-        for (j = i + 1; j < client_count; ++j)
-        {
-            if (client_time_pairs[i].transfer_time_diff < client_time_pairs[j].transfer_time_diff) 
-            {
-                temp =  client_time_pairs[i];
-                client_time_pairs[i] = client_time_pairs[j];
-                client_time_pairs[j] = temp;
-            }
-        }
-    }
-
-    for (i = 0; i < client_count; i++)
-    {
-        cs = client_time_pairs[i].client;
         if( cs->conn_state==CS_RECEIVED && 
             cs->request_handler->req == REQUEST_STREAM &&
             cs->pcb!=NULL && 
             cs->pcb->unsent !=NULL)
         {
             err = tcp_output(cs->pcb);
-            if(err == ERR_OK)
-                cs->previous_transfer_time = SysTime_Get();
-            else
+            if(err != ERR_OK)
             {
                 if(err!=ERR_BUF)
                 {
