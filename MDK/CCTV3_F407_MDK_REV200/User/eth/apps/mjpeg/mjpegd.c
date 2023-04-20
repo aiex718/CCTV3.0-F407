@@ -788,7 +788,7 @@ static void mjpegd_proc_rawframe_handler(void *sender, void *arg, void *owner)
 
         //write mjpegd tail, chunked block end
         Mjpegd_Frame_WriteTail(frame,(u8_t*)Http_CLRF,MJPEGD_STRLEN(Http_CLRF));
-        //write mjpegd tail, chunked EOF, only used by snap mode
+        //write mjpegd eof, only used by snap mode
         Mjpegd_Frame_WriteEOF(frame,(u8_t*)Http_ChunkedEOF,MJPEGD_STRLEN(Http_ChunkedEOF));
     }
     catch(NULL_FRAME)
