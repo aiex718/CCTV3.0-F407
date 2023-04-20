@@ -1,8 +1,9 @@
 #include "eth/apps/mjpeg/mjpegd_framebuf.h"
-#include "bsp/sys/callback.h"
-#include "bsp/sys/systime.h"
-#include "bsp/sys/atomic.h"
+#include "eth/apps/mjpeg/mjpegd_typedef.h"
 #include "eth/apps/mjpeg/mjpegd_debug.h"
+
+#include "bsp/sys/callback.h"
+#include "bsp/sys/atomic.h"
 
 //TODO: make a linklist.h
 // #define LINKLIST_GET_UNTIL(p,list,end) do{\
@@ -10,7 +11,7 @@
 // }while(0)
 // #define LINKLIST_GET_LAST(p,list) LINKLIST_GET_UNTIL(p,list,NULL)
 
-static void Mjpegd_FrameBuf_Sort(Mjpegd_FrameBuf_t* self,u8_t* order_out,SysTime_t time);
+static void Mjpegd_FrameBuf_Sort(Mjpegd_FrameBuf_t* self,u8_t* order_out,Mjpegd_Systime_t time);
 
 void Mjpegd_FrameBuf_Init(Mjpegd_FrameBuf_t* self)
 {
@@ -33,7 +34,7 @@ void Mjpegd_FrameBuf_SetCallback(Mjpegd_FrameBuf_t* self, Mjpegd_FrameBuf_Callba
 
 void Mjpegd_FrameBuf_Service(Mjpegd_FrameBuf_t* self)
 {
-    SysTime_t now = SysTime_Get();
+    Mjpegd_Systime_t now = sys_now();
     //take pending frame to local and process it
     Mjpegd_Frame_t* pending_frame = (Mjpegd_Frame_t*)
             Atomic_Exchange((__IO u32_t *)&self->_pending_frame,NULL);
@@ -62,10 +63,10 @@ void Mjpegd_FrameBuf_Service(Mjpegd_FrameBuf_t* self)
     }
 }
 
-Mjpegd_Frame_t* Mjpegd_FrameBuf_GetLatest(Mjpegd_FrameBuf_t* self,SysTime_t last_frame_time)
+Mjpegd_Frame_t* Mjpegd_FrameBuf_GetLatest(Mjpegd_FrameBuf_t* self,Mjpegd_Systime_t last_frame_time)
 {
     u8_t i,sorted_idx[self->_frames_len];
-    SysTime_t now = SysTime_Get();
+    Mjpegd_Systime_t now = sys_now();
     Mjpegd_Frame_t* frame;
 
     //Try to acquire newest frame.
@@ -85,9 +86,9 @@ Mjpegd_Frame_t* Mjpegd_FrameBuf_GetLatest(Mjpegd_FrameBuf_t* self,SysTime_t last
             else
             {
                 //how much time has passed since last frame
-                SysTime_t last_frame_diff = now - last_frame_time;
+                Mjpegd_Systime_t last_frame_diff = now - last_frame_time;
                 //how much time has passed since this frame
-                SysTime_t new_frame_diff = now - frame->capture_time;
+                Mjpegd_Systime_t new_frame_diff = now - frame->capture_time;
                 //if this frame is newer than last frame
                 if(last_frame_diff>new_frame_diff)
                 {
@@ -113,7 +114,7 @@ Mjpegd_Frame_t* Mjpegd_FrameBuf_GetLatest(Mjpegd_FrameBuf_t* self,SysTime_t last
         LWIP_DEBUGF(MJPEGD_FRAMEBUF_DEBUG | LWIP_DBG_TRACE , 
             DBG_ARG("acquired frame %p\n",frame));
     }
-    
+
     return frame;
 }
 
@@ -136,7 +137,7 @@ void Mjpegd_FrameBuf_Release(Mjpegd_FrameBuf_t* self,Mjpegd_Frame_t* frame)
 Mjpegd_Frame_t* Mjpegd_FrameBuf_GetIdle(Mjpegd_FrameBuf_t* self)
 {
     u8_t i,sorted_idx[self->_frames_len];
-    SysTime_t now = SysTime_Get();
+    Mjpegd_Systime_t now = sys_now();
     Mjpegd_Frame_t* frame;
 
     //Try to get and lock oldest idle node.
@@ -205,10 +206,10 @@ void Mjpegd_FrameBuf_ReturnIdle(Mjpegd_FrameBuf_t* self,Mjpegd_Frame_t* frame)
 }
 
 //sort by frame's time diff (capture_time-now),order from small to big(new to old)
-static void Mjpegd_FrameBuf_Sort(Mjpegd_FrameBuf_t* self,u8_t* order_out,SysTime_t time)
+static void Mjpegd_FrameBuf_Sort(Mjpegd_FrameBuf_t* self,u8_t* order_out,Mjpegd_Systime_t time)
 {
     //notice:vla on armcc alloc at heap
-    SysTime_t tmp,time_diffs[self->_frames_len];
+    Mjpegd_Systime_t tmp,time_diffs[self->_frames_len];
     u8_t tmp2,i,j;
     for (i = 0; i < self->_frames_len; i++)
     {

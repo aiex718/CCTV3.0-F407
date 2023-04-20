@@ -4,7 +4,6 @@
 
 #include "alloca.h"
 #include "lwip/tcp.h"
-#include "bsp/sys/systime.h"
 #include "eth/apps/mjpeg/mjpegd_framebuf.h"
 
 

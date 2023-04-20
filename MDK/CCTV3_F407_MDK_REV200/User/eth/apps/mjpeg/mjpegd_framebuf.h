@@ -2,7 +2,6 @@
 #define MJPEGD_FRAMEBUF_H
 
 #include "eth/apps/mjpeg/mjpegd_frame.h"
-#include "bsp/sys/systime.h"
 #include "bsp/sys/callback.h"
 
 
@@ -24,7 +23,7 @@ typedef struct
     Mjpegd_Frame_t *_frames;
     u8_t _frames_len;
     Mjpegd_Frame_t *_pending_frame;
-    SysTime_t _fps_timer;
+    Mjpegd_Systime_t _fps_timer;
     u16_t _fps_counter;
 }Mjpegd_FrameBuf_t;
 
@@ -35,7 +34,7 @@ void Mjpegd_FrameBuf_Init(Mjpegd_FrameBuf_t* self);
 void Mjpegd_FrameBuf_SetCallback(Mjpegd_FrameBuf_t* self, Mjpegd_FrameBuf_CallbackIdx_t cb_idx, Callback_t* callback);
 void Mjpegd_FrameBuf_Service(Mjpegd_FrameBuf_t* self);
 
-Mjpegd_Frame_t* Mjpegd_FrameBuf_GetLatest(Mjpegd_FrameBuf_t* self,SysTime_t frame_time);
+Mjpegd_Frame_t* Mjpegd_FrameBuf_GetLatest(Mjpegd_FrameBuf_t* self,Mjpegd_Systime_t frame_time);
 void Mjpegd_FrameBuf_Release(Mjpegd_FrameBuf_t* self,Mjpegd_Frame_t* frame);
 
 Mjpegd_Frame_t* Mjpegd_FrameBuf_GetIdle(Mjpegd_FrameBuf_t* self);

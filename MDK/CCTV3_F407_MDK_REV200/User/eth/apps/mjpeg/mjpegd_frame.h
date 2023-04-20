@@ -2,7 +2,7 @@
 #define MJPEGD_FRAME_H
 
 #include "bsp/sys/semaphore.h"
-#include "bsp/sys/systime.h"
+#include "eth/apps/mjpeg/mjpegd_typedef.h"
 #include "lwip/opt.h"
 
 //this is the size of the frame buffer
@@ -31,7 +31,7 @@ struct Mjpegd_Frame_struct
     u16_t payload_len;
     u8_t* tail;
     u8_t* eof;
-    SysTime_t capture_time;
+    Mjpegd_Systime_t capture_time;
 
     //dont modify these private member
     Semaphore_t _sem;

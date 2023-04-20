@@ -20,7 +20,7 @@ void Mjpegd_Frame_Clear(Mjpegd_Frame_t* self)
 
 void Mjpegd_Frame_CaptureFinish(Mjpegd_Frame_t* self,uint16_t len)
 {
-    self->capture_time = SysTime_Get();
+    self->capture_time = sys_now();
     self->payload_len = len;
     self->tail = self->payload+self->payload_len;
     self->eof = self->tail;

@@ -30,7 +30,7 @@
 #ifndef __LWIPOPTS_H__
 #define __LWIPOPTS_H__
 
-#include "bsp/platform/platform_opts.h"
+#include "bsp/sys/systime.h"
 
 /**
  * SYS_LIGHTWEIGHT_PROT==1: if you want inter-task protection for certain
