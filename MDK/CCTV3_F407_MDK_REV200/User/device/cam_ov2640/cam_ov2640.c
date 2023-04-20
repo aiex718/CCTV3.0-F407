@@ -38,13 +38,13 @@ void Device_CamOV2640_DcmiFrameCallback(void *sender,void *arg,void *owner)
 
 void Device_CamOV2640_DcmiRxDmaTcCallback(void *sender,void *arg,void *owner)
 {
-    const static uint8_t Jpeg_Start_Tag[]={0xFF,0xD8};
-    const static uint8_t Jpeg_End_Tag[]={0xFF,0xD9};
+    static const uint8_t Jpeg_Start_Tag[]={0xFF,0xD8};
+    static const uint8_t Jpeg_End_Tag[]={0xFF,0xD9};
     HAL_DMA_t *dma = (HAL_DMA_t*)sender;
     Device_CamOV2640_t* self = (Device_CamOV2640_t*)owner;
     uint8_t *rxbuf = self->CamOV2640_FrameBuf;
     uint16_t rxlen = self->CamOV2640_FrameBuf_Len - HAL_DMA_GetNumOfData(dma)*4;
-    uint16_t frame_len = 0;
+    self->CamOV2640_FrameBuf_Len = 0;
     
     //check jpeg start and end tag
     if(rxlen && BSP_MEMCMP(rxbuf,Jpeg_Start_Tag,BSP_ARR_LEN(Jpeg_Start_Tag))==0)
@@ -54,26 +54,25 @@ void Device_CamOV2640_DcmiRxDmaTcCallback(void *sender,void *arg,void *owner)
         {
             tail+=BSP_ARR_LEN(Jpeg_End_Tag);
             if(tail>rxbuf)
-                frame_len = tail-rxbuf;
+                self->CamOV2640_FrameBuf_Len = tail-rxbuf;
         }
     }
 
-    Callback_InvokeNowOrPending_Idx(self ,&frame_len, self->CamOV2640_Callbacks,
-        CAMOV2640_CALLBACK_NEWFRAME,self->_callback_pending_flag);
-
-
-    if(frame_len){
+    if(self->CamOV2640_FrameBuf_Len){
 #if DEVICE_CAM_OV2640_DEBUG
         DBG_INFO("%6d:Snaped len:%u ,trimmed len:%u\n",
-            SysTime_Get(),rxlen,frame_len);
+            SysTime_Get(),rxlen,self->CamOV2640_FrameBuf_Len);
 #endif
     }
     else{
         DBG_WARNING("Bad frame\n");
     }
 
+    Callback_InvokeNowOrPending_Idx(self ,NULL, self->CamOV2640_Callbacks,
+        CAMOV2640_CALLBACK_NEWFRAME,self->_callback_pending_flag);
+
     BSP_UNUSED_ARG(arg);
-    //uncomment this if self loop mode is needed
+    //uncomment this if self looping mode is needed
     //Device_CamOV2640_SnapCmd(self,true);
 }
 
@@ -159,16 +158,25 @@ Device_CamOV2640_Status_t Device_CamOV2640_SnapCmd(Device_CamOV2640_t* self,bool
 
     return DEVICE_CAMOV2640_OK;
 }
+
+void Device_CamOV2640_SetBuf(Device_CamOV2640_t* self,uint8_t *buf, uint16_t len)
+{
+    self->CamOV2640_FrameBuf = buf;
+    self->CamOV2640_FrameBuf_Len = len;
+}
+
 void Device_CamOV2640_PwdnCmd(Device_CamOV2640_t* self,bool en)
 {
     if(self->CamOV2640_PWDN_pin!=NULL)
         HAL_GPIO_WritePin(self->CamOV2640_PWDN_pin,en);
 }
+
 void Device_CamOV2640_SoftReset(Device_CamOV2640_t* self)
 {
     Device_CamOV2640_WriteReg(self,OV2640_DSP_RA_DLMT, 0x01);
     Device_CamOV2640_WriteReg(self,OV2640_SENSOR_COM7, 0x80);
 }
+
 void Device_CamOV2640_ReadID(Device_CamOV2640_t* self,CAM_OV2640_ID_t *id)
 {
     Device_CamOV2640_WriteReg(self,OV2640_DSP_RA_DLMT, 0x01);
@@ -177,6 +185,7 @@ void Device_CamOV2640_ReadID(Device_CamOV2640_t* self,CAM_OV2640_ID_t *id)
     id->PIDH = Device_CamOV2640_ReadReg(self,OV2640_SENSOR_PIDH);
     id->PIDL = Device_CamOV2640_ReadReg(self,OV2640_SENSOR_PIDL);
 }
+
 void Device_CamOV2640_SetJpegFormat(Device_CamOV2640_t* self,CAM_OV2640_JpegFormat_Config_t jpeg_format)
 {
     uint32_t i;
@@ -215,11 +224,15 @@ void Device_CamOV2640_SetJpegFormat(Device_CamOV2640_t* self,CAM_OV2640_JpegForm
         default:
             break;
     }
-    
-    //TODO:Set QS, default 0x0C(12), smaller is better
-    // Device_CamOV2640_WriteReg(self,OV2640_DSP_RA_DLMT, 0x00);
-    // Device_CamOV2640_WriteReg(self,OV2640_DSP_Qs, 0x0A);
 }
+
+void Device_CamOV2640_SetQs(Device_CamOV2640_t* self,uint8_t qs)
+{
+    //TODO:Set QS, default 0x0C(12), smaller is better
+    Device_CamOV2640_WriteReg(self,OV2640_DSP_RA_DLMT, 0x00);
+    Device_CamOV2640_WriteReg(self,OV2640_DSP_Qs, qs);
+}
+
 void Device_CamOV2640_SetClock(Device_CamOV2640_t* self,bool doubler,uint8_t div)
 {
     uint8_t clkrc;
@@ -236,6 +249,7 @@ void Device_CamOV2640_SetClock(Device_CamOV2640_t* self,bool doubler,uint8_t div
 
     Device_CamOV2640_WriteReg(self,OV2640_SENSOR_CLKRC,clkrc);
 }
+
 void Device_CamOV2640_SetFlip(Device_CamOV2640_t* self,bool vert,bool hori)
 {
     uint8_t reg04;
@@ -254,6 +268,7 @@ void Device_CamOV2640_SetFlip(Device_CamOV2640_t* self,bool vert,bool hori)
     
     Device_CamOV2640_WriteReg(self,OV2640_SENSOR_REG04,reg04);
 }
+
 void Device_CamOV2640_SetBrightness(Device_CamOV2640_t* self,CAM_OV2640_Brightness_Config_t brightness)
 {
     Device_CamOV2640_WriteReg(self,OV2640_DSP_RA_DLMT, 0x00);
@@ -263,6 +278,7 @@ void Device_CamOV2640_SetBrightness(Device_CamOV2640_t* self,CAM_OV2640_Brightne
     Device_CamOV2640_WriteReg(self,OV2640_DSP_BPDATA, (uint8_t)brightness);
     Device_CamOV2640_WriteReg(self,OV2640_DSP_BPDATA, 0x00);
 }
+
 void Device_CamOV2640_SetContrast(Device_CamOV2640_t* self,CAM_OV2640_Contrast_Config_t contrast)
 {
     uint8_t value1, value2;
@@ -304,6 +320,7 @@ void Device_CamOV2640_SetContrast(Device_CamOV2640_t* self,CAM_OV2640_Contrast_C
     Device_CamOV2640_WriteReg(self,OV2640_DSP_BPDATA, value2);
     Device_CamOV2640_WriteReg(self,OV2640_DSP_BPDATA, 0x06);
 }
+
 void Device_CamOV2640_SetLightMode(Device_CamOV2640_t* self,CAM_OV2640_LightMode_Config_t light)
 {
     switch(light)
@@ -348,6 +365,7 @@ void Device_CamOV2640_SetLightMode(Device_CamOV2640_t* self,CAM_OV2640_LightMode
 
     }
 }
+
 void Device_CamOV2640_SetSpecialEffects(Device_CamOV2640_t* self,CAM_OV2640_SpecialEffects_Config_t effect)
 {
     switch(effect)

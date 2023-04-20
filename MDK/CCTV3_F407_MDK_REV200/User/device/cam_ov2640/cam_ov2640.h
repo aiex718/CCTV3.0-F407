@@ -61,10 +61,12 @@ void Device_CamOV2640_Service(Device_CamOV2640_t* self);
 
 //device specific function
 Device_CamOV2640_Status_t Device_CamOV2640_SnapCmd(Device_CamOV2640_t* self,bool en);
+void Device_CamOV2640_SetBuf(Device_CamOV2640_t* self,uint8_t *buf, uint16_t len);
 void Device_CamOV2640_PwdnCmd(Device_CamOV2640_t* self,bool en);
 void Device_CamOV2640_SoftReset(Device_CamOV2640_t* self);
 void Device_CamOV2640_ReadID(Device_CamOV2640_t* self,CAM_OV2640_ID_t *id);
 void Device_CamOV2640_SetJpegFormat(Device_CamOV2640_t* self,CAM_OV2640_JpegFormat_Config_t jpeg_format);
+void Device_CamOV2640_SetQs(Device_CamOV2640_t* self,uint8_t qs);
 void Device_CamOV2640_SetClock(Device_CamOV2640_t* self,bool doubler,uint8_t div);
 void Device_CamOV2640_SetFlip(Device_CamOV2640_t* self,bool vert,bool hori);
 void Device_CamOV2640_SetBrightness(Device_CamOV2640_t* self,CAM_OV2640_Brightness_Config_t brightness);
