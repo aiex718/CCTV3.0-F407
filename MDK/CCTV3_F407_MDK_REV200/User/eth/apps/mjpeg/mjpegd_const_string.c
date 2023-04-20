@@ -56,12 +56,6 @@ Keep-Alive: timeout=10   \r\n\
 \r\n\
 ";
 
-static const char Http_Mjpeg_Boundary[]="--myboundary";
-static const char Http_Mjpeg_ContentType[]="Content-Type: image/jpg \r\n";
-static const char Http_Mjpeg_ContentLength[]="Content-Length: %5d   \r\n\r\n";
-static const char Http_CLRF[]="\r\n";
-static const char Http_ChunkedEOF[]="0\r\n\r\n";
-
 //content-len= total - 101
 static const char Http_ViewFps_Response[]= "\
 HTTP/1.1 200 OK\r\n\

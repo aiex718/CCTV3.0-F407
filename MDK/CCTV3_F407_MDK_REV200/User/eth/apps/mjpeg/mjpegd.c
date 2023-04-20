@@ -12,7 +12,6 @@
 #include "lwip/stats.h"
 
 /* BSP */
-#include "bsp/sys/systime.h"
 #include "bsp/sys/callback.h"
 
 /* Devices */
@@ -751,7 +750,11 @@ static void mjpegd_close_conn(struct tcp_pcb *pcb, client_state_t *cs)
  */
 static void mjpegd_proc_rawframe_handler(void *sender, void *arg, void *owner)
 {
-
+    static const char Http_Mjpeg_ContentLength[]="Content-Length: %5d   \r\n\r\n";
+    static const char Http_Mjpeg_Boundary[]="--myboundary";
+    static const char Http_Mjpeg_ContentType[]="Content-Type: image/jpg \r\n";
+    static const char Http_CLRF[]="\r\n";
+    static const char Http_ChunkedEOF[]="0\r\n\r\n";
     Mjpegd_Frame_t* frame = (Mjpegd_Frame_t*)arg;
     u8_t buf[30];
     u16_t w_len;
