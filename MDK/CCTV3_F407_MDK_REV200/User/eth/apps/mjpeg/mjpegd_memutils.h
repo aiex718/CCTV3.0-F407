@@ -7,8 +7,9 @@
 #define MJPEGD_STRLEN(s) (sizeof(s)/sizeof(s[0])-1)
 #define MJPEGD_MEMCPY MEMCPY
 #define MJPEGD_STRNCMP strncmp
+#define MJPEGD_STRNSTR strnstr
 
-static char* MJPEGD_STRNSTR(const char* buffer, const char* token, size_t n)
+static char* strnstr(const char* buffer, const char* token, size_t n)
 {
     const char* p;
     int tokenlen = (int)strlen(token);
