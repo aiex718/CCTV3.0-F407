@@ -8,11 +8,10 @@
 
 #include "eth/apps/mjpeg/mjpegd_framebuf.h"
 
-const char Http_ChunkedEOF[]="\r\n0\r\n\r\n";
-
-err_t mjpegd_nextframe_snap_start(client_state_t* cs)
+err_t mjpegd_nextframe_snap_start(void* client_state)
 {
     err_t err;
+    client_state_t* cs = (client_state_t*)client_state;
     try
     {
         u8_t w_len=0;
@@ -83,9 +82,10 @@ err_t mjpegd_nextframe_snap_start(client_state_t* cs)
     }
 }
 
-err_t mjpegd_nextframe_snap_body(client_state_t* cs)
+err_t mjpegd_nextframe_snap_body(void *client_state)
 {
     err_t err;
+    client_state_t* cs = (client_state_t*)client_state;
     try
     {
         throwif(cs==NULL,NULL_CS);
@@ -135,9 +135,11 @@ err_t mjpegd_nextframe_snap_body(client_state_t* cs)
     }
 }
 
-err_t mjpegd_nextframe_snap_finish(client_state_t* cs)
+err_t mjpegd_nextframe_snap_finish(void *client_state)
 {
+    static const char Http_ChunkedEOF[]="\r\n0\r\n\r\n";
     err_t err;
+    client_state_t* cs = (client_state_t*)client_state;
     try
     {
         throwif(cs==NULL,NULL_CS);

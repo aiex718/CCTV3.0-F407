@@ -4,7 +4,6 @@
 #include "bsp/platform/platform_defs.h"
 #include "bsp/sys/systime.h"
 
-#include "eth/apps/mjpeg/mjpegd_fwdecl.h"
 #include "eth/apps/mjpeg/mjpegd_request.h"
 #include "eth/apps/mjpeg/mjpegd_frame.h"
 
@@ -29,6 +28,7 @@ typedef enum
 }conn_state_enum;
 typedef s8_t conn_state_t;
 
+typedef struct client_state_struct client_state_t;
 struct client_state_struct 
 {
     struct tcp_pcb* pcb;
@@ -43,7 +43,7 @@ struct client_state_struct
     u16_t file_len;
 
     //callback when eof reached
-    get_nextfile_func get_nextfile;
+    err_t (*get_nextfile)(void* client_state);
 
     Mjpegd_Frame_t* frame;
     SysTime_t previous_frame_time;

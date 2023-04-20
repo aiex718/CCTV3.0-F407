@@ -10,6 +10,7 @@
 
 #define MJPEGD_STREAM_LIMIT MJPEGD_TOTAL_CLEINT_LIMIT
 
+//TODO:Collect this
 volatile static u8_t stream_client_count=0;
 
 u8_t mjpegd_stream_get_client_count(void)
@@ -83,9 +84,10 @@ void mjpegd_stream_output(void)
  *        assigned when new frame arrived.
  * @return err_t ERR_OK
  */
-err_t mjpegd_nextframe_stream(client_state_t* cs)
+err_t mjpegd_nextframe_stream(void* client_state)
 {
     err_t err;
+    client_state_t* cs = (client_state_t*)client_state;
 
     try
     {
@@ -108,9 +110,10 @@ err_t mjpegd_nextframe_stream(client_state_t* cs)
     }
 }
 
-err_t mjpegd_stream_recv_request(client_state_t* cs)
+err_t mjpegd_stream_recv_request(void* client_state)
 {
     err_t err;
+    client_state_t* cs = (client_state_t*)client_state;
     try
     {
         throwif(cs==NULL, NULL_CS);
@@ -152,9 +155,10 @@ err_t mjpegd_stream_recv_request(client_state_t* cs)
     }
 }
 
-err_t mjpegd_stream_clsd_request(client_state_t* cs)
+err_t mjpegd_stream_clsd_request(void* client_state)
 {
     err_t err;
+    client_state_t* cs = (client_state_t*)client_state;
     try
     {
         throwif(cs==NULL, NULL_CS);

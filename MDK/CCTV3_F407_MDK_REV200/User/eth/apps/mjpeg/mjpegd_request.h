@@ -1,8 +1,7 @@
 #ifndef __MJPEGD_REQUEST_H__
 #define __MJPEGD_REQUEST_H__
 
-#include "eth/apps/mjpeg/mjpegd_fwdecl.h"
-#include "eth/apps/mjpeg/mjpegd_client.h"
+#include "lwip/err.h"
 
 typedef enum 
 {
@@ -15,13 +14,13 @@ typedef enum
     REQUEST_SNAP,
     REQUEST_STREAM,
     
-    REQUEST_MAX
+    __NOT_REQUEST_MAX
 } request_enum;
 typedef s8_t request_t;
 
 #if MJPEGD_DEBUG
 #define mjpegd_strreq(x) (request_strreq[x])
-static const char *request_strreq[] = {
+static const char *request_strreq[__NOT_REQUEST_MAX] = {
     "REQUEST_NOTFOUND",
     "REQUEST_TOOMANY",
     "REQUEST_HANDSHAKE",
@@ -35,18 +34,16 @@ static const char *request_strreq[] = {
 #define mjpegd_strreq(x) ""
 #endif
 
-
-struct request_handler_struct
+typedef struct request_handler_struct
 {
     const request_t req;
     const char      *url;
     const char      *response;
     const u16_t     response_len;
-    const get_nextfile_func get_nextfile;
-    const recv_request_func recv_request;
-    const clsd_request_func clsd_request;
-};
 
-
+    err_t (* const get_nextfile)(void *client_state);
+    err_t (* const recv_request)(void *client_state);
+    err_t (* const clsd_request)(void *client_state);
+}request_handler_t;
 
 #endif // __MJPEGD_REQUEST_H__

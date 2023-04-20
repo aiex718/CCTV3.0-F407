@@ -69,7 +69,7 @@ static void mjpegd_proc_rawframe_handler(void *sender, void *arg, void *owner);
 static void mjpegd_send_newframe_handler(void *sender, void *arg, void *owner);
 
 /** http request handlers **/
-const request_handler_t request_handlers[]=
+const request_handler_t request_handlers[__NOT_REQUEST_MAX]=
 {
     {REQUEST_NOTFOUND   ,"/404"         ,Http_Notfound_Response     ,MJPEGD_STRLEN(Http_Notfound_Response)      ,NULL                       ,NULL                           ,NULL                       },
     {REQUEST_TOOMANY    ,"/429"         ,HTTP_TooMany_Response      ,MJPEGD_STRLEN(HTTP_TooMany_Response)       ,NULL                       ,NULL                           ,NULL                       },
@@ -81,13 +81,12 @@ const request_handler_t request_handlers[]=
     {REQUEST_STREAM     ,"/stream"      ,Http_Stream_Response       ,MJPEGD_STRLEN(Http_Stream_Response)        ,mjpegd_nextframe_stream    ,mjpegd_stream_recv_request     ,mjpegd_stream_clsd_request },
 };
 
-
 #define MJPEGD_FRAMEBUF_LEN (MJPEGD_TOTAL_CLEINT_LIMIT+2)
 
 //main listen pcb
 //TODO: let lwip manage mjpegd_pcb
 static struct tcp_pcb *mjpegd_pcb;
-//TODO:Move callback to .h?
+//TODO:Collect this
 static Callback_t Cam2640_NewFrame_cb,Framebuf_RecvRaw_cb,Framebuf_RecvNew_cb;
 
 Mjpegd_FrameBuf_t *Mjpegd_FrameBuf = (Mjpegd_FrameBuf_t*)&(Mjpegd_FrameBuf_t){

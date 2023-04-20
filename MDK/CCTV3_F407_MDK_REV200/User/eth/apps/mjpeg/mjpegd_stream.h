@@ -6,8 +6,8 @@
 
 u8_t mjpegd_stream_get_client_count(void);
 void mjpegd_stream_output(void);
-err_t mjpegd_nextframe_stream(client_state_t* cs);
-err_t mjpegd_stream_recv_request(client_state_t* cs);
-err_t mjpegd_stream_clsd_request(client_state_t* cs);
+err_t mjpegd_nextframe_stream(void* client_state);
+err_t mjpegd_stream_recv_request(void* client_state);
+err_t mjpegd_stream_clsd_request(void* client_state);
 
 #endif // __MJPEGD_STREAM_H__
