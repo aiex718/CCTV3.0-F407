@@ -17,29 +17,55 @@ void Mjpegd_Frame_Clear(Mjpegd_Frame_t* self)
     self->capture_time=0;
 }
 
-u16_t Mjpegd_Frame_WriteComment(Mjpegd_Frame_t* self,const u8_t *data, u16_t len)
+void Mjpegd_Frame_CaptureFinish(Mjpegd_Frame_t* self,uint16_t len)
 {
-    const static u8_t Jpeg_Comment_Tag[]={0xFF,0xFE};
-    u8_t* wptr = MJPEGD_MEMSEARCH(self->payload,self->payload_len,
-                            Jpeg_Comment_Tag,MJPEGD_ARRLEN(Jpeg_Comment_Tag),false);
-    u16_t wlen=0;
-    if(wptr!=NULL)
-    {   
-        //find next 0xff, calculate the available length for comment
-        u8_t* wptr_end;
-        wptr+=MJPEGD_ARRLEN(Jpeg_Comment_Tag);
-        wptr_end = wptr;
-        while(wptr_end<self->payload+self->payload_len)
-        {
-            if(*wptr_end==0xFF)
-            {
-                wlen = MJPEGD_MIN(wptr_end - wptr,len);
-                MJPEGD_MEMCPY(wptr,data,wlen);
-                break;
-            }
-        }
+    self->capture_time = SysTime_Get();
+    self->payload_len = len;
+    self->tail = self->payload+self->payload_len;
+}
+
+/**
+ * @brief insert comment into frame header
+ * @warning this function must be called before Mjpegd_Frame_WriteHeader
+ *          if header has been written, no comment allowed
+ * @param self frame object
+ * @param data comment data
+ * @param w_len comment data length
+ * @return actual written length
+ */
+u16_t Mjpegd_Frame_InsertComment(Mjpegd_Frame_t* self,const u8_t *data, u16_t w_len)
+{
+    static const u8_t Jpeg_Comment_Section[6+MJPEGD_FRAME_COMMENT_SPACE] =
+    {
+        //jpeg SOI
+        0xFF,0xD8,
+        //jpeg COM section tag
+        0xFF,0xFE,
+        //comment len indicator
+        ((MJPEGD_FRAME_COMMENT_SPACE+2)>>8)&0xff,
+        (MJPEGD_FRAME_COMMENT_SPACE+2)&0xff,
+    };
+
+    if( self->payload==self->head &&
+        Mjpegd_Frame_HeaderAvailable(self)>sizeof(Jpeg_Comment_Section))
+    {
+        u8_t* comment_wptr;
+        w_len = MJPEGD_MIN(w_len,MJPEGD_FRAME_COMMENT_SPACE);
+        //make space for comment
+        self->payload -= sizeof(Jpeg_Comment_Section)-2;
+        self->head -= sizeof(Jpeg_Comment_Section)-2;
+        self->payload_len += sizeof(Jpeg_Comment_Section)-2;
+        
+        //write comment block
+        MJPEGD_MEMCPY(self->payload,Jpeg_Comment_Section,sizeof(Jpeg_Comment_Section));
+        comment_wptr = self->head+6;
+
+        //write comment content
+        MJPEGD_MEMCPY(comment_wptr,data,w_len);
+        return w_len;
     }
-    return wlen;
+
+    return 0;
 }
 
 u16_t Mjpegd_Frame_WriteHeader(Mjpegd_Frame_t* self, const u8_t *data, u16_t w_len)

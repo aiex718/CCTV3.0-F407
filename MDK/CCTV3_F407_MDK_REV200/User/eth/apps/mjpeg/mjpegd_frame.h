@@ -18,6 +18,10 @@
     #define MJPEGD_FRAME_HEADER_SPACE 128
 #endif
 
+#ifndef MJPEGD_FRAME_COMMENT_SPACE
+    #define MJPEGD_FRAME_COMMENT_SPACE 16
+#endif
+
 #define MJPEGD_FRAME_PAYLOAD_SPACE (MJPEGD_FRAME_MEM_SPACE - MJPEGD_FRAME_HEADER_SPACE)
 #define MJPEGD_FRAME_SEMAPHORE_MAX MJPEGD_TOTAL_CLEINT_LIMIT
 
@@ -47,7 +51,8 @@ struct Mjpegd_Frame_struct
 
 void Mjpegd_Frame_Init(Mjpegd_Frame_t* self);
 void Mjpegd_Frame_Clear(Mjpegd_Frame_t* self);
-u16_t Mjpegd_Frame_WriteComment(Mjpegd_Frame_t* self,const u8_t *data, u16_t len);
+void Mjpegd_Frame_CaptureFinish(Mjpegd_Frame_t* self,uint16_t len);
+u16_t Mjpegd_Frame_InsertComment(Mjpegd_Frame_t* self,const u8_t *data, u16_t w_len);
 u16_t Mjpegd_Frame_WriteHeader(Mjpegd_Frame_t* self, const u8_t *data, u16_t w_len);
 u16_t Mjpegd_Frame_WriteTail(Mjpegd_Frame_t* self, const u8_t *data, u16_t w_len);
 
