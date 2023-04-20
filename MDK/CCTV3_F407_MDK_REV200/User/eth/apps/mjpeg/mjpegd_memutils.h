@@ -23,24 +23,5 @@ static char* MJPEGD_STRNSTR(const char* buffer, const char* token, size_t n)
     return 0;
 } 
 
-static void* MJPEGD_MEMSEARCH
-    (const u8_t *data, u16_t data_len, 
-     const u8_t *search, u16_t search_len, u8_t from_end)
-{
-    int8_t inc=from_end?-1:1;
-    if(data_len==0 || search_len==0 || data_len<search_len)
-        return NULL;
-    if(from_end)
-        data+=data_len - search_len;
-    data_len=data_len - search_len + 1;
-    while(data_len--)
-    {
-        if(BSP_MEMCMP(data,search,search_len)==0)
-            return (void*)data;
-
-        data+=inc;
-    }
-    return NULL;
-}
 
 #endif // __MJPEGD_MACRO_H__

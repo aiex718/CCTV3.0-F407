@@ -18,6 +18,7 @@ u8_t mjpegd_stream_get_client_count(void)
     return stream_client_count;
 }
 
+//TODO:dont use alloca?
 void mjpegd_stream_output(void)
 {
     typedef struct client_time_pair_struct

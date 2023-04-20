@@ -55,8 +55,6 @@ static err_t mjpegd_sent_handler(void *arg, struct tcp_pcb *pcb, u16_t len);
 static err_t mjpegd_poll_handler(void *arg, struct tcp_pcb *pcb);
 static void  mjpegd_err_handler(void *arg, err_t err);
 
-/** Lwip timeout callbacks **/
-static void mjpegd_timeout_handler(void* arg);
 
 /** mjpegd functions **/
 static void  mjpegd_close_conn(struct tcp_pcb *pcb, client_state_t *cs);
@@ -99,43 +97,47 @@ Mjpegd_FrameBuf_t *Mjpegd_FrameBuf = (Mjpegd_FrameBuf_t*)&(Mjpegd_FrameBuf_t){
 void Cam2640_NewFrame_Handler(void *sender, void *arg, void *owner)
 {
     Device_CamOV2640_t *cam = (Device_CamOV2640_t*)sender;
-    u16_t *frame_len = (u16_t *)arg;
     Mjpegd_Frame_t *frame = (Mjpegd_Frame_t*)cam->pExtension;
-
-    //TODO:need a function to end frame
-    if(frame!=NULL)
+    uint16_t frame_len = cam->CamOV2640_FrameBuf_Len;
+    
+    if(frame==NULL)
     {
-        frame->capture_time = SysTime_Get();
-        frame->payload_len = *frame_len;
-        frame->tail = frame->payload+frame->payload_len;
-        Mjpegd_FrameBuf_ReturnIdle(Mjpegd_FrameBuf,frame);
+        LWIP_DEBUGF(MJPEGD_DEBUG | LWIP_DBG_LEVEL_SERIOUS , 
+            DBG_ARG("Cam2640_NewFrame NULL\n"));
+    }
+    else if (frame_len==0)
+    {
+        LWIP_DEBUGF(MJPEGD_DEBUG | LWIP_DBG_LEVEL_SERIOUS , 
+            DBG_ARG("Cam2640_NewFrame Bad frame\n"));
     }
     else
     {
-        LWIP_DEBUGF(MJPEGD_DEBUG | LWIP_DBG_LEVEL_SERIOUS , 
-            DBG_ARG("Mjpegd: Cam2640_NewFrame NULL\n"));
+        Mjpegd_Frame_CaptureFinish(frame, frame_len);
+        Mjpegd_FrameBuf_ReturnIdle(Mjpegd_FrameBuf,frame);
+        frame=NULL;
     }
 
-
-    frame = Mjpegd_FrameBuf_GetIdle(Mjpegd_FrameBuf);
+    //start next capture
+    //try to get a new idle frame
+    if(frame==NULL)
+        frame=Mjpegd_FrameBuf_GetIdle(Mjpegd_FrameBuf);
 
     if(frame!=NULL)
     {
-        //TODO: need a function to set frame
         Mjpegd_Frame_Clear(frame);
         cam->pExtension = frame;
-        cam->CamOV2640_FrameBuf = frame->payload;
-        cam->CamOV2640_FrameBuf_Len = MJPEGD_FRAME_PAYLOAD_SPACE;
+        Device_CamOV2640_SetBuf(cam,frame->payload,MJPEGD_FRAME_PAYLOAD_SPACE);
         Device_CamOV2640_SnapCmd(cam,true);
     }
     else
     {
         cam->pExtension = NULL;
-        cam->CamOV2640_FrameBuf = NULL;
-        cam->CamOV2640_FrameBuf_Len = 0;
+        Device_CamOV2640_SetBuf(cam,NULL,0);
         LWIP_DEBUGF(MJPEGD_DEBUG | LWIP_DBG_LEVEL_SERIOUS , 
-            DBG_ARG("Mjpegd: No idle frame\n"));
+            DBG_ARG("No idle frame\n"));
     }
+
+    BSP_UNUSED_ARG(arg);
 }
 
 err_t mjpegd_init(u16_t port)
@@ -178,10 +180,11 @@ err_t mjpegd_init(u16_t port)
         Framebuf_RecvNew_cb.owner = NULL;
         Mjpegd_FrameBuf_SetCallback(Mjpegd_FrameBuf,FRAMEBUF_CALLBACK_RX_NEWFRAME,&Framebuf_RecvNew_cb);
 
-        //invoke newframe handler to start snap TODO: remove this callback invoke?
+        //invoke newframe handler to start snap 
+        //TODO: remove this callback invoke?
         Cam2640_NewFrame_Handler(Cam_OV2640,NULL,NULL);
-        //invoke timeout handler to start timeout
-        mjpegd_timeout_handler(NULL);
+        //invoke service to start timeout loop
+        mjpegd_service(NULL);
         err=ERR_OK;
     }
     catch(NEW_PCB_FAIL)
@@ -215,13 +218,14 @@ err_t mjpegd_init(u16_t port)
  * @brief MJPEGD service loop, regist to lwip timeout to execute periodically   
  * @param arg 
  */
-void mjpegd_timeout_handler(void* arg)
+void mjpegd_service(void* arg)
 {
+    BSP_UNUSED_ARG(arg);
     Mjpegd_FrameBuf_Service(Mjpegd_FrameBuf);
     mjpegd_stream_output();
     //TODO: restart capture if it's stopped
 
-    sys_timeout(MJPEGD_SERVICE_PERIOD, mjpegd_timeout_handler, NULL);
+    sys_timeout(MJPEGD_SERVICE_PERIOD, mjpegd_service, NULL);
 }
 
 static err_t mjpegd_accept_handler(void *arg, struct tcp_pcb *newpcb, err_t err)
@@ -564,7 +568,6 @@ static err_t mjpegd_build_response(client_state_t *cs)
             cs->request_handler->response_len);
 
         cs->get_nextfile = cs->request_handler->get_nextfile;
-
         err=ERR_OK;
     }
     catch(NULL_CS)
@@ -743,12 +746,13 @@ static void mjpegd_close_conn(struct tcp_pcb *pcb, client_state_t *cs)
 }
 
 /**
- * @brief Add headers and HTTP EOF to received frame.
+ * @brief Add headers, comments(contains frame time information) and HTTP EOF to received frame.
  * @note  This function should regist to FrameBuffer_ReceiveRawFrame_Event.
  * @param frame Received frame
  */
 static void mjpegd_proc_rawframe_handler(void *sender, void *arg, void *owner)
 {
+
     Mjpegd_Frame_t* frame = (Mjpegd_Frame_t*)arg;
     u8_t buf[30];
     u16_t w_len;
@@ -758,27 +762,23 @@ static void mjpegd_proc_rawframe_handler(void *sender, void *arg, void *owner)
         throwif(frame==NULL,NULL_FRAME);
         throwif(frame->payload_len==0,EMPTY_FRAME);
         throwif(frame->head!=frame->payload,ALREADY_PROCESSED);
-        
         //insert jpeg comment section
         //this will overwrite old frame SOI(FF D8) from frame->head
         {
-            u8_t* comment_wptr;
-            frame->payload -= (Mjpeg_Jpeg_Comment_len-2);
-            frame->head -= (Mjpeg_Jpeg_Comment_len-2);
-            frame->payload_len +=(Mjpeg_Jpeg_Comment_len-2);
-            
-            MJPEGD_MEMCPY(frame->payload,Mjpeg_Jpeg_Comment,Mjpeg_Jpeg_Comment_len);
-            comment_wptr = frame->head+6;
-        
             //TODO:insert RTC time 8 byte
             u8_t FakeRTC[8]={0,1,2,3,4,5,6,7};
+            u8_t comment[sizeof(FakeRTC)+sizeof(frame->capture_time)]; //8 byte RTC time, 4 byte frame time
+            u8_t* comment_wptr = comment;
+            
             MJPEGD_MEMCPY(comment_wptr,FakeRTC,sizeof(FakeRTC));
-            comment_wptr+=8;
+            comment_wptr+=sizeof(FakeRTC);
 
             //insert frame time 4byte
             MJPEGD_MEMCPY(comment_wptr,&frame->capture_time,sizeof(frame->capture_time));
             comment_wptr+=sizeof(frame->capture_time);
+            Mjpegd_Frame_InsertComment(frame,comment,sizeof(comment));
         }
+
         //insert mjpeg header
         w_len = sprintf((char*)buf,Http_Mjpeg_ContentLength,frame->payload_len);
         Mjpegd_Frame_WriteHeader(frame,buf,w_len);
