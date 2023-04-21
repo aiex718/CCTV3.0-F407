@@ -1,5 +1,5 @@
-#ifndef __TRYCATCH_WHILE_H__
-#define __TRYCATCH_WHILE_H__
+#ifndef __TRYCATCH_H__
+#define __TRYCATCH_H__
 
 #define try do{  
 #define throw(X) goto __EXCEPTION_ROUTE_##X
@@ -29,4 +29,4 @@ __EXCEPTION_ROUTE_##X:
 }
 */
 
-#endif // __TRYCATCH_WHILE_H__
+#endif // __TRYCATCH_H__

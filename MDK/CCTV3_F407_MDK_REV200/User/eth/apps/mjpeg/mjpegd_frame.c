@@ -1,6 +1,7 @@
 #include "eth/apps/mjpeg/mjpegd_frame.h"
 #include "eth/apps/mjpeg/mjpegd_memutils.h"
 #include "eth/apps/mjpeg/mjpegd_debug.h"
+#include "eth/apps/mjpeg/trycatch.h"
 
 void Mjpegd_Frame_Init(Mjpegd_Frame_t* self)
 {
@@ -18,7 +19,7 @@ void Mjpegd_Frame_Clear(Mjpegd_Frame_t* self)
     self->capture_time=0;
 }
 
-void Mjpegd_Frame_CaptureFinish(Mjpegd_Frame_t* self,uint16_t len)
+void Mjpegd_Frame_SetLen(Mjpegd_Frame_t* self,uint16_t len)
 {
     self->capture_time = sys_now();
     self->payload_len = len;
@@ -48,20 +49,14 @@ u16_t Mjpegd_Frame_InsertComment(Mjpegd_Frame_t* self,const u8_t *data, u16_t w_
         (MJPEGD_FRAME_COMMENT_SPACE+2)&0xff,
     };
 
-    if( self->payload!=self->head)
-    {
-        LWIP_DEBUGF(MJPEGD_DEBUG | LWIP_DBG_LEVEL_SERIOUS,
-            DBG_ARG("Header exist\n"));
-    }
-    else if(sizeof(Jpeg_Comment_Section)>= Mjpegd_Frame_HeaderAvailable(self))
-    {
-        LWIP_DEBUGF(MJPEGD_DEBUG | LWIP_DBG_LEVEL_SERIOUS,
-            DBG_ARG("InsertComment out of space %d>=%d\n",
-                sizeof(Jpeg_Comment_Section),Mjpegd_Frame_HeaderAvailable(self)));
-    }
-    else
+    try
     {
         u8_t* comment_wptr;
+
+        throwif(self->payload!=self->head,HEADER_EXIST);
+        throwif(sizeof(Jpeg_Comment_Section)>= 
+            Mjpegd_Frame_HeaderAvailable(self),OUTOFSPACE);
+        
         w_len = MJPEGD_MIN(w_len,MJPEGD_FRAME_COMMENT_SPACE);
         //make space for comment
         self->payload -= sizeof(Jpeg_Comment_Section)-2;
@@ -74,10 +69,24 @@ u16_t Mjpegd_Frame_InsertComment(Mjpegd_Frame_t* self,const u8_t *data, u16_t w_
 
         //write comment content
         MJPEGD_MEMCPY(comment_wptr,data,w_len);
-        return w_len;
     }
-
-    return 0;
+    catch(HEADER_EXIST)
+    {
+        w_len=0;
+        LWIP_DEBUGF(MJPEGD_DEBUG | LWIP_DBG_LEVEL_SERIOUS,
+            MJPEGD_DBG_ARG("InsertComment HEADER_EXIST\n"));
+    }
+    catch(OUTOFSPACE)
+    {
+        w_len=0;
+        LWIP_DEBUGF(MJPEGD_DEBUG | LWIP_DBG_LEVEL_SERIOUS,
+            MJPEGD_DBG_ARG("InsertComment OUTOFSPACE %d>=%d\n",
+                sizeof(Jpeg_Comment_Section),Mjpegd_Frame_HeaderAvailable(self)));
+    }
+    finally
+    {
+        return w_len;   
+    }
 }
 
 u16_t Mjpegd_Frame_WriteHeader(Mjpegd_Frame_t* self, const u8_t *data, u16_t w_len)
@@ -85,7 +94,7 @@ u16_t Mjpegd_Frame_WriteHeader(Mjpegd_Frame_t* self, const u8_t *data, u16_t w_l
     if(w_len>=Mjpegd_Frame_HeaderAvailable(self))
     {
         LWIP_DEBUGF(MJPEGD_DEBUG | LWIP_DBG_LEVEL_SERIOUS,
-            DBG_ARG("WriteHeader out of space %d>=%d\n",w_len,Mjpegd_Frame_HeaderAvailable(self)));
+            MJPEGD_DBG_ARG("WriteHeader out of space %d>=%d\n",w_len,Mjpegd_Frame_HeaderAvailable(self)));
     }
     else
     {
@@ -108,25 +117,32 @@ u16_t Mjpegd_Frame_WriteHeader(Mjpegd_Frame_t* self, const u8_t *data, u16_t w_l
  */
 u16_t Mjpegd_Frame_WriteTail(Mjpegd_Frame_t* self, const u8_t *data, u16_t w_len)
 {
-    if(self->eof!=self->tail)
+    try
     {
-        LWIP_DEBUGF(MJPEGD_DEBUG | LWIP_DBG_LEVEL_SERIOUS,
-            DBG_ARG("EOF exist\n"));
-    }
-    else if(w_len>=Mjpegd_Frame_TailAvailable(self))
-    {
-        LWIP_DEBUGF(MJPEGD_DEBUG | LWIP_DBG_LEVEL_SERIOUS,
-            DBG_ARG("WriteTail out of space %d>=%d\n",w_len,Mjpegd_Frame_TailAvailable(self)));
-    }
-    else
-    {
+        throwif(self->eof!=self->tail,EOF_EXIST);
+        throwif(w_len>=Mjpegd_Frame_TailAvailable(self),OUTOFSPACE);
+        
         MJPEGD_MEMCPY(self->tail,data,w_len);
         self->tail+=w_len;
         self->eof=self->tail;
+        
+    }
+    catch(EOF_EXIST)
+    {
+        w_len=0;
+        LWIP_DEBUGF(MJPEGD_DEBUG | LWIP_DBG_LEVEL_SERIOUS,
+            MJPEGD_DBG_ARG("EOF exist\n"));
+    }
+    catch(OUTOFSPACE)
+    {
+        w_len=0;
+        LWIP_DEBUGF(MJPEGD_DEBUG | LWIP_DBG_LEVEL_SERIOUS,
+            MJPEGD_DBG_ARG("WriteTail out of space %d>=%d\n",w_len,Mjpegd_Frame_TailAvailable(self)));
+    }
+    finally
+    {
         return w_len;
     }
-
-    return 0;
 }
 
 u16_t Mjpegd_Frame_WriteEOF(Mjpegd_Frame_t* self, const u8_t *data, u16_t w_len)
@@ -134,7 +150,7 @@ u16_t Mjpegd_Frame_WriteEOF(Mjpegd_Frame_t* self, const u8_t *data, u16_t w_len)
     if(w_len>=Mjpegd_Frame_EofAvailable(self))
     {
         LWIP_DEBUGF(MJPEGD_DEBUG | LWIP_DBG_LEVEL_SERIOUS,
-            DBG_ARG("WriteEOF out of space %d>=%d\n",w_len,Mjpegd_Frame_EofAvailable(self)));
+            MJPEGD_DBG_ARG("WriteEOF out of space %d>=%d\n",w_len,Mjpegd_Frame_EofAvailable(self)));
     }
     else
     {

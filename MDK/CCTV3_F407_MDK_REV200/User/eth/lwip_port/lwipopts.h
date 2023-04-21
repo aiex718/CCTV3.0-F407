@@ -253,10 +253,6 @@ The STM32F4x7 allows computing and verifying the IP, UDP, TCP and ICMP checksums
 #define LWIP_DBG_TYPES_ON        (LWIP_DBG_LEVEL_SEVERE|LWIP_DBG_STATE)//(LWIP_DBG_ON|LWIP_DBG_STATE)//|LWIP_DBG_TRACE)
 
 
-
-#define MJPEGD_TOTAL_CLEINT_LIMIT 3
-#define MJPEGD_PORT 8080
-
 #endif /* __LWIPOPTS_H__ */
 
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

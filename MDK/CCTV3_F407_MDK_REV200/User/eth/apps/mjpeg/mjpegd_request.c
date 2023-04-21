@@ -1,6 +1,10 @@
-/**DO NOT COMPILE THIS FILE, SHOULD BE INCLUDE IN MJPEGD.C**/
-//TODO: make a .h
-static const char Http_Notfound_Response[]= "\
+
+#include "eth/apps/mjpeg/mjpegd_request.h"
+#include "eth/apps/mjpeg/mjpegd_snap.h"
+#include "eth/apps/mjpeg/mjpegd_stream.h"
+#include "eth/apps/mjpeg/mjpegd_memutils.h"
+
+const char Http_Notfound_Response[]= "\
 HTTP/1.1 404 Not Found\r\n\
 Content-Type: text/html\r\n\
 Content-Length: 39\r\n\
@@ -10,10 +14,10 @@ Connection: close  \r\n\
 <H1>404 Not Found</H1>\r\n\
 </html>";
 
-static const char HTTP_TooMany_Response[]="\
+const char HTTP_TooMany_Response[]="\
 HTTP/1.1 429 Too Many Requests\r\n\
 Connection: close\r\n\
-Content-Length: 71\r\n\
+// Content-Length: 71\r\n\
 Content-Type: text/html\r\n\
 Retry-After: 60\r\n\
 \r\n\
@@ -22,7 +26,7 @@ Retry-After: 60\r\n\
 <H4>Retry later<H4>\r\n\
 </html>";
 
-static const char Http_Handshake_Response[]= "\
+const char Http_Handshake_Response[]= "\
 HTTP/1.1 200 No Content\r\n\
 Content-Length: 26\r\n\
 Content-Type: text/html; charset=UTF-8\r\n\
@@ -30,7 +34,7 @@ Connection: close \r\n\
 \r\n\
 <H1>Hello from mjpegd</H1>";
 
-static const char Http_ViewSnap_Response[]= "\
+const char Http_ViewSnap_Response[]= "\
 HTTP/1.1 200 OK\r\n\
 Content-Length: 19\r\n\
 Content-Type: text/html; charset=UTF-8\r\n\
@@ -38,7 +42,7 @@ Connection: close  \r\n\
 \r\n\
 <img src=\"/snap\" />";
 
-static const char Http_ViewStream_Response[]= "\
+const char Http_ViewStream_Response[]= "\
 HTTP/1.1 200 OK\r\n\
 Content-Length: 21\r\n\
 Content-Type: text/html; charset=UTF-8\r\n\
@@ -46,7 +50,7 @@ Connection: close\r\n\
 \r\n\
 <img src=\"/stream\" />";
 
-static const char Http_MjpegChunked_Response[]= "\
+const char Http_MjpegChunked_Response[]= "\
 HTTP/1.1 200 OK\r\n\
 Content-Type: multipart/x-mixed-replace;boundary=myboundary\r\n\
 Transfer-Encoding: chunked\r\n\
@@ -57,7 +61,7 @@ Keep-Alive: timeout=10   \r\n\
 ";
 
 //content-len= total - 101
-static const char Http_ViewFps_Response[]= "\
+const char Http_ViewFps_Response[]= "\
 HTTP/1.1 200 OK\r\n\
 Content-Length: 6548\r\n\
 Content-Type: text/html; charset=UTF-8\r\n\
@@ -217,3 +221,16 @@ Connection: close\r\n\
         };\r\n\
     </script>\r\n\
 </html>";
+
+/** http request handlers **/
+const request_handler_t mjpegd_request_handlers[__NOT_REQUEST_MAX]=
+{
+    {REQUEST_NOTFOUND   ,"/404"         ,Http_Notfound_Response     ,MJPEGD_CHRARR_STRLEN(Http_Notfound_Response)       ,NULL                       ,NULL                           ,NULL                       },
+    {REQUEST_TOOMANY    ,"/429"         ,HTTP_TooMany_Response      ,MJPEGD_CHRARR_STRLEN(HTTP_TooMany_Response)        ,NULL                       ,NULL                           ,NULL                       },
+    {REQUEST_HANDSHAKE  ,"/handshake"   ,Http_Handshake_Response    ,MJPEGD_CHRARR_STRLEN(Http_Handshake_Response)      ,NULL                       ,NULL                           ,NULL                       },
+    {REQUEST_VIEW_SNAP  ,"/view/snap"   ,Http_ViewSnap_Response     ,MJPEGD_CHRARR_STRLEN(Http_ViewSnap_Response)       ,NULL                       ,NULL                           ,NULL                       },
+    {REQUEST_VIEW_STREAM,"/view/stream" ,Http_ViewStream_Response   ,MJPEGD_CHRARR_STRLEN(Http_ViewStream_Response)     ,NULL                       ,NULL                           ,NULL                       },
+    {REQUEST_VIEW_FPS   ,"/view/fps"    ,Http_ViewFps_Response      ,MJPEGD_CHRARR_STRLEN(Http_ViewFps_Response)        ,NULL                       ,NULL                           ,NULL                       },
+    {REQUEST_SNAP       ,"/snap"        ,Http_MjpegChunked_Response ,MJPEGD_CHRARR_STRLEN(Http_MjpegChunked_Response)   ,Mjpegd_Snap_NextFrame      ,NULL                           ,NULL                       },
+    {REQUEST_STREAM     ,"/stream"      ,Http_MjpegChunked_Response ,MJPEGD_CHRARR_STRLEN(Http_MjpegChunked_Response)   ,Mjpegd_Stream_NextFrame    ,Mjpegd_Stream_RecvRequest     ,Mjpegd_Stream_CloseRequest },
+};

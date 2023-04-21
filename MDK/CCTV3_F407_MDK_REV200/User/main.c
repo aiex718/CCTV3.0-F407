@@ -57,7 +57,7 @@ int main(void)
 	ETH_BSP_Config();	
 	LwIP_Init();
 	httpd_init();
-	mjpegd_init(MJPEGD_PORT);
+	Mjpegd_Init(mjpeg_inst);
 	
 	SysTimer_Init(&blinkTimer,1000);
 	while(1)

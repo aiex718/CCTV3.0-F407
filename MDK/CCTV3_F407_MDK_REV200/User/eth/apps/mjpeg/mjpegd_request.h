@@ -46,4 +46,7 @@ typedef struct request_handler_struct
     err_t (* const clsd_request_func)(void *client_state);
 }request_handler_t;
 
+extern const request_handler_t mjpegd_request_handlers[__NOT_REQUEST_MAX];
+
+
 #endif // __MJPEGD_REQUEST_H__

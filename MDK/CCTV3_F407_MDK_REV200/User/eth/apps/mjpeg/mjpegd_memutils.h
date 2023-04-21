@@ -1,6 +1,9 @@
 #ifndef __MJPEGD_MACRO_H__
 #define __MJPEGD_MACRO_H__
 
+#include "bsp/sys/atomic.h"
+#include "string.h"
+
 #define MJPEGD_MIN(a,b) (((a)<(b))?(a):(b))
 #define MJPEGD_MAX(a,b) (((a)>(b))?(a):(b))
 #define MJPEGD_ARRLEN(s) (sizeof(s)/sizeof(s[0]))
@@ -8,11 +11,16 @@
 #define MJPEGD_MEMCPY MEMCPY
 #define MJPEGD_STRNCMP strncmp
 #define MJPEGD_STRNSTR strnstr
+#define MJPEGD_MEMSET memset
+
+
+#define MJPEGD_ATOMIC_XCHG(p,val) Atomic_Exchange((p),(val))
+
 
 static char* strnstr(const char* buffer, const char* token, size_t n)
 {
     const char* p;
-    int tokenlen = (int)strlen(token);
+    size_t tokenlen = strlen(token);
     if (tokenlen == 0) {
         return (char *)buffer;
     }

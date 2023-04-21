@@ -1,6 +1,7 @@
 #ifndef __MJPEGD_CLIENT_H__
 #define __MJPEGD_CLIENT_H__
 
+#include "eth/apps/mjpeg/mjpegd.h"
 #include "eth/apps/mjpeg/mjpegd_typedef.h"
 #include "eth/apps/mjpeg/mjpegd_request.h"
 #include "eth/apps/mjpeg/mjpegd_frame.h"
@@ -26,13 +27,16 @@ typedef enum
 }conn_state_enum;
 typedef s8_t conn_state_t;
 
-typedef struct client_state_struct client_state_t;
-struct client_state_struct 
+typedef struct ClientState_struct ClientState_t;
+struct ClientState_struct 
 {
     struct tcp_pcb* pcb;
+    void* parent_mjpeg;
+
     const request_handler_t* request_handler;
     conn_state_t conn_state;
 
+    //file to send
     u8_t *file;
     u8_t *file_wptr;
     u16_t file_len;
@@ -40,20 +44,19 @@ struct client_state_struct
     //callback when eof reached to get next file
     //if NULL, client will be closed
     err_t (*get_nextfile_func)(void* client_state);
-
+    
     Mjpegd_Frame_t* frame;
-    Mjpegd_Systime_t previous_frame_time;
-
+    Mjpegd_SysTime_t previous_frame_time;
     u8_t retries;
 
     //private linklist
-    client_state_t *_next;
+    ClientState_t *_next;
 };
 
-client_state_t* mjpegd_get_clients(void);
-u8_t mjpegd_get_client_count(void);
+ClientState_t* Mjpegd_Client_New(Mjpegd_t *mjpeg, struct tcp_pcb *pcb);
+void Mjpegd_Client_Free(ClientState_t *cs);
 
-client_state_t* mjpegd_new_client(struct tcp_pcb *pcb);
-err_t mjpegd_free_client(struct tcp_pcb *pcb, client_state_t *cs);
+err_t Mjpegd_Client_ParseRequest(ClientState_t *cs,const char* req,const u16_t req_len);
+err_t Mjpegd_Client_BuildResponse(ClientState_t *cs);
 
 #endif // __MJPEGD_CLIENT_H__

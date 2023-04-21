@@ -1,49 +1,50 @@
-#include "eth/apps/mjpeg/mjpegd_debug.h"
-
 #include "eth/apps/mjpeg/mjpegd_client.h"
-#include "eth/apps/mjpeg/trycatch_while.h"
-#include "string.h"
+#include "eth/apps/mjpeg/mjpegd_opts.h"
+#include "eth/apps/mjpeg/mjpegd_debug.h"
+#include "eth/apps/mjpeg/mjpegd_memutils.h"
+#include "eth/apps/mjpeg/mjpegd_framebuf.h"
+#include "eth/apps/mjpeg/trycatch.h"
 
 #include "lwip/mem.h"
 #include "lwip/tcp.h"
-#include "eth/apps/mjpeg/mjpegd_framebuf.h"
 
-//TODO:Collect this
-static volatile u8_t mjpegd_client_count=0;
-static client_state_t *clients_list=NULL;
-
-client_state_t* mjpegd_get_clients(void)
+ClientState_t* Mjpegd_Client_New(Mjpegd_t *mjpeg, struct tcp_pcb *pcb)
 {
-    return clients_list;
-}
-
-u8_t mjpegd_get_client_count(void)
-{
-    return mjpegd_client_count;
-}
-
-client_state_t* mjpegd_new_client(struct tcp_pcb *pcb)
-{
-    client_state_t *cs = NULL;
+    ClientState_t *cs = NULL;
     try
     {
-        cs = (client_state_t*)mem_malloc(sizeof(client_state_t));
+        throwif(pcb == NULL,PCB_NULL);
+        throwif(mjpeg == NULL,MJPEG_NULL);
+
+        cs = (ClientState_t*)mem_malloc(sizeof(ClientState_t));
         throwif(cs == NULL,CLIENT_STATE_OOM);
-        memset(cs,0,sizeof(client_state_t));
+        
+        MJPEGD_MEMSET(cs,0,sizeof(ClientState_t));
         cs->pcb = pcb;
+        cs->parent_mjpeg = mjpeg;
 
-        //Attach to clients_list head
-        cs->_next = clients_list;
-        clients_list=cs;
+        //Attach to mjpeg->_clients_list head
+        cs->_next = mjpeg->_clients_list;
+        mjpeg->_clients_list=cs;
 
-        mjpegd_client_count++;
+        mjpeg->_client_count++;
         LWIP_DEBUGF(MJPEGD_DEBUG | LWIP_DBG_STATE | LWIP_DBG_LEVEL_WARNING,
-            DBG_ARG("Alloc client %p, total %d\n",cs,mjpegd_client_count));
+            MJPEGD_DBG_ARG("Alloc client %p, total %d\n",cs,mjpeg->_client_count));
+    }
+    catch(PCB_NULL)
+    {
+        LWIP_DEBUGF(MJPEGD_DEBUG | LWIP_DBG_LEVEL_SERIOUS,
+            MJPEGD_DBG_ARG("Client_New PCB_NULL\n"));
+    }
+    catch(MJPEG_NULL)
+    {
+        LWIP_DEBUGF(MJPEGD_DEBUG | LWIP_DBG_LEVEL_SERIOUS,
+            MJPEGD_DBG_ARG("Client_New MJPEG_NULL\n"));
     }
     catch(CLIENT_STATE_OOM)
     {
         LWIP_DEBUGF(MJPEGD_DEBUG | LWIP_DBG_LEVEL_SERIOUS,
-            DBG_ARG("No mem for new client\n"));
+            MJPEGD_DBG_ARG("Client_New No mem for new client\n"));
     }
     finally
     {
@@ -51,35 +52,124 @@ client_state_t* mjpegd_new_client(struct tcp_pcb *pcb)
     }
 }
 
-err_t mjpegd_free_client(struct tcp_pcb *pcb,client_state_t *cs)
+void Mjpegd_Client_Free(ClientState_t *cs)
 {
     if(cs!=NULL)
     {
-        u32_t client_addr=(u32_t)cs;
-        client_state_t **prev_ptr=NULL;
-        client_state_t *prev;
+        struct tcp_pcb *pcb = cs->pcb;
+        Mjpegd_t *mjpeg = (Mjpegd_t*)cs->parent_mjpeg;
+
+        ClientState_t **prev_ptr=NULL;
+        ClientState_t *prev;
         
-        //Get prev and delete cs
-        for (prev=clients_list; prev!=NULL && prev->_next!=cs; prev=prev->_next);
-        
-        //if prev is NULL, cs is first node in clients_list
-        //concat cs->next to head directly, otherwise concat to prev->_next
-        prev_ptr = prev==NULL ? &clients_list : &prev->_next;
+        //Remove cs from mjpeg->_clients_list
+        //Try get previous node whose next is pointing to cs
+        for (prev=mjpeg->_clients_list; prev!=NULL && prev->_next!=cs; prev=prev->_next);
+        //if previous node is NULL, cs is first node in _clients_list
+        //concat cs->next to _clients_list head directly, otherwise concat to prev->_next
+        prev_ptr = prev==NULL ? &mjpeg->_clients_list : &prev->_next;
         *prev_ptr = cs->_next;
 
-        Mjpegd_FrameBuf_Release(Mjpegd_FrameBuf,cs->frame);
+        Mjpegd_FrameBuf_Release(mjpeg->FrameBuf,cs->frame);
         cs->frame = NULL;
 
         mem_free(cs);
 
         if(pcb!=NULL)
-            tcp_arg(pcb, NULL);//this might not be necessary, just for robust
+            tcp_arg(pcb, NULL);//this isn't necessary, just for safety
 
-        mjpegd_client_count--;
+        mjpeg->_client_count--;
         LWIP_DEBUGF(MJPEGD_DEBUG | LWIP_DBG_STATE | LWIP_DBG_LEVEL_WARNING,
-            DBG_ARG("Dealloc client %x, remaning %d\n",client_addr,mjpegd_client_count));
+            MJPEGD_DBG_ARG("Dealloc client %p, remaning %d\n",cs,mjpeg->_client_count));
     }
-
-    return ERR_OK;
 }
 
+err_t Mjpegd_Client_ParseRequest(ClientState_t *cs,const char* req,const u16_t req_len)
+{
+    err_t err;
+
+    try
+    {
+        char *line_end;
+        u8_t i;
+        throwif (cs==NULL,NULL_CLIENT);
+
+        line_end=MJPEGD_STRNSTR(req, "\r\n",req_len);
+        throwif (req_len < MJPEGD_MIN_REQ_LEN || line_end==NULL, REQUEST_NOT_COMPLETE);
+        throwif (MJPEGD_STRNCMP(req, "GET ", 4) , NOT_HTTP_GET);
+
+        //default request handler is REQUEST_NOTFOUND
+        cs->request_handler = &mjpegd_request_handlers[REQUEST_NOTFOUND];
+
+        for ( i = 0; i < MJPEGD_ARRLEN(mjpegd_request_handlers); i++)
+        {
+            const request_handler_t* handler = &mjpegd_request_handlers[i];
+            if (!MJPEGD_STRNCMP(req+4, handler->url, strlen(handler->url)))
+            {
+                cs->request_handler = handler;
+                break;
+            }
+        }
+        err=ERR_OK;
+    }   
+    catch(NULL_CLIENT)
+    {
+        LWIP_DEBUGF(MJPEGD_DEBUG | LWIP_DBG_LEVEL_SERIOUS,
+            MJPEGD_DBG_ARG("ParseRequest NULL_CLIENT\n"));
+        err=ERR_ARG;
+    }
+    catch(REQUEST_NOT_COMPLETE)
+    {
+        LWIP_DEBUGF(MJPEGD_DEBUG | LWIP_DBG_LEVEL_WARNING,
+            MJPEGD_DBG_ARG("ParseRequest REQUEST_NOT_COMPLETE:%s\n",req));
+
+        err=ERR_ARG;
+    }
+    catch(NOT_HTTP_GET)
+    {
+        LWIP_DEBUGF(MJPEGD_DEBUG | LWIP_DBG_LEVEL_WARNING,
+            MJPEGD_DBG_ARG("ParseRequest NOT_HTTP_GET:%s\n",req));
+
+        err=ERR_ARG;
+    }
+    finally
+    {
+        return err;
+    }
+
+}
+
+err_t Mjpegd_Client_BuildResponse(ClientState_t *cs)
+{
+    err_t err;
+
+    try
+    {
+        throwif (cs==NULL,NULL_CS);
+        throwif (cs->request_handler==NULL,NULL_REQUEST_HANDLER);
+
+        client_assign_file(cs,
+            (u8_t*)cs->request_handler->response,
+            cs->request_handler->response_len);
+
+        cs->get_nextfile_func = cs->request_handler->get_nextfile_func;
+        err=ERR_OK;
+    }
+    catch(NULL_CS)
+    {
+        LWIP_DEBUGF(MJPEGD_DEBUG | LWIP_DBG_LEVEL_SERIOUS,
+            MJPEGD_DBG_ARG("response NULL_CLIENT\n"));
+        err=ERR_ARG;
+    }
+    catch(NULL_REQUEST_HANDLER)
+    {
+        LWIP_DEBUGF(MJPEGD_DEBUG | LWIP_DBG_LEVEL_SERIOUS,
+            MJPEGD_DBG_ARG("response NULL_REQUEST_HANDLER\n"));
+
+        err=ERR_ARG;
+    }
+    finally
+    {
+        return err;
+    }
+}
