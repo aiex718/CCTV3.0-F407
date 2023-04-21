@@ -57,7 +57,7 @@ Mjpegd_Frame_t* Mjpegd_FrameProc_NextFrame(Mjpegd_t *mjpeg,Mjpegd_Frame_t* frame
 
 void Mjpegd_FrameProc_ProcPending(Mjpegd_t *mjpeg)
 {
-    Mjpegd_SysTime_t now = sys_now();
+    MJPEGD_SYSTIME_T now = sys_now();
     //take pending frame to local and process it
     Mjpegd_Frame_t* local_frame = (Mjpegd_Frame_t*)
             MJPEGD_ATOMIC_XCHG((__IO u32_t *)&mjpeg->_pending_frame,NULL);

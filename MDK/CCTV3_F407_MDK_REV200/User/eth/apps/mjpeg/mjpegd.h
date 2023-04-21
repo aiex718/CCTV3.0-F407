@@ -1,7 +1,8 @@
 #ifndef __MJPEGD_H__
 #define __MJPEGD_H__
 
-#include "eth/apps/mjpeg/mjpegd_typedef.h"
+#include "eth/apps/mjpeg/mjpegd_opts.h"
+#include "eth/apps/mjpeg/mjpegd_callback.h"
 #include "lwip/err.h"
 #include "lwip/tcp.h"
 
@@ -24,9 +25,11 @@ typedef struct {
     u8_t _stream_count;
     //pending frame and timer for fps
     Mjpegd_Frame_t *_pending_frame;
-    Mjpegd_SysTime_t _fps_timer;
+    MJPEGD_SYSTIME_T _fps_timer;
     u16_t _fps_counter;
     u16_t _drop_counter;
+    //callback
+    Mjpegd_Callback_t RecvNewFrame_cb;
 } Mjpegd_t;
 
 #include "eth/apps/mjpeg/mjpegd_framebuf.h"

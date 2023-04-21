@@ -10,12 +10,13 @@
 // #define LINKLIST_GET_LAST(p,list) LINKLIST_GET_UNTIL(p,list,NULL)
 
 //Private functions
-static void Mjpegd_FrameBuf_Sort(Mjpegd_FrameBuf_t* self,u8_t* order_out,Mjpegd_SysTime_t time);
+static void Mjpegd_FrameBuf_Sort(
+    Mjpegd_FrameBuf_t* self,u8_t* order_out,MJPEGD_SYSTIME_T time);
 
 void Mjpegd_FrameBuf_Init(Mjpegd_FrameBuf_t* self)
 {
     u8_t i;
-    
+
     for (i = 0; i < __NOT_CALLBACK_FRAMEBUF_MAX; i++)
         self->FrameBuf_Callbacks[i] = NULL;
 
@@ -23,24 +24,26 @@ void Mjpegd_FrameBuf_Init(Mjpegd_FrameBuf_t* self)
         Mjpegd_Frame_Init(&self->_frames[i]);
 }
 
-void Mjpegd_FrameBuf_SetCallback(Mjpegd_FrameBuf_t* self, Mjpegd_FrameBuf_CallbackIdx_t cb_idx, Mjpegd_Callback_fn callback_fn)
+void Mjpegd_FrameBuf_SetCallback(
+    Mjpegd_FrameBuf_t* self, Mjpegd_FrameBuf_CallbackIdx_t cb_idx, 
+    Mjpegd_Callback_t *callback)
 {
     if(cb_idx < __NOT_CALLBACK_FRAMEBUF_MAX)
-        self->FrameBuf_Callbacks[cb_idx] = callback_fn;
+        self->FrameBuf_Callbacks[cb_idx] = callback;
 }
 
 /**
  * @brief Get the latest frame newer than last_frame_time, 0 to get the newest frame.
  * @return Mjpegd_Frame_t* 
  */
-Mjpegd_Frame_t* Mjpegd_FrameBuf_GetLatest(Mjpegd_FrameBuf_t* self,Mjpegd_SysTime_t last_frame_time)
+Mjpegd_Frame_t* Mjpegd_FrameBuf_GetLatest(Mjpegd_FrameBuf_t* self,MJPEGD_SYSTIME_T last_frame_time)
 {
     //vla on armcc alloc using malloc (heap)
     u8_t i,sorted_idx[self->_frames_len];
-    Mjpegd_SysTime_t now = sys_now();
+    MJPEGD_SYSTIME_T now = sys_now();
     Mjpegd_Frame_t* frame;
     //how much time has passed since last frame
-    Mjpegd_SysTime_t last_frame_diff = now - last_frame_time,new_frame_diff;
+    MJPEGD_SYSTIME_T last_frame_diff = now - last_frame_time,new_frame_diff;
 
     //Try to acquire newest frame.
     //Newest node should be the first node.
@@ -108,7 +111,7 @@ void Mjpegd_FrameBuf_Release(Mjpegd_FrameBuf_t* self,Mjpegd_Frame_t* frame)
 Mjpegd_Frame_t* Mjpegd_FrameBuf_GetIdle(Mjpegd_FrameBuf_t* self)
 {
     u8_t i,sorted_idx[self->_frames_len];
-    Mjpegd_SysTime_t now = sys_now();
+    MJPEGD_SYSTIME_T now = sys_now();
     Mjpegd_Frame_t* frame;
 
     //Try to get and lock oldest idle node.
@@ -142,25 +145,24 @@ void Mjpegd_FrameBuf_ReleaseIdle(Mjpegd_FrameBuf_t* self,Mjpegd_Frame_t* frame)
 {
     if(frame!=NULL)
     {
-        Mjpegd_Callback_fn rx_newframe_fn = self->FrameBuf_Callbacks[FRAMEBUF_CALLBACK_RX_NEWFRAME];
+        Mjpegd_Callback_t* rx_newframe_cb = self->FrameBuf_Callbacks[FRAMEBUF_CALLBACK_RX_NEWFRAME];
+        
         Mjpegd_Frame_Unlock(frame);
+        Mjpegd_Callback_Invoke(self,frame,rx_newframe_cb);
 
         if(frame->_sem>MJPEGD_FRAME_SEMAPHORE_MAX)
         {
             LWIP_DEBUGF(MJPEGD_FRAMEBUF_DEBUG | LWIP_DBG_LEVEL_SEVERE , 
                 MJPEGD_DBG_ARG("frame %p ->_sem=%d > MAX %d\n",frame,frame->_sem,MJPEGD_FRAME_SEMAPHORE_MAX));
         }
-
-        if(rx_newframe_fn!=NULL)
-            rx_newframe_fn(self,frame);
     }
 }
 
 //sort by frame's time diff (capture_time-now),order from small to big(new to old)
-static void Mjpegd_FrameBuf_Sort(Mjpegd_FrameBuf_t* self,u8_t* order_out,Mjpegd_SysTime_t time)
+static void Mjpegd_FrameBuf_Sort(Mjpegd_FrameBuf_t* self,u8_t* order_out,MJPEGD_SYSTIME_T time)
 {
     //vla on armcc alloc using malloc (heap)
-    Mjpegd_SysTime_t tmp,time_diffs[self->_frames_len];
+    MJPEGD_SYSTIME_T tmp,time_diffs[self->_frames_len];
     u8_t tmp2,i,j;
     for (i = 0; i < self->_frames_len; i++)
     {

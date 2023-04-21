@@ -2,9 +2,8 @@
 #define MJPEGD_FRAME_H
 
 
-#include "eth/apps/mjpeg/mjpegd_typedef.h"
-#include "eth/apps/mjpeg/mjpegd_semaphore.h"
 #include "eth/apps/mjpeg/mjpegd_opts.h"
+#include "eth/apps/mjpeg/mjpegd_semaphore.h"
 
 typedef struct Mjpegd_Frame_struct Mjpegd_Frame_t;
 struct Mjpegd_Frame_struct
@@ -14,7 +13,7 @@ struct Mjpegd_Frame_struct
     u16_t payload_len;
     u8_t* tail;
     u8_t* eof;
-    Mjpegd_SysTime_t capture_time;
+    MJPEGD_SYSTIME_T capture_time;
 
     //dont modify these private member
     Mjpegd_Semaphore_t _sem;

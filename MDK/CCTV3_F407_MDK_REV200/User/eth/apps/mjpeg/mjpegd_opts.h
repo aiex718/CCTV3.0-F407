@@ -35,6 +35,9 @@
     #define MJPEGD_SERVICE_PERIOD 10//10ms
 #endif
 
+#ifndef MJPEGD_SYSTIME_T
+    #define MJPEGD_SYSTIME_T u32_t
+#endif
 //poll interval is n*2*TCP_TMR_INTERVAL
 #ifndef MJPEGD_POLL_INTERVAL
     #define MJPEGD_POLL_INTERVAL 2 //2*2*250=1000ms

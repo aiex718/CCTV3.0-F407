@@ -1,31 +1,20 @@
 #include "eth/apps/mjpeg/mjpegd.h"
+#include "eth/apps/mjpeg/mjpegd_debug.h"
 #include "eth/apps/mjpeg/trycatch.h"
-#include "eth/apps/mjpeg/mjpegd_opts.h"
+#include "eth/apps/mjpeg/mjpegd_frameproc.h"
+#include "eth/apps/mjpeg/mjpegd_memutils.h"
+#include "eth/apps/mjpeg/mjpegd_request.h"
+#include "eth/apps/mjpeg/mjpegd_stream.h"
 
-/* Lwip */
 #include "lwip/opt.h"
 #include "lwip/timeouts.h"
-#include "lwip/tcp.h"
-#include "lwip/err.h"
 #include "lwip/pbuf.h"
 #include "lwip/stats.h"
 
 /* BSP */
-#include "bsp/sys/callback.h"
 #include "device/cam_ov2640/cam_ov2640.h"
+#include "bsp/sys/callback.h"
 #include "bsp/platform/periph_list.h"
-
-/** Debug defines **/
-#include "eth/apps/mjpeg/mjpegd_debug.h"
-
-/** Sub modules **/
-#include "eth/apps/mjpeg/mjpegd_framebuf.h"
-#include "eth/apps/mjpeg/mjpegd_frameproc.h"
-#include "eth/apps/mjpeg/mjpegd_memutils.h"
-#include "eth/apps/mjpeg/mjpegd_request.h"
-#include "eth/apps/mjpeg/mjpegd_client.h"
-#include "eth/apps/mjpeg/mjpegd_snap.h"
-#include "eth/apps/mjpeg/mjpegd_stream.h"
 
 Mjpegd_t* mjpeg_inst = (Mjpegd_t*)&(Mjpegd_t){
     .Port = 8080,
@@ -51,7 +40,7 @@ static void  Mjpegd_CloseConn(struct tcp_pcb *pcb, ClientState_t *cs);
 static err_t Mjpegd_SendData(struct tcp_pcb *pcb, ClientState_t *cs);
 
 /** callbacks **/
-static err_t mjpegd_newframe_handler(void *sender, void *arg);
+static void Mjpegd_RecvNewFrame_handler(void *sender, void *arg, void *owner);
 
 //main listen pcb
 static Callback_t Cam2640_NewFrame_cb;
@@ -128,20 +117,26 @@ err_t Mjpegd_Init(Mjpegd_t *mjpeg)
         tcp_arg(mjpeg->_main_pcb, mjpeg);
         tcp_accept(mjpeg->_main_pcb, Mjpegd_LwipAccept_Handler);
 
-        LWIP_DEBUGF(MJPEGD_DEBUG | LWIP_DBG_LEVEL_SEVERE ,MJPEGD_DBG_ARG("init ok at port %d\n",mjpeg->Port));
+        LWIP_DEBUGF(MJPEGD_DEBUG | LWIP_DBG_LEVEL_SEVERE 
+            ,MJPEGD_DBG_ARG("init ok at port %d\n",mjpeg->Port));
 
         //TODO:Move to camera init
         Cam2640_NewFrame_cb.func = Cam2640_NewFrame_Handler;
         Cam2640_NewFrame_cb.invoke_cfg = INVOKE_IMMEDIATELY;
         Cam2640_NewFrame_cb.owner = NULL;
-        Device_CamOV2640_SetCallback(Cam_OV2640,CAMOV2640_CALLBACK_NEWFRAME,&Cam2640_NewFrame_cb);
-
-        Mjpegd_FrameBuf_SetCallback(mjpeg->FrameBuf,FRAMEBUF_CALLBACK_RX_NEWFRAME,mjpegd_newframe_handler);
+        Device_CamOV2640_SetCallback(Cam_OV2640,
+            CAMOV2640_CALLBACK_NEWFRAME,&Cam2640_NewFrame_cb);
+        
+        //regist framebuf callback
+        mjpeg->RecvNewFrame_cb.func = Mjpegd_RecvNewFrame_handler;
+        mjpeg->RecvNewFrame_cb.owner = mjpeg;
+        Mjpegd_FrameBuf_SetCallback(mjpeg->FrameBuf,
+            FRAMEBUF_CALLBACK_RX_NEWFRAME,&mjpeg->RecvNewFrame_cb);
 
         //invoke newframe handler to start snap 
         //TODO: move to camera start
         Cam2640_NewFrame_Handler(Cam_OV2640,NULL,NULL);
-        //invoke service to start timeout loop
+        //invoke service to start timeout loop and new snap
         Mjpegd_Service((void*)mjpeg);
         err=ERR_OK;
     }
@@ -643,13 +638,16 @@ void Mjpegd_Service(void* arg)
  * @param sender source frame_buf.
  * @param arg new arrived frame, not use in this function.
  */
-static err_t mjpegd_newframe_handler(void *sender, void *arg)
+static void Mjpegd_RecvNewFrame_handler(void *sender, void *arg, void *owner)
 {
     Mjpegd_FrameBuf_t* frame_buf = (Mjpegd_FrameBuf_t*)sender;
     //Mjpegd_Frame_t* new_frame = (Mjpegd_Frame_t*)arg;
+    Mjpegd_t* mjpeg = (Mjpegd_t*)owner;
     ClientState_t* cs;
-    //TODO:remove inst
-    for (cs=mjpeg_inst->_clients_list; cs!=NULL; cs=cs->_next)
+
+    BSP_UNUSED_ARG(arg);
+
+    for (cs=mjpeg->_clients_list; cs!=NULL; cs=cs->_next)
     {
         //check if stream client transfer done
         if( cs->conn_state==CS_RECEIVED && 
@@ -699,8 +697,5 @@ static err_t mjpegd_newframe_handler(void *sender, void *arg)
             }
         }
     }
-
-    BSP_UNUSED_ARG(arg);
-    return ERR_OK;
 }
 
