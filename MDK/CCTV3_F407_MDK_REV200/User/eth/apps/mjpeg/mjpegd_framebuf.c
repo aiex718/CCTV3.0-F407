@@ -36,7 +36,8 @@ void Mjpegd_FrameBuf_SetCallback(
  * @brief Get the latest frame newer than last_frame_time, 0 to get the newest frame.
  * @return Mjpegd_Frame_t* 
  */
-Mjpegd_Frame_t* Mjpegd_FrameBuf_GetLatest(Mjpegd_FrameBuf_t* self,MJPEGD_SYSTIME_T last_frame_time)
+Mjpegd_Frame_t* Mjpegd_FrameBuf_GetLatest(Mjpegd_FrameBuf_t* self,
+    MJPEGD_SYSTIME_T last_frame_time)
 {
     //vla on armcc alloc using malloc (heap)
     u8_t i,sorted_idx[self->_frames_len];
@@ -103,7 +104,8 @@ void Mjpegd_FrameBuf_Release(Mjpegd_FrameBuf_t* self,Mjpegd_Frame_t* frame)
         if(frame->_sem>MJPEGD_FRAME_SEMAPHORE_MAX)
         {
             LWIP_DEBUGF(MJPEGD_FRAMEBUF_DEBUG | LWIP_DBG_LEVEL_SEVERE , 
-                MJPEGD_DBG_ARG("frame %p ->_sem=%d > MAX %d\n",frame,frame->_sem,MJPEGD_FRAME_SEMAPHORE_MAX));
+                MJPEGD_DBG_ARG("frame %p ->_sem=%d > MAX %d\n",
+                    frame,frame->_sem,MJPEGD_FRAME_SEMAPHORE_MAX));
         }
     }
 }
@@ -145,21 +147,22 @@ void Mjpegd_FrameBuf_ReleaseIdle(Mjpegd_FrameBuf_t* self,Mjpegd_Frame_t* frame)
 {
     if(frame!=NULL)
     {
-        Mjpegd_Callback_t* rx_newframe_cb = self->FrameBuf_Callbacks[FRAMEBUF_CALLBACK_RX_NEWFRAME];
-        
         Mjpegd_Frame_Unlock(frame);
-        Mjpegd_Callback_Invoke(self,frame,rx_newframe_cb);
+        Mjpegd_Callback_Invoke_Idx(self, frame, self->FrameBuf_Callbacks,
+                FRAMEBUF_CALLBACK_RX_NEWFRAME);
 
         if(frame->_sem>MJPEGD_FRAME_SEMAPHORE_MAX)
         {
             LWIP_DEBUGF(MJPEGD_FRAMEBUF_DEBUG | LWIP_DBG_LEVEL_SEVERE , 
-                MJPEGD_DBG_ARG("frame %p ->_sem=%d > MAX %d\n",frame,frame->_sem,MJPEGD_FRAME_SEMAPHORE_MAX));
+                MJPEGD_DBG_ARG("frame %p ->_sem=%d > MAX %d\n",
+                    frame,frame->_sem,MJPEGD_FRAME_SEMAPHORE_MAX));
         }
     }
 }
 
 //sort by frame's time diff (capture_time-now),order from small to big(new to old)
-static void Mjpegd_FrameBuf_Sort(Mjpegd_FrameBuf_t* self,u8_t* order_out,MJPEGD_SYSTIME_T time)
+static void Mjpegd_FrameBuf_Sort(Mjpegd_FrameBuf_t* self,u8_t* order_out,
+    MJPEGD_SYSTIME_T time)
 {
     //vla on armcc alloc using malloc (heap)
     MJPEGD_SYSTIME_T tmp,time_diffs[self->_frames_len];

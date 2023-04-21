@@ -14,9 +14,9 @@ typedef struct
     (cb)->func((sender),(arg),(cb)->owner);         \
 }while(0)   
 
-#define Mjpegd_Callback_Invoke_Idx(sender,arg,cb_ary,cb_idx) do{    \
-    Callback_t* cb = (cb_ary)[(cb_idx)];                            \
-    Callback_Invoke((sender),(arg),cb);                             \
+#define Mjpegd_Callback_Invoke_Idx(sender,arg,cb_ary,cb_idx) do{  \
+    Mjpegd_Callback_t* cb = (cb_ary)[(cb_idx)];                   \
+    Mjpegd_Callback_Invoke((sender),(arg),cb);                    \
 }while(0)
 
 #endif
