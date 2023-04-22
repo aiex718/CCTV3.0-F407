@@ -3,13 +3,33 @@
 
 #include "bsp/sys/semaphore.h"
 
-#define Mjpegd_Semaphore_t Semaphore_t
+typedef Semaphore_t Mjpegd_Semaphore_t;
 
-#define Mjpegd_Semaphore_Init(sem,val) Semaphore_Init(sem,val)
-#define Mjpegd_Semaphore_TryDown(sem) Semaphore_TryDown(sem)
-#define Mjpegd_Semaphore_Up(sem) Semaphore_Up(sem);
-#define Mjpegd_Semaphore_TryDownMulti(sem,val) Semaphore_TryDownMulti(sem,val)
-#define Mjpegd_Semaphore_UpMulti(sem,val) Semaphore_UpMulti(sem,val)
+__STATIC_INLINE void Mjpegd_Semaphore_Init(Mjpegd_Semaphore_t *sem,u8_t val)
+{
+    Semaphore_Init(sem,val);
+}
+
+__STATIC_INLINE u8_t Mjpegd_Semaphore_TryDown(Mjpegd_Semaphore_t *sem)
+{
+    return Semaphore_TryDown(sem);
+}
+
+__STATIC_INLINE void Mjpegd_Semaphore_Up(Mjpegd_Semaphore_t *sem)
+{
+    Semaphore_Up(sem);
+}
+
+__STATIC_INLINE u8_t Mjpegd_Semaphore_TryDownMulti(Mjpegd_Semaphore_t *sem,u8_t val)
+{
+    return Semaphore_TryDownMulti(sem,val);
+}
+
+__STATIC_INLINE void Mjpegd_Semaphore_UpMulti(Mjpegd_Semaphore_t *sem,u8_t val)
+{
+    Semaphore_UpMulti(sem,val);
+}
+
 
 
 #endif
