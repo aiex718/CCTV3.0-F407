@@ -15,6 +15,7 @@
 
 
 #define MJPEGD_ATOMIC_XCHG(p,val) Atomic_Exchange((p),(val))
+#define MJPEGD_ATOMIC_INC(p) Atomic_Increment((p))
 
 
 static char* strnstr(const char* buffer, const char* token, size_t n)

@@ -42,9 +42,9 @@ void Device_CamOV2640_DcmiRxDmaTcCallback(void *sender,void *arg,void *owner)
     static const uint8_t Jpeg_End_Tag[]={0xFF,0xD9};
     HAL_DMA_t *dma = (HAL_DMA_t*)sender;
     Device_CamOV2640_t* self = (Device_CamOV2640_t*)owner;
-    uint8_t *rxbuf = self->CamOV2640_FrameBuf;
-    uint16_t rxlen = self->CamOV2640_FrameBuf_Len - HAL_DMA_GetNumOfData(dma)*4;
-    self->CamOV2640_FrameBuf_Len = 0;
+    uint8_t *rxbuf = self->CamOV2640_Buffer;
+    uint16_t rxlen = self->CamOV2640_Buffer_Len - HAL_DMA_GetNumOfData(dma)*4;
+    self->CamOV2640_Buffer_Len = 0;
     
     //check jpeg start and end tag
     if(rxlen && BSP_MEMCMP(rxbuf,Jpeg_Start_Tag,BSP_ARR_LEN(Jpeg_Start_Tag))==0)
@@ -54,14 +54,14 @@ void Device_CamOV2640_DcmiRxDmaTcCallback(void *sender,void *arg,void *owner)
         {
             tail+=BSP_ARR_LEN(Jpeg_End_Tag);
             if(tail>rxbuf)
-                self->CamOV2640_FrameBuf_Len = tail-rxbuf;
+                self->CamOV2640_Buffer_Len = tail-rxbuf;
         }
     }
 
-    if(self->CamOV2640_FrameBuf_Len){
+    if(self->CamOV2640_Buffer_Len){
 #if DEVICE_CAM_OV2640_DEBUG
         DBG_INFO("%6d:Snaped len:%u ,trimmed len:%u\n",
-            SysTime_Get(),rxlen,self->CamOV2640_FrameBuf_Len);
+            SysTime_Get(),rxlen,self->CamOV2640_Buffer_Len);
 #endif
     }
     else{
@@ -73,7 +73,7 @@ void Device_CamOV2640_DcmiRxDmaTcCallback(void *sender,void *arg,void *owner)
 
     BSP_UNUSED_ARG(arg);
     //uncomment this if self looping mode is needed
-    //Device_CamOV2640_SnapCmd(self,true);
+    //Device_CamOV2640_CaptureCmd(self,true);
 }
 
 //common function
@@ -111,10 +111,12 @@ void Device_CamOV2640_Init(Device_CamOV2640_t* self)
     self->_dcmi_rxdma_tc_cb.invoke_cfg = INVOKE_IMMEDIATELY;
     HAL_DMA_SetCallback(self->CamOV2640_DCMI->DCMI_RxDma_Cfg,DMA_CALLBACK_IRQ_TC,&self->_dcmi_rxdma_tc_cb);
 }
+
 void Device_CamOV2640_Attach_DCMI(Device_CamOV2640_t* self,HAL_DCMI_t* dcmi)
 {
     self->CamOV2640_DCMI = dcmi;
 }
+
 void Device_CamOV2640_Attach_I2C(Device_CamOV2640_t* self,HAL_I2C_t* i2c)
 {
     self->CamOV2640_I2C = i2c;
@@ -137,16 +139,16 @@ void Device_CamOV2640_Service(Device_CamOV2640_t* self)
 }
 
 //device specific function
-Device_CamOV2640_Status_t Device_CamOV2640_SnapCmd(Device_CamOV2640_t* self,bool en)
+Device_CamOV2640_Status_t Device_CamOV2640_CaptureCmd(Device_CamOV2640_t* self,bool en)
 {
     if(en)
     {
-        if(self->CamOV2640_FrameBuf==NULL||self->CamOV2640_FrameBuf_Len==0)
+        if(self->CamOV2640_Buffer==NULL||self->CamOV2640_Buffer_Len==0)
             return DEVICE_CAMOV2640_ERR;
         
         HAL_DCMI_Cmd(self->CamOV2640_DCMI,true);
         HAL_DCMI_StartDmaRecv(self->CamOV2640_DCMI,
-            self->CamOV2640_FrameBuf,self->CamOV2640_FrameBuf_Len);
+            self->CamOV2640_Buffer,self->CamOV2640_Buffer_Len);
         HAL_DCMI_CaptureCmd(self->CamOV2640_DCMI,true);
     }
     else
@@ -161,14 +163,27 @@ Device_CamOV2640_Status_t Device_CamOV2640_SnapCmd(Device_CamOV2640_t* self,bool
 
 void Device_CamOV2640_SetBuf(Device_CamOV2640_t* self,uint8_t *buf, uint16_t len)
 {
-    self->CamOV2640_FrameBuf = buf;
-    self->CamOV2640_FrameBuf_Len = len;
+    self->CamOV2640_Buffer = buf;
+    self->CamOV2640_Buffer_Len = len;
 }
 
 void Device_CamOV2640_PwdnCmd(Device_CamOV2640_t* self,bool en)
 {
     if(self->CamOV2640_PWDN_pin!=NULL)
         HAL_GPIO_WritePin(self->CamOV2640_PWDN_pin,en);
+}
+
+bool Device_CamOV2640_IsPowerDown(Device_CamOV2640_t* self)
+{
+    if(self->CamOV2640_PWDN_pin!=NULL)
+        return HAL_GPIO_ReadPin(self->CamOV2640_PWDN_pin);
+    
+    return false;
+}
+
+bool Device_CamOV2640_IsCapturing(Device_CamOV2640_t* self)
+{
+    return HAL_DCMI_IsCapturing(self->CamOV2640_DCMI);
 }
 
 void Device_CamOV2640_SoftReset(Device_CamOV2640_t* self)

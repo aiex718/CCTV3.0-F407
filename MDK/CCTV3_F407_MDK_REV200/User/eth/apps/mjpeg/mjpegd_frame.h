@@ -36,7 +36,7 @@ struct Mjpegd_Frame_struct
 
 void Mjpegd_Frame_Init(Mjpegd_Frame_t* self);
 void Mjpegd_Frame_Clear(Mjpegd_Frame_t* self);
-void Mjpegd_Frame_SetLen(Mjpegd_Frame_t* self,uint16_t len);
+void Mjpegd_Frame_SetLenAndTime(Mjpegd_Frame_t* self,uint16_t len);
 u16_t Mjpegd_Frame_InsertComment(Mjpegd_Frame_t* self,const u8_t *data, u16_t w_len);
 u16_t Mjpegd_Frame_WriteHeader(Mjpegd_Frame_t* self, const u8_t *data, u16_t w_len);
 u16_t Mjpegd_Frame_WriteTail(Mjpegd_Frame_t* self, const u8_t *data, u16_t w_len);

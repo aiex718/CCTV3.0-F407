@@ -12,20 +12,9 @@
 #include "lwip/stats.h"
 
 /* BSP */
-#include "device/cam_ov2640/cam_ov2640.h"
-#include "bsp/sys/callback.h"
 #include "bsp/platform/periph_list.h"
 
-Mjpegd_t* mjpeg_inst = (Mjpegd_t*)&(Mjpegd_t){
-    .Port = 8080,
-    .FrameBuf = (Mjpegd_FrameBuf_t*)&(Mjpegd_FrameBuf_t){
-        ._frames_len = MJPEGD_FRAMEBUF_LEN,
-        ._frames = (Mjpegd_Frame_t*)&(Mjpegd_Frame_t[MJPEGD_FRAMEBUF_LEN]){
-            0
-        },
-    },
-    .Camera = NULL,
-};
+
 
 /** Lwip raw api callbacks **/
 static err_t Mjpegd_LwipAccept_Handler(void *arg, struct tcp_pcb *pcb, err_t err);
@@ -42,64 +31,22 @@ static err_t Mjpegd_SendData(struct tcp_pcb *pcb, ClientState_t *cs);
 /** callbacks **/
 static void Mjpegd_RecvNewFrame_handler(void *sender, void *arg, void *owner);
 
-//main listen pcb
-static Callback_t Cam2640_NewFrame_cb;
-
-/**
- * @brief   Callback invoked when new frame arrived.
- * @details New frame will be assigned to _pending_frame, waiting service call
- *          to process the raw frame.
- * @warning If original _pending_frame is not NULL, it will be released directly,
- *          which cause frame dropped, we dont buffer frame since all mjpegd client
- *          can reference to the same newest frame, buffer old frame make no sense.
- */
-void Cam2640_NewFrame_Handler(void *sender, void *arg, void *owner)
-{
-    Device_CamOV2640_t *cam = (Device_CamOV2640_t*)sender;
-    Mjpegd_Frame_t *frame = (Mjpegd_Frame_t*)cam->pExtension;
-    
-    if(frame!=NULL)
-        Mjpegd_Frame_SetLen(frame, cam->CamOV2640_FrameBuf_Len);
-    
-    //return captured frame and get a new frame buffer
-    //TODO:Remove inst
-    frame=Mjpegd_FrameProc_NextFrame(mjpeg_inst,frame);
-
-    //start next capture
-    if(frame!=NULL)
-    {
-        Mjpegd_Frame_Clear(frame);
-        cam->pExtension = frame;
-        Device_CamOV2640_SetBuf(cam,frame->payload,MJPEGD_FRAME_PAYLOAD_SPACE);
-        Device_CamOV2640_SnapCmd(cam,true);
-    }
-    else
-    {
-        cam->pExtension = NULL;
-        Device_CamOV2640_SetBuf(cam,NULL,0);
-        LWIP_DEBUGF(MJPEGD_DEBUG | LWIP_DBG_LEVEL_SERIOUS , 
-            MJPEGD_DBG_ARG("Camera no idle frame\n"));
-    }
-
-    BSP_UNUSED_ARG(arg);
-}
-
-err_t Mjpegd_Init(Mjpegd_t *mjpeg)
+err_t Mjpegd_Init(Mjpegd_t *mjpegd)
 {
     struct tcp_pcb *pcb;
     err_t err;
 
-    Mjpegd_FrameBuf_Init(mjpeg->FrameBuf);
-    //Mjpegd_Camera_Init(mjpeg->Camera);
+    Mjpegd_FrameBuf_Init(mjpegd->FrameBuf);
+    Mjpegd_Camera_Init(mjpegd->Camera,mjpegd);
 
-    mjpeg->_main_pcb=NULL;
-    mjpeg->_clients_list=NULL;
-    mjpeg->_client_count=0;
-    mjpeg->_stream_count=0;
-    mjpeg->_pending_frame=NULL;
-    mjpeg->_fps_timer=sys_now();
-    mjpeg->_fps_counter=0;
-    mjpeg->_drop_counter=0;
+    mjpegd->_main_pcb=NULL;
+    mjpegd->_clients_list=NULL;
+    mjpegd->_client_count=0;
+    mjpegd->_stream_count=0;
+    mjpegd->_pending_frame=NULL;
+    mjpegd->_fps_timer=sys_now();
+    mjpegd->_fps_counter=0;
+    mjpegd->_drop_counter=0;
 
     try
     {
@@ -108,36 +55,26 @@ err_t Mjpegd_Init(Mjpegd_t *mjpeg)
 
         tcp_setprio(pcb, MJPEGD_MAIN_TCP_PRIO);
 
-        err = tcp_bind(pcb, IP_ADDR_ANY, mjpeg->Port);
+        err = tcp_bind(pcb, IP_ADDR_ANY, mjpegd->Port);
         throwif(err!=ERR_OK,BIND_FAIL);
 
-        mjpeg->_main_pcb = tcp_listen(pcb);
-        throwif(mjpeg->_main_pcb==NULL,LISTEN_FAIL);
+        mjpegd->_main_pcb = tcp_listen(pcb);
+        throwif(mjpegd->_main_pcb==NULL,LISTEN_FAIL);
 
-        tcp_arg(mjpeg->_main_pcb, mjpeg);
-        tcp_accept(mjpeg->_main_pcb, Mjpegd_LwipAccept_Handler);
+        tcp_arg(mjpegd->_main_pcb, mjpegd);
+        tcp_accept(mjpegd->_main_pcb, Mjpegd_LwipAccept_Handler);
 
         LWIP_DEBUGF(MJPEGD_DEBUG | LWIP_DBG_LEVEL_SEVERE 
-            ,MJPEGD_DBG_ARG("init ok at port %d\n",mjpeg->Port));
+            ,MJPEGD_DBG_ARG("init ok at port %d\n",mjpegd->Port));
 
-        //TODO:Move to camera init
-        Cam2640_NewFrame_cb.func = Cam2640_NewFrame_Handler;
-        Cam2640_NewFrame_cb.invoke_cfg = INVOKE_IMMEDIATELY;
-        Cam2640_NewFrame_cb.owner = NULL;
-        Device_CamOV2640_SetCallback(Cam_OV2640,
-            CAMOV2640_CALLBACK_NEWFRAME,&Cam2640_NewFrame_cb);
-        
         //regist framebuf callback
-        mjpeg->RecvNewFrame_cb.func = Mjpegd_RecvNewFrame_handler;
-        mjpeg->RecvNewFrame_cb.owner = mjpeg;
-        Mjpegd_FrameBuf_SetCallback(mjpeg->FrameBuf,
-            FRAMEBUF_CALLBACK_RX_NEWFRAME,&mjpeg->RecvNewFrame_cb);
+        mjpegd->RecvNewFrame_cb.func = Mjpegd_RecvNewFrame_handler;
+        mjpegd->RecvNewFrame_cb.owner = mjpegd;
+        Mjpegd_FrameBuf_SetCallback(mjpegd->FrameBuf,
+            FRAMEBUF_CALLBACK_RX_NEWFRAME,&mjpegd->RecvNewFrame_cb);
 
-        //invoke newframe handler to start snap 
-        //TODO: move to camera start
-        Cam2640_NewFrame_Handler(Cam_OV2640,NULL,NULL);
         //invoke service to start timeout loop and new snap
-        Mjpegd_Service((void*)mjpeg);
+        Mjpegd_Service((void*)mjpegd);
         err=ERR_OK;
     }
     catch(NEW_PCB_FAIL)
@@ -157,7 +94,7 @@ err_t Mjpegd_Init(Mjpegd_t *mjpeg)
     }
     finally
     {
-        if(mjpeg->_main_pcb==NULL && pcb!=NULL)
+        if(mjpegd->_main_pcb==NULL && pcb!=NULL)
         {
             memp_free(MEMP_TCP_PCB, pcb);
             LWIP_DEBUGF(MJPEGD_DEBUG | LWIP_DBG_LEVEL_SERIOUS , MJPEGD_DBG_ARG("init failed, free orig pcb\n"));
@@ -170,12 +107,12 @@ err_t Mjpegd_Init(Mjpegd_t *mjpeg)
 static err_t Mjpegd_LwipAccept_Handler(void *arg, struct tcp_pcb *newpcb, err_t err)
 {
     ClientState_t* cs;
-    Mjpegd_t* mjpeg = (Mjpegd_t*)arg;
+    Mjpegd_t *mjpegd = (Mjpegd_t*)arg;
 
     try
     {
         throwif(err !=ERR_OK,ERR_ACCEPT_HANDLER_ERROR);
-        throwif(mjpeg == NULL,FATAL_ERROR_NULL_MJPEG);
+        throwif(mjpegd == NULL,FATAL_ERROR_NULL_MJPEG);
         throwif(newpcb == NULL,FATAL_ERROR_NULL_PCB);
         tcp_setprio(newpcb, MJPEGD_STREAM_TCP_PRIO);
 
@@ -185,7 +122,7 @@ static err_t Mjpegd_LwipAccept_Handler(void *arg, struct tcp_pcb *newpcb, err_t 
         LWIP_DEBUGF(MJPEGD_DEBUG | LWIP_DBG_STATE,
             MJPEGD_DBG_ARG("New client %s:%d\n", ipaddr_ntoa(&(newpcb->remote_ip)),newpcb->remote_port));
 
-        cs = Mjpegd_Client_New(mjpeg,newpcb);
+        cs = Mjpegd_Client_New(mjpegd,newpcb);
         throwif(cs==NULL,NEW_CLIENT_ERROR);
         
         cs->conn_state = CS_ACCEPTED;
@@ -363,7 +300,7 @@ static err_t Mjpegd_LwipSent_Handler(void *arg, struct tcp_pcb *pcb, u16_t len)
     {
         if(err==ERR_MEM)
         {
-            //ERR_MEM happen quite often when stream sending
+            //ERR_MEM happen quite often when streaming
             //It'll retry when tcp_sndbuf is available
             LWIP_DEBUGF(MJPEGD_DEBUG | LWIP_DBG_TRACE,
                 MJPEGD_DBG_ARG("sent ERR_SEND out of ram\n"));
@@ -544,8 +481,9 @@ static err_t Mjpegd_SendData(struct tcp_pcb *pcb, ClientState_t *cs)
         if (err==ERR_MEM)
         {
             //no enough ram, try again later
-            //LWIP_DEBUGF(MJPEGD_DEBUG | LWIP_DBG_LEVEL_WARNING,
-            //    MJPEGD_DBG_ARG("send TCP_WRITE_ERROR out of ram\n"));
+            //happen quite often when streaming
+            LWIP_DEBUGF(MJPEGD_DEBUG | LWIP_DBG_TRACE,
+               MJPEGD_DBG_ARG("send TCP_WRITE_ERROR out of ram\n"));
         }
         else
         {
@@ -608,25 +546,37 @@ static void Mjpegd_CloseConn(struct tcp_pcb *pcb, ClientState_t *cs)
  */
 void Mjpegd_Service(void* arg)
 {
-    Mjpegd_t* mjpeg = (Mjpegd_t*)arg;
+    Mjpegd_t *mjpegd = (Mjpegd_t*)arg;
+    MJPEGD_SYSTIME_T now = sys_now();
 
-    Mjpegd_FrameProc_ProcPending(mjpeg);
+    Mjpegd_Stream_Output(mjpegd);
+    Mjpegd_FrameProc_ProcPending(mjpegd);
     
-    //TODO:Impl camera on off resnap
-    // if(Mjpegd_Camera_IsSnapping(mjpeg->Camera)==false)
-    // {
-    //     Mjpegd_Frame_t* frame = Mjpegd_FrameBuf_GetIdle(mjpeg->FrameBuf);
-    //     if(frame != NULL)
-    //         Mjpegd_Camera_DoSnap(mjpeg->Camera,frame);
-    //     else
-    //     {
-    //         LWIP_DEBUGF(MJPEGD_DEBUG | LWIP_DBG_LEVEL_WARNING,
-    //             MJPEGD_DBG_ARG("No idle frame\n"));
-    //     }
-    // }
+    //TODO:Impl camera on off 
+    if(Mjpegd_Camera_IsSnapping(mjpegd->Camera)==false)
+    {
+        Mjpegd_Frame_t* frame = Mjpegd_FrameBuf_GetIdle(mjpegd->FrameBuf);
+        if(frame != NULL)
+            Mjpegd_Camera_DoSnap(mjpegd->Camera,frame);
+        else
+        {
+            LWIP_DEBUGF(MJPEGD_DEBUG | LWIP_DBG_LEVEL_WARNING,
+                MJPEGD_DBG_ARG("No idle frame\n"));
+        }
+    }
 
-    Mjpegd_Stream_Output(mjpeg);
-    sys_timeout(MJPEGD_SERVICE_PERIOD, Mjpegd_Service, mjpeg);
+    //show fps
+    if(now - mjpegd->_fps_timer > (1000<<MJPEGD_FPS_PERIOD))
+    {
+        MJPEGD_ATOMIC_XCHG(&mjpegd->_fps_timer,now);
+
+        LWIP_DEBUGF(MJPEGD_FRAMEBUF_DEBUG | LWIP_DBG_STATE, 
+            MJPEGD_DBG_ARG("Mjpegd FPS %d\n",(mjpegd->_fps_counter>>MJPEGD_FPS_PERIOD)));
+        
+        MJPEGD_ATOMIC_XCHG(&mjpegd->_fps_counter,0);
+    }
+
+    sys_timeout(MJPEGD_SERVICE_PERIOD, Mjpegd_Service, mjpegd);
 }
 
 /**
@@ -642,12 +592,12 @@ static void Mjpegd_RecvNewFrame_handler(void *sender, void *arg, void *owner)
 {
     Mjpegd_FrameBuf_t* frame_buf = (Mjpegd_FrameBuf_t*)sender;
     //Mjpegd_Frame_t* new_frame = (Mjpegd_Frame_t*)arg;
-    Mjpegd_t* mjpeg = (Mjpegd_t*)owner;
+    Mjpegd_t *mjpegd = (Mjpegd_t*)owner;
     ClientState_t* cs;
 
     BSP_UNUSED_ARG(arg);
 
-    for (cs=mjpeg->_clients_list; cs!=NULL; cs=cs->_next)
+    for (cs=mjpegd->_clients_list; cs!=NULL; cs=cs->_next)
     {
         //check if stream client transfer done
         if( cs->conn_state==CS_RECEIVED && 

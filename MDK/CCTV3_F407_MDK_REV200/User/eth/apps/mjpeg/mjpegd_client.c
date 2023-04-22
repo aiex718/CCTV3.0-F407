@@ -8,28 +8,28 @@
 #include "lwip/mem.h"
 #include "lwip/tcp.h"
 
-ClientState_t* Mjpegd_Client_New(Mjpegd_t *mjpeg, struct tcp_pcb *pcb)
+ClientState_t* Mjpegd_Client_New(Mjpegd_t *mjpegd, struct tcp_pcb *pcb)
 {
     ClientState_t *cs = NULL;
     try
     {
         throwif(pcb == NULL,PCB_NULL);
-        throwif(mjpeg == NULL,MJPEG_NULL);
+        throwif(mjpegd == NULL,MJPEG_NULL);
 
         cs = (ClientState_t*)mem_malloc(sizeof(ClientState_t));
         throwif(cs == NULL,CLIENT_STATE_OOM);
         
         MJPEGD_MEMSET(cs,0,sizeof(ClientState_t));
         cs->pcb = pcb;
-        cs->parent_mjpeg = mjpeg;
+        cs->parent_mjpeg = mjpegd;
 
-        //Attach to mjpeg->_clients_list head
-        cs->_next = mjpeg->_clients_list;
-        mjpeg->_clients_list=cs;
+        //Attach to mjpegd->_clients_list head
+        cs->_next = mjpegd->_clients_list;
+        mjpegd->_clients_list=cs;
 
-        mjpeg->_client_count++;
+        mjpegd->_client_count++;
         LWIP_DEBUGF(MJPEGD_DEBUG | LWIP_DBG_STATE | LWIP_DBG_LEVEL_WARNING,
-            MJPEGD_DBG_ARG("Alloc client %p, total %d\n",cs,mjpeg->_client_count));
+            MJPEGD_DBG_ARG("Alloc client %p, total %d\n",cs,mjpegd->_client_count));
     }
     catch(PCB_NULL)
     {
@@ -57,20 +57,20 @@ void Mjpegd_Client_Free(ClientState_t *cs)
     if(cs!=NULL)
     {
         struct tcp_pcb *pcb = cs->pcb;
-        Mjpegd_t *mjpeg = (Mjpegd_t*)cs->parent_mjpeg;
+        Mjpegd_t *mjpegd = (Mjpegd_t*)cs->parent_mjpeg;
 
         ClientState_t **prev_ptr=NULL;
         ClientState_t *prev;
         
         //Remove cs from mjpeg->_clients_list
         //Try get previous node whose next is pointing to cs
-        for (prev=mjpeg->_clients_list; prev!=NULL && prev->_next!=cs; prev=prev->_next);
+        for (prev=mjpegd->_clients_list; prev!=NULL && prev->_next!=cs; prev=prev->_next);
         //if previous node is NULL, cs is first node in _clients_list
         //concat cs->next to _clients_list head directly, otherwise concat to prev->_next
-        prev_ptr = prev==NULL ? &mjpeg->_clients_list : &prev->_next;
+        prev_ptr = prev==NULL ? &mjpegd->_clients_list : &prev->_next;
         *prev_ptr = cs->_next;
 
-        Mjpegd_FrameBuf_Release(mjpeg->FrameBuf,cs->frame);
+        Mjpegd_FrameBuf_Release(mjpegd->FrameBuf,cs->frame);
         cs->frame = NULL;
 
         mem_free(cs);
@@ -78,9 +78,9 @@ void Mjpegd_Client_Free(ClientState_t *cs)
         if(pcb!=NULL)
             tcp_arg(pcb, NULL);//this isn't necessary, just for safety
 
-        mjpeg->_client_count--;
+        mjpegd->_client_count--;
         LWIP_DEBUGF(MJPEGD_DEBUG | LWIP_DBG_STATE | LWIP_DBG_LEVEL_WARNING,
-            MJPEGD_DBG_ARG("Dealloc client %p, remaning %d\n",cs,mjpeg->_client_count));
+            MJPEGD_DBG_ARG("Dealloc client %p, remaning %d\n",cs,mjpegd->_client_count));
     }
 }
 

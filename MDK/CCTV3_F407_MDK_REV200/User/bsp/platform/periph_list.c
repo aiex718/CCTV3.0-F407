@@ -11,7 +11,7 @@
 #define __CONST_ARRAY_CAST_VAR(type) (type*)&(const type[])
 
 //GPIO LEDs
-HAL_GPIO_pin_t *LED_Load_pin = __CONST_CAST_VAR(HAL_GPIO_pin_t)
+HAL_GPIO_pin_t *Periph_LED_Load_pin = __CONST_CAST_VAR(HAL_GPIO_pin_t)
 {
 	.GPIOx = GPIOC,
 	.GPIO_RCC_cmd = __CONST_CAST_VAR(HAL_RCC_Cmd_t){
@@ -28,7 +28,7 @@ HAL_GPIO_pin_t *LED_Load_pin = __CONST_CAST_VAR(HAL_GPIO_pin_t)
 	.GPIO_AF_Mapping = 0,
 };
 
-HAL_GPIO_pin_t *LED_STAT_pin = __CONST_CAST_VAR(HAL_GPIO_pin_t)
+HAL_GPIO_pin_t *Periph_LED_STAT_pin = __CONST_CAST_VAR(HAL_GPIO_pin_t)
 {	
 	.GPIOx = GPIOC,
 	.GPIO_RCC_cmd = __CONST_CAST_VAR(HAL_RCC_Cmd_t){
@@ -46,7 +46,7 @@ HAL_GPIO_pin_t *LED_STAT_pin = __CONST_CAST_VAR(HAL_GPIO_pin_t)
 };
 
 //GPIO Buttons
-HAL_GPIO_pin_t *Button_Wkup_pin = __CONST_CAST_VAR(HAL_GPIO_pin_t)
+HAL_GPIO_pin_t *Periph_Button_Wkup_pin = __CONST_CAST_VAR(HAL_GPIO_pin_t)
 {
 	.GPIOx = GPIOA,
 	.GPIO_RCC_cmd = __CONST_CAST_VAR(HAL_RCC_Cmd_t){
@@ -231,7 +231,7 @@ DBG_Serial_t* DBG_Serial= __VAR_CAST_VAR(DBG_Serial_t)
 	},//hal_usart
 };
 
-HAL_Timer_PWM_t *Timer_PWM_FlashLight = __CONST_CAST_VAR(HAL_Timer_PWM_t)
+HAL_Timer_PWM_t *Periph_Timer_PWM_FlashLight = __CONST_CAST_VAR(HAL_Timer_PWM_t)
 {
 	.Timer = __CONST_CAST_VAR(HAL_Timer_t)
 	{
@@ -255,7 +255,7 @@ HAL_Timer_PWM_t *Timer_PWM_FlashLight = __CONST_CAST_VAR(HAL_Timer_PWM_t)
 };
 
 
-Device_FlashLight_t *FlashLight_Top = __VAR_CAST_VAR(Device_FlashLight_t)
+Device_FlashLight_t *Periph_FlashLight_Top = __VAR_CAST_VAR(Device_FlashLight_t)
 {
 	.FlashLight_Timer_PWM = NULL,
 	.FlashLight_Timer_PWM_Channel = __CONST_CAST_VAR(HAL_Timer_PWM_Channel_t){
@@ -291,7 +291,7 @@ Device_FlashLight_t *FlashLight_Top = __VAR_CAST_VAR(Device_FlashLight_t)
 	.FlashLight_Brightness = 1,//default brightness 1%
 };
 
-Device_FlashLight_t *FlashLight_Bottom = __VAR_CAST_VAR(Device_FlashLight_t)
+Device_FlashLight_t *Periph_FlashLight_Bottom = __VAR_CAST_VAR(Device_FlashLight_t)
 {
 	.FlashLight_Timer_PWM = NULL,
 	.FlashLight_Timer_PWM_Channel = __CONST_CAST_VAR(HAL_Timer_PWM_Channel_t){
@@ -327,7 +327,7 @@ Device_FlashLight_t *FlashLight_Bottom = __VAR_CAST_VAR(Device_FlashLight_t)
 	.FlashLight_Brightness = 1,//default brightness 1%
 };
 
-HAL_MCO_t *MCO2_Cam = __CONST_CAST_VAR(HAL_MCO_t){
+HAL_MCO_t *Periph_MCO2_Cam = __CONST_CAST_VAR(HAL_MCO_t){
 	.MCO_Idx = MCO2, 
 	.MCO_Pin = __CONST_CAST_VAR(HAL_GPIO_pin_t){
 		.GPIOx = GPIOC, //MCO2 - PC9
@@ -348,7 +348,7 @@ HAL_MCO_t *MCO2_Cam = __CONST_CAST_VAR(HAL_MCO_t){
 	.MCO_ClkDiv = RCC_MCO2Div_1,
 };
 
-Device_CamOV2640_t *Cam_OV2640 = __VAR_CAST_VAR(Device_CamOV2640_t){
+Device_CamOV2640_t _Cam_OV2640  = {
 	.CamOV2640_DCMI = __VAR_CAST_VAR(HAL_DCMI_t){
 		.DCMIx = DCMI,
 		.DCMI_RCC_Cmd = __CONST_CAST_VAR(HAL_RCC_Cmd_t){
@@ -624,8 +624,24 @@ Device_CamOV2640_t *Cam_OV2640 = __VAR_CAST_VAR(Device_CamOV2640_t){
 			.GPIO_PuPd = GPIO_PuPd_NOPULL, //external pulldown
 		},
 	},//PWDN_Pin
-	.CamOV2640_FrameBuf = NULL,
-	.CamOV2640_FrameBuf_Len = 0,
-	// .CamOV2640_FrameBuf = __VAR_ARRAY_CAST_VAR(uint8_t,1024*12){0},
-	// .CamOV2640_FrameBuf_Len = 1024*12,
-};//Cam_OV2640
+	.CamOV2640_Buffer = NULL,
+	.CamOV2640_Buffer_Len = 0,
+	// .CamOV2640_Buffer = __VAR_ARRAY_CAST_VAR(uint8_t,1024*12){0},
+	// .CamOV2640_Buffer_Len = 1024*12,
+};
+Device_CamOV2640_t *Periph_Cam_OV2640 = &_Cam_OV2640;
+//TODO: Change decl format to upper
+
+Mjpegd_t* Periph_Mjpegd = __VAR_CAST_VAR(Mjpegd_t){
+    .Port = 8080,
+    .FrameBuf = __VAR_CAST_VAR(Mjpegd_FrameBuf_t){
+        ._frames_len = MJPEGD_FRAMEBUF_LEN,
+        ._frames = __VAR_ARRAY_CAST_VAR(Mjpegd_Frame_t,MJPEGD_FRAMEBUF_LEN){
+            0
+        },
+    },
+    .Camera = __VAR_CAST_VAR(Mjpegd_Camera_t){
+		.Ov2640_RecvRawFrame_cb = NULL,
+        .HwCam_Ov2640 = &_Cam_OV2640,
+    },
+};//Periph_Mjpegd

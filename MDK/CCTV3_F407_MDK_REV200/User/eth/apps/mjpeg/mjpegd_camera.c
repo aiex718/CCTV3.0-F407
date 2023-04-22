@@ -1,1 +1,125 @@
-#include "mjpegd_camera.h"
+#include "eth/apps/mjpeg/mjpegd_camera.h"
+#include "eth/apps/mjpeg/mjpegd_frameproc.h"
+#include "eth/apps/mjpeg/mjpegd_debug.h"
+
+#include "bsp/platform/periph_list.h"
+
+//private functions
+static void Cam2640_NewFrame_Handler(void *sender, void *arg, void *owner);
+
+void Mjpegd_Camera_Init(Mjpegd_Camera_t *cam,Mjpegd_t *mjpegd)
+{
+    //Camera init
+	Device_CamOV2640_Init(cam->HwCam_Ov2640);
+
+    cam->Ov2640_RecvRawFrame_cb.func = Cam2640_NewFrame_Handler;
+    cam->Ov2640_RecvRawFrame_cb.invoke_cfg = INVOKE_IMMEDIATELY;
+    cam->Ov2640_RecvRawFrame_cb.owner = mjpegd;
+    Device_CamOV2640_SetCallback(cam->HwCam_Ov2640,
+        CAMOV2640_CALLBACK_NEWFRAME,&cam->Ov2640_RecvRawFrame_cb);
+}
+
+void Mjpegd_Camera_DoSnap(Mjpegd_Camera_t *cam,Mjpegd_Frame_t *frame)
+{
+    if(frame!=NULL)
+    {
+        void* oldframe=cam->HwCam_Ov2640->pExtension;
+        if(oldframe)
+        {
+            LWIP_DEBUGF(MJPEGD_DEBUG | LWIP_DBG_LEVEL_SERIOUS,
+                MJPEGD_DBG_ARG("DoSnap old frame not NULL %p\n",oldframe));
+        }
+
+        Mjpegd_Frame_Clear(frame);
+        cam->HwCam_Ov2640->pExtension = frame;
+        //TODO: Set buf len without MJPEGD_FRAME_PAYLOAD_SPACE
+        Device_CamOV2640_SetBuf(cam->HwCam_Ov2640,frame->payload,MJPEGD_FRAME_PAYLOAD_SPACE);
+        Device_CamOV2640_CaptureCmd(cam->HwCam_Ov2640,true);
+    }
+}
+
+void Mjpegd_Camera_Start(Mjpegd_Camera_t *cam)
+{
+	Device_FlashLight_Cmd(Periph_FlashLight_Top,true);
+	Device_FlashLight_Cmd(Periph_FlashLight_Bottom,true);
+    Device_CamOV2640_PwdnCmd(cam->HwCam_Ov2640,false);
+
+    LWIP_DEBUGF(MJPEGD_DEBUG | LWIP_DBG_STATE,
+        MJPEGD_DBG_ARG("Camera_Start %p\n",cam));
+}
+
+void Mjpegd_Camera_Stop(Mjpegd_Camera_t *cam)
+{
+    Device_CamOV2640_CaptureCmd(cam->HwCam_Ov2640,false);
+    //TODO:Check if need to release frame,
+    //normally stop capture will trigger dma complete callback
+    //which will release frame
+
+    Device_CamOV2640_PwdnCmd(cam->HwCam_Ov2640,true);
+	Device_FlashLight_Cmd(Periph_FlashLight_Top,false);
+	Device_FlashLight_Cmd(Periph_FlashLight_Bottom,false);
+
+    LWIP_DEBUGF(MJPEGD_DEBUG | LWIP_DBG_STATE,
+        MJPEGD_DBG_ARG("Camera_Stop %p\n",cam));
+
+}
+
+u8_t Mjpegd_Camera_IsStarted(Mjpegd_Camera_t *cam)
+{
+    return !Device_CamOV2640_IsPowerDown(cam->HwCam_Ov2640);
+}
+
+u8_t Mjpegd_Camera_IsSnapping(Mjpegd_Camera_t *cam)
+{
+    return Device_CamOV2640_IsCapturing(cam->HwCam_Ov2640);
+}
+
+
+/**
+ * @brief   Callback invoked when new frame arrived.
+ * @details New frame will be assigned to _pending_frame, waiting service call
+ *          to process the raw frame.
+ * @warning If original _pending_frame is not NULL, it will be released directly,
+ *          which cause frame dropped, we dont buffer frame since all mjpegd client
+ *          can reference to the same newest frame, buffer old frame make no sense.
+ */
+static void Cam2640_NewFrame_Handler(void *sender, void *arg, void *owner)
+{
+    Device_CamOV2640_t *cam2640 = (Device_CamOV2640_t*)sender;
+    Mjpegd_t *mjpegd = (Mjpegd_t*)owner;
+    Mjpegd_Frame_t *frame;
+
+    if(cam2640==NULL || mjpegd==NULL)
+    {
+        LWIP_DEBUGF(MJPEGD_DEBUG | LWIP_DBG_LEVEL_SERIOUS , 
+            MJPEGD_DBG_ARG("NULL args\n"));
+        return;
+    }
+
+    //remove frame from camera
+    frame = (Mjpegd_Frame_t*)cam2640->pExtension;
+    cam2640->pExtension=NULL;
+
+    if(frame!=NULL)
+        Mjpegd_Frame_SetLenAndTime(frame, cam2640->CamOV2640_Buffer_Len);
+    
+    //clear buffer
+    Device_CamOV2640_SetBuf(cam2640,NULL,0);
+    
+    //return captured frame and get a new frame buffer
+    frame=Mjpegd_FrameProc_NextFrame(mjpegd,frame);
+    
+    if(frame!=NULL)
+    {
+        //start next capture
+        Mjpegd_Camera_DoSnap(mjpegd->Camera,frame);
+    }
+    else
+    {
+        //no frame buffer available, stop capture
+        LWIP_DEBUGF(MJPEGD_DEBUG | LWIP_DBG_LEVEL_SERIOUS , 
+            MJPEGD_DBG_ARG("Camera no idle frame\n"));
+    }
+
+    BSP_UNUSED_ARG(arg);
+}

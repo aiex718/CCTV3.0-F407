@@ -7,8 +7,10 @@
 #include "eth/apps/mjpeg/mjpegd_frame.h"
 #include "eth/apps/mjpeg/mjpegd_memutils.h"
 
-Mjpegd_Frame_t* Mjpegd_FrameProc_NextFrame(Mjpegd_t *mjpeg,Mjpegd_Frame_t* frame);
-void Mjpegd_FrameProc_ProcPending(Mjpegd_t *mjpeg);
+
+void Mjpegd_FrameProc_RecvRaw(Mjpegd_t *mjpegd,Mjpegd_Frame_t* frame);
+Mjpegd_Frame_t* Mjpegd_FrameProc_NextFrame(Mjpegd_t *mjpegd,Mjpegd_Frame_t* frame);
+void Mjpegd_FrameProc_ProcPending(Mjpegd_t *mjpegd);
 
 
 #endif

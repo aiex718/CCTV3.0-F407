@@ -63,6 +63,16 @@ void HAL_DCMI_JpegCmd(HAL_DCMI_t* self, bool en)
 void HAL_DCMI_CaptureCmd(HAL_DCMI_t* self, bool en)
 {
     DCMI_CaptureCmd(en?ENABLE:DISABLE);
+    
+    if (en==false)
+    {
+        HAL_DMA_Cmd(self->DCMI_RxDma_Cfg,false);
+    }
+}
+
+bool HAL_DCMI_IsCapturing(HAL_DCMI_t* self)
+{
+    return self->DCMIx->CR & DCMI_CR_CAPTURE;
 }
 
 void HAL_DCMI_Cmd(HAL_DCMI_t* self, bool en)

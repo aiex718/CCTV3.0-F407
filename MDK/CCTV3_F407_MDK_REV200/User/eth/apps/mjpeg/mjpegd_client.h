@@ -53,7 +53,7 @@ struct ClientState_struct
     ClientState_t *_next;
 };
 
-ClientState_t* Mjpegd_Client_New(Mjpegd_t *mjpeg, struct tcp_pcb *pcb);
+ClientState_t* Mjpegd_Client_New(Mjpegd_t *mjpegd, struct tcp_pcb *pcb);
 void Mjpegd_Client_Free(ClientState_t *cs);
 
 err_t Mjpegd_Client_ParseRequest(ClientState_t *cs,const char* req,const u16_t req_len);

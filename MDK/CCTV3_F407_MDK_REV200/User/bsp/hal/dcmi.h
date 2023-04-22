@@ -50,6 +50,8 @@ HAL_DCMI_Status_t HAL_DCMI_StartDmaRecv(HAL_DCMI_t* self, uint8_t* buf, uint32_t
 void HAL_DCMI_JpegCmd(HAL_DCMI_t* self, bool en);
 void HAL_DCMI_CaptureCmd(HAL_DCMI_t* self, bool en);
 void HAL_DCMI_Cmd(HAL_DCMI_t* self, bool en);
+bool HAL_DCMI_IsCapturing(HAL_DCMI_t* self);
+bool HAL_DCMI_IsEnabled(HAL_DCMI_t* self);
 void HAL_DCMI_IRQHandler(HAL_DCMI_t* self);
 void HAL_DCMI_Service(HAL_DCMI_t* self);
 

@@ -13,12 +13,12 @@
  * @brief Force output to all stream clients
  * @return err_t ERR_OK
  */
-void Mjpegd_Stream_Output(Mjpegd_t *mjpeg)
+void Mjpegd_Stream_Output(Mjpegd_t *mjpegd)
 {
     ClientState_t* cs;
     err_t err;
 
-    for (cs=mjpeg->_clients_list; cs!=NULL; cs=cs->_next)
+    for (cs=mjpegd->_clients_list; cs!=NULL; cs=cs->_next)
     {
         if( cs->conn_state==CS_RECEIVED && 
             cs->request_handler->req == REQUEST_STREAM &&

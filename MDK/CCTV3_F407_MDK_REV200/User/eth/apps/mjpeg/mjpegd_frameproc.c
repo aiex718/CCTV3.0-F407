@@ -7,11 +7,40 @@
 
 
 //private functions
+static void Mjpegd_FrameProc_Drop(Mjpegd_t *mjpegd);
 static void Mjpegd_FrameProc_ProcessRawFrame(Mjpegd_Frame_t* frame);
+
+/**
+ * @brief Return new frame captured by camera.
+ * @note  This function is thread safe.
+ * @details If previous frame is not yet processed, we drop previous frame.
+ * @param frame New jpeg frame captured by camera.
+ */
+void Mjpegd_FrameProc_RecvRaw(Mjpegd_t *mjpegd,Mjpegd_Frame_t* frame)
+{
+    if (Mjpegd_Frame_IsValid(frame)==false)
+    {
+        LWIP_DEBUGF(MJPEGD_DEBUG | LWIP_DBG_LEVEL_SERIOUS , 
+            MJPEGD_DBG_ARG("RecvRaw bad frame %p\n",frame));
+    }
+    else
+    {
+        frame = (Mjpegd_Frame_t*)
+            MJPEGD_ATOMIC_XCHG((__IO u32_t *)&mjpegd->_pending_frame,(u32_t)frame);
+    }
+
+    if(frame!=NULL)
+    {
+        Mjpegd_FrameProc_Drop(mjpegd);
+        Mjpegd_Frame_Clear(frame);
+        Mjpegd_FrameBuf_ReleaseIdle(mjpegd->FrameBuf,frame);
+    }
+}
 
 /**
  * @brief Return new frame captured by camera, return next frame buffer
  *        for next capture if available.
+ * @note  This function is thread safe.
  * @details If previous frame is not yet processed, we drop previous frame 
  *          and reuse the frame buffer for next capture.          
  *          Otherwise, get a new frame buffer for next capture.
@@ -19,13 +48,12 @@ static void Mjpegd_FrameProc_ProcessRawFrame(Mjpegd_Frame_t* frame);
  * @param frame New jpeg frame captured by camera.
  * @return Next frame buffer for next capture, null if not available.
  */
-Mjpegd_Frame_t* Mjpegd_FrameProc_NextFrame(Mjpegd_t *mjpeg,Mjpegd_Frame_t* frame)
+Mjpegd_Frame_t* Mjpegd_FrameProc_NextFrame(Mjpegd_t *mjpegd,Mjpegd_Frame_t* frame)
 {
     Mjpegd_Frame_t *next_frame=NULL;
 
     if (Mjpegd_Frame_IsValid(frame)==false)
     {
-        //Frame null usually occurs when first capture from camera 
         LWIP_DEBUGF(MJPEGD_DEBUG | LWIP_DBG_LEVEL_SERIOUS , 
             MJPEGD_DBG_ARG("NextFrame bad frame %p\n",frame));
         next_frame = frame; //reuse the frame buffer
@@ -33,60 +61,63 @@ Mjpegd_Frame_t* Mjpegd_FrameProc_NextFrame(Mjpegd_t *mjpeg,Mjpegd_Frame_t* frame
     else
     {
         next_frame = (Mjpegd_Frame_t*)
-            MJPEGD_ATOMIC_XCHG((__IO u32_t *)&mjpeg->_pending_frame,(u32_t)frame);
+            MJPEGD_ATOMIC_XCHG((__IO u32_t *)&mjpegd->_pending_frame,(u32_t)frame);
     }
 
     if(next_frame!=NULL)
     {
-        mjpeg->_drop_counter++;
-        if(mjpeg->_drop_counter >= MJPEGD_FRAMEDROP_WARNING_THRESHOLD)
-        {
-            LWIP_DEBUGF(MJPEGD_FRAMEBUF_DEBUG | LWIP_DBG_LEVEL_WARNING, 
-                MJPEGD_DBG_ARG("NextFrame dropped %d, proc too slow?\n",mjpeg->_drop_counter));
-            mjpeg->_drop_counter=0;
-        }
+        Mjpegd_FrameProc_Drop(mjpegd);
         Mjpegd_Frame_Clear(next_frame);
     }
     else
     {
-        next_frame=Mjpegd_FrameBuf_GetIdle(mjpeg->FrameBuf);
+        next_frame=Mjpegd_FrameBuf_GetIdle(mjpegd->FrameBuf);
     }
 
     return next_frame;
 }
 
-void Mjpegd_FrameProc_ProcPending(Mjpegd_t *mjpeg)
+/**
+ * @brief Take pending frame to local and process it.
+ * @note  This function is thread safe.
+ */
+void Mjpegd_FrameProc_ProcPending(Mjpegd_t *mjpegd)
 {
-    MJPEGD_SYSTIME_T now = sys_now();
-    //take pending frame to local and process it
     Mjpegd_Frame_t* local_frame = (Mjpegd_Frame_t*)
-            MJPEGD_ATOMIC_XCHG((__IO u32_t *)&mjpeg->_pending_frame,NULL);
+            MJPEGD_ATOMIC_XCHG((__IO u32_t *)&mjpegd->_pending_frame,NULL);
     
     if(local_frame!=NULL)
     {
         Mjpegd_FrameProc_ProcessRawFrame(local_frame);
-        Mjpegd_FrameBuf_ReleaseIdle(mjpeg->FrameBuf,local_frame);
+        Mjpegd_FrameBuf_ReleaseIdle(mjpegd->FrameBuf,local_frame);
 
         LWIP_DEBUGF(MJPEGD_FRAMEBUF_DEBUG | LWIP_DBG_TRACE, 
             MJPEGD_DBG_ARG("ProcPending %p, _sem=%d\n",local_frame,local_frame->_sem));
         
-        mjpeg->_fps_counter++;
-    }
-
-    //show fps
-    if(now - mjpeg->_fps_timer > (1000<<MJPEGD_FPS_PERIOD))
-    {
-        LWIP_DEBUGF(MJPEGD_FRAMEBUF_DEBUG | LWIP_DBG_STATE, 
-            MJPEGD_DBG_ARG("Proc fps %d\n",(mjpeg->_fps_counter>>MJPEGD_FPS_PERIOD)));
-        mjpeg->_fps_counter = 0;
-        mjpeg->_fps_timer = now;
+        MJPEGD_ATOMIC_INC(&mjpegd->_fps_counter);
     }
 }
 
+/**
+ * @brief Add drop counter and show warning message if too many frames dropped.
+ * @note  This function is thread safe.
+ */
+static void Mjpegd_FrameProc_Drop(Mjpegd_t *mjpegd)
+{
+    u16_t drop_cnt = MJPEGD_ATOMIC_INC(&mjpegd->_drop_counter);
+
+    if(drop_cnt >= MJPEGD_FRAMEDROP_WARNING_THRESHOLD)
+    {
+        LWIP_DEBUGF(MJPEGD_FRAMEBUF_DEBUG | LWIP_DBG_LEVEL_SEVERE, 
+            MJPEGD_DBG_ARG("Frame dropped %d, proc too slow?\n",mjpegd->_drop_counter));
+        
+        MJPEGD_ATOMIC_XCHG(&mjpegd->_drop_counter,0);
+    }
+}
 
 /**
  * @brief Add headers, comments(contains frame time information) and HTTP EOF to received frame.
- * @note  This function should regist to FrameBuffer_ReceiveRawFrame_Event.
+ * @note  This function is thread safe.
  * @param frame Received frame
  */
 static void Mjpegd_FrameProc_ProcessRawFrame(Mjpegd_Frame_t* frame)

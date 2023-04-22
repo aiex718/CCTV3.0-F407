@@ -24,6 +24,7 @@ typedef enum
 
 typedef enum 
 {
+    //source=Device_CamOV2640_t,arg=NULL
     CAMOV2640_CALLBACK_NEWFRAME = 0 ,
     __NOT_CALLBACK_CAM_OV2640_MAX   ,
 }Device_CamOV2640_CallbackIdx_t;
@@ -34,8 +35,8 @@ typedef struct
     HAL_I2C_t *CamOV2640_I2C;
     HAL_GPIO_pin_t *CamOV2640_PWDN_pin;
     //frame buffer
-    uint8_t *CamOV2640_FrameBuf;
-    uint16_t CamOV2640_FrameBuf_Len;
+    uint8_t *CamOV2640_Buffer;
+    uint16_t CamOV2640_Buffer_Len;
     //callbalck
     Callback_t *CamOV2640_Callbacks[__NOT_CALLBACK_CAM_OV2640_MAX];
     //custom data
@@ -59,10 +60,13 @@ void Device_CamOV2640_SetCallback(Device_CamOV2640_t* self, \
     Device_CamOV2640_CallbackIdx_t cb_idx, Callback_t* callback); 
 void Device_CamOV2640_Service(Device_CamOV2640_t* self);
 
+
 //device specific function
-Device_CamOV2640_Status_t Device_CamOV2640_SnapCmd(Device_CamOV2640_t* self,bool en);
+Device_CamOV2640_Status_t Device_CamOV2640_CaptureCmd(Device_CamOV2640_t* self,bool en);
 void Device_CamOV2640_SetBuf(Device_CamOV2640_t* self,uint8_t *buf, uint16_t len);
 void Device_CamOV2640_PwdnCmd(Device_CamOV2640_t* self,bool en);
+bool Device_CamOV2640_IsPowerDown(Device_CamOV2640_t* self);
+bool Device_CamOV2640_IsCapturing(Device_CamOV2640_t* self);
 void Device_CamOV2640_SoftReset(Device_CamOV2640_t* self);
 void Device_CamOV2640_ReadID(Device_CamOV2640_t* self,CAM_OV2640_ID_t *id);
 void Device_CamOV2640_SetJpegFormat(Device_CamOV2640_t* self,CAM_OV2640_JpegFormat_Config_t jpeg_format);

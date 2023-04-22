@@ -23,7 +23,8 @@ typedef struct {
     ClientState_t *_clients_list;
     u8_t _client_count;
     u8_t _stream_count;
-    //pending frame and timer for fps
+    //pending frame and timer for fps,
+    //these variables are shared between main thread and camera thread/ISR
     Mjpegd_Frame_t *_pending_frame;
     MJPEGD_SYSTIME_T _fps_timer;
     u16_t _fps_counter;
@@ -37,7 +38,7 @@ typedef struct {
 #include "eth/apps/mjpeg/mjpegd_client.h"
 #include "eth/apps/mjpeg/mjpegd_camera.h"
 
-err_t Mjpegd_Init(Mjpegd_t *mjpeg);
+err_t Mjpegd_Init(Mjpegd_t *mjpegd);
 void Mjpegd_Service(void *arg);
 
 extern Mjpegd_t* mjpeg_inst;

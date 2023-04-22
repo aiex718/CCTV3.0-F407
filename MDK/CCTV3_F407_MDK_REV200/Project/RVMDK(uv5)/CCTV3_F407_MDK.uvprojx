@@ -1226,6 +1226,11 @@
               <FileType>1</FileType>
               <FilePath>..\..\User\eth\apps\mjpeg\mjpegd_frameproc.c</FilePath>
             </File>
+            <File>
+              <FileName>mjpegd_camera.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\User\eth\apps\mjpeg\mjpegd_camera.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
