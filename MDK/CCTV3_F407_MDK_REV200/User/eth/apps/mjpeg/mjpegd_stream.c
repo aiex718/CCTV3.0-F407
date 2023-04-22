@@ -1,13 +1,11 @@
 #include "eth/apps/mjpeg/mjpegd_stream.h"
+#include "eth/apps/mjpeg/mjpegd_opts.h"
 #include "eth/apps/mjpeg/mjpegd_debug.h"
 #include "eth/apps/mjpeg/trycatch.h"
 #include "eth/apps/mjpeg/mjpegd_framebuf.h"
 #include "eth/apps/mjpeg/mjpegd_client.h"
 
 #include "lwip/tcp.h"
-
-
-#define MJPEGD_STREAM_LIMIT MJPEGD_TOTAL_CLEINT_LIMIT
 
 /**
  * @brief Force output to all stream clients
@@ -21,9 +19,10 @@ void Mjpegd_Stream_Output(Mjpegd_t *mjpegd)
     for (cs=mjpegd->_clients_list; cs!=NULL; cs=cs->_next)
     {
         if( cs->conn_state==CS_RECEIVED && 
-            cs->request_handler->req == REQUEST_STREAM &&
             cs->pcb!=NULL && 
-            cs->pcb->unsent !=NULL)
+            cs->pcb->unsent !=NULL && 
+            (cs->request_handler->req == REQUEST_STREAM || 
+            cs->request_handler->req == REQUEST_SNAP))
         {
             err = tcp_output(cs->pcb);
             if(err != ERR_OK)
@@ -33,7 +32,6 @@ void Mjpegd_Stream_Output(Mjpegd_t *mjpegd)
                     LWIP_DEBUGF(MJPEGD_DEBUG | LWIP_DBG_LEVEL_WARNING,
                         MJPEGD_DBG_ARG("stream_output TCP_OUTPUT %s\n",lwip_strerr(err)));
                 }
-                return;
             }
         }
     }
@@ -44,7 +42,7 @@ void Mjpegd_Stream_Output(Mjpegd_t *mjpegd)
  *        assigned when new frame arrived.
  * @return err_t ERR_OK
  */
-err_t Mjpegd_Stream_NextFrame(void* client_state)
+err_t Mjpegd_Stream_FrameSent(void* client_state)
 {
     err_t err;
     ClientState_t *cs;
@@ -59,11 +57,28 @@ err_t Mjpegd_Stream_NextFrame(void* client_state)
         throwif(mjpegd==NULL,NULL_MJPEGD);
         frame_buf = mjpegd->FrameBuf;
         throwif(frame_buf==NULL,NULL_FRAMEBUF);
+        throwif(cs->request_handler==NULL,NULL_REQUEST_HANDLER);
 
-        Mjpegd_FrameBuf_Release(frame_buf,cs->frame);
-        cs->frame = NULL;
+        //clear client file
+        client_assign_file(cs,NULL,0);
 
-        err=ERR_OK;
+        //if cs->frame not null, it's already transfered, release it
+        if(cs->frame!=NULL)
+        {
+            Mjpegd_FrameBuf_Release(frame_buf,cs->frame);
+            cs->frame = NULL;
+            
+            //if client is a snap request, we already done transfer 1 frame
+            //clear get_nextfile_func to trigger connection close
+            if(cs->request_handler->req == REQUEST_SNAP)
+            {
+                cs->get_nextfile_func=NULL;
+                err = ERR_CLSD;
+            }
+        }
+        
+
+        err=ERR_INPROGRESS;
     }
     catch(NULL_CS)
     {
@@ -81,6 +96,12 @@ err_t Mjpegd_Stream_NextFrame(void* client_state)
     {
         LWIP_DEBUGF(MJPEGD_DEBUG | LWIP_DBG_LEVEL_SERIOUS,
             MJPEGD_DBG_ARG("Stream_NextFrame NULL_FRAMEBUF\n"));
+        err=ERR_ARG;
+    }
+    catch(NULL_REQUEST_HANDLER)
+    {
+        LWIP_DEBUGF(MJPEGD_DEBUG | LWIP_DBG_LEVEL_SERIOUS,
+            MJPEGD_DBG_ARG("Stream_NextFrame NULL_REQUEST_HANDLER\n"));
         err=ERR_ARG;
     }
     finally
@@ -103,7 +124,7 @@ err_t Mjpegd_Stream_RecvRequest(void* client_state)
 
         throwif(cs->request_handler==NULL, NULL_REQUEST);
         throwif(cs->request_handler->req != REQUEST_STREAM, REQUEST_NOT_MATCH);
-        throwif(mjpegd->_stream_count+1>MJPEGD_STREAM_LIMIT,TOO_MANY_CLIENTS);
+        throwif(mjpegd->_stream_count+1>MJPEGD_STREAM_CLIENT_LIMIT,TOO_MANY_CLIENTS);
 
         mjpegd->_stream_count++;
         LWIP_DEBUGF(MJPEGD_DEBUG | LWIP_DBG_STATE | LWIP_DBG_LEVEL_WARNING,
@@ -139,7 +160,7 @@ err_t Mjpegd_Stream_RecvRequest(void* client_state)
         err = ERR_USE;
         LWIP_DEBUGF(MJPEGD_DEBUG | LWIP_DBG_LEVEL_WARNING,
             MJPEGD_DBG_ARG("Stream_RecvRequest TOO_MANY_CLIENTS, total: %d, limit: %d\n"
-                ,mjpegd->_stream_count,MJPEGD_STREAM_LIMIT));
+                ,mjpegd->_stream_count,MJPEGD_STREAM_CLIENT_LIMIT));
     }
     finally
     {

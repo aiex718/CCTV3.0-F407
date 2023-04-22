@@ -24,6 +24,7 @@ typedef struct Mjpegd_FrameBuf_struct
 }Mjpegd_FrameBuf_t;
 
 void Mjpegd_FrameBuf_Init(Mjpegd_FrameBuf_t* self);
+bool Mjpegd_FrameBuf_TryClear(Mjpegd_FrameBuf_t* self);
 void Mjpegd_FrameBuf_SetCallback(
     Mjpegd_FrameBuf_t* self, Mjpegd_FrameBuf_CallbackIdx_t cb_idx, 
     Mjpegd_Callback_t *callback);

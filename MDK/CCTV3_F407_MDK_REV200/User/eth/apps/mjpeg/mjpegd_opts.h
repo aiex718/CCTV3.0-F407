@@ -3,15 +3,15 @@
 
 #include "lwip/opt.h"
 
-#ifndef MJPEGD_TOTAL_CLEINT_LIMIT
-    #define MJPEGD_TOTAL_CLEINT_LIMIT 3
+#ifndef MJPEGD_STREAM_CLIENT_LIMIT
+    #define MJPEGD_STREAM_CLIENT_LIMIT 3
 #endif
 
 //this is the size of each frame
-//for 320x240 and default Qs, 10K is pretty enough
+//for 320x240 and default Qs, 12K is pretty enough
 //actual available size is MJPEGD_FRAME_MEM_SPACE - MJPEGD_FRAME_HEADER_SPACE
 #ifndef MJPEGD_FRAME_MEM_SPACE
-    #define MJPEGD_FRAME_MEM_SPACE (10*1024) //10K
+    #define MJPEGD_FRAME_MEM_SPACE (12*1024) //10K
 #endif
 
 //we reserve some space for mjpeg header
@@ -45,7 +45,7 @@
 
 //retry limit is n*(poll interval)
 #ifndef MJPEGD_MAX_RETRIES
-    #define MJPEGD_MAX_RETRIES 5 //5x1000ms=5s
+    #define MJPEGD_MAX_RETRIES 8 //8x1000ms=8s
 #endif
 
 #ifndef MJPEGD_MAIN_TCP_PRIO
@@ -60,8 +60,12 @@
     #define MJPEGD_MIN_REQ_LEN 7
 #endif
 
+#ifndef MJPEGD_IDLE_TIMEOUT
+    #define MJPEGD_IDLE_TIMEOUT 30000 //30s
+#endif
+
 #define MJPEGD_FRAME_PAYLOAD_SPACE (MJPEGD_FRAME_MEM_SPACE - MJPEGD_FRAME_HEADER_SPACE)
-#define MJPEGD_FRAME_SEMAPHORE_MAX MJPEGD_TOTAL_CLEINT_LIMIT
-#define MJPEGD_FRAMEBUF_LEN (MJPEGD_TOTAL_CLEINT_LIMIT+2)
+#define MJPEGD_FRAME_SEMAPHORE_MAX MJPEGD_STREAM_CLIENT_LIMIT
+#define MJPEGD_FRAMEBUF_LEN (MJPEGD_STREAM_CLIENT_LIMIT)
 
 #endif

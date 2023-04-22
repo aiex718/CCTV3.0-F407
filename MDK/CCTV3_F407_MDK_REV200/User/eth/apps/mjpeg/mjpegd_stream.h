@@ -6,7 +6,7 @@
 #include "eth/apps/mjpeg/mjpegd.h"
 
 void Mjpegd_Stream_Output(Mjpegd_t *mjpegd);
-err_t Mjpegd_Stream_NextFrame(void* client_state);
+err_t Mjpegd_Stream_FrameSent(void* client_state);
 err_t Mjpegd_Stream_RecvRequest(void* client_state);
 err_t Mjpegd_Stream_CloseRequest(void* client_state);
 

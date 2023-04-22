@@ -9,13 +9,13 @@
 
 /** Helper macro as function **/
 #define client_assign_file(_cs,_file,_len) do{  \
-_cs->file = (_file);                            \
-_cs->file_len = (_len);                         \
-_cs->file_wptr = cs->file;                      \
-_cs->retries=0;                                 \
+(_cs)->file = (_file);                          \
+(_cs)->file_len = (_len);                       \
+(_cs)->file_wptr = cs->file;                    \
+(_cs)->retries=0;                               \
 } while (0)
-#define client_file_isvalid(_cs) (cs->file!=NULL && cs->file_wptr!=NULL && cs->file_len>0)
-#define client_file_bytestosend(_cs) (_cs->file + _cs->file_len - _cs->file_wptr)
+#define client_file_isvalid(_cs) ((_cs)->file!=NULL && (_cs)->file_wptr!=NULL && (_cs)->file_len>0)
+#define client_file_bytestosend(_cs) ((_cs)->file + (_cs)->file_len - (_cs)->file_wptr)
 
 
 typedef enum 
@@ -33,7 +33,7 @@ struct ClientState_struct
     struct tcp_pcb* pcb;
     void* parent_mjpeg;
 
-    const request_handler_t* request_handler;
+    const Mjpegd_RequestHandler_t* request_handler;
     conn_state_t conn_state;
 
     //file to send

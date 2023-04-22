@@ -16,11 +16,11 @@ typedef struct Mjpegd_Camera_struct
 }Mjpegd_Camera_t;
 
 void Mjpegd_Camera_Init(Mjpegd_Camera_t *cam,Mjpegd_t *mjpegd);
-void Mjpegd_Camera_DoSnap(Mjpegd_Camera_t *cam,Mjpegd_Frame_t *frame);
+bool Mjpegd_Camera_DoSnap(Mjpegd_Camera_t *cam,Mjpegd_Frame_t *frame);
 void Mjpegd_Camera_Start(Mjpegd_Camera_t *cam);
 void Mjpegd_Camera_Stop(Mjpegd_Camera_t *cam);
 
-u8_t Mjpegd_Camera_IsStarted(Mjpegd_Camera_t *cam);
+u8_t Mjpegd_Camera_IsEnabled(Mjpegd_Camera_t *cam);
 u8_t Mjpegd_Camera_IsSnapping(Mjpegd_Camera_t *cam);
 
 #endif

@@ -1207,11 +1207,6 @@
               <FilePath>..\..\User\eth\apps\mjpeg\mjpegd_framebuf.c</FilePath>
             </File>
             <File>
-              <FileName>mjpegd_snap.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\User\eth\apps\mjpeg\mjpegd_snap.c</FilePath>
-            </File>
-            <File>
               <FileName>mjpegd_stream.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\User\eth\apps\mjpeg\mjpegd_stream.c</FilePath>

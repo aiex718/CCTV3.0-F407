@@ -34,7 +34,7 @@ static const char *request_strreq[__NOT_REQUEST_MAX] = {
 #define mjpegd_strreq(x) ""
 #endif
 
-typedef struct request_handler_struct
+typedef struct Mjpegd_RequestHandler_struct
 {
     const request_t req;
     const char      *url;
@@ -44,9 +44,9 @@ typedef struct request_handler_struct
     err_t (* const get_nextfile_func)(void *client_state);
     err_t (* const recv_request_func)(void *client_state);
     err_t (* const clsd_request_func)(void *client_state);
-}request_handler_t;
+}Mjpegd_RequestHandler_t;
 
-extern const request_handler_t mjpegd_request_handlers[__NOT_REQUEST_MAX];
+extern const Mjpegd_RequestHandler_t mjpegd_request_handlers[__NOT_REQUEST_MAX];
 
 
 #endif // __MJPEGD_REQUEST_H__

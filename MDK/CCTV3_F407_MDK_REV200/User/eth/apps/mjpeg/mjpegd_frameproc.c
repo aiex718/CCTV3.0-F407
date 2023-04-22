@@ -11,6 +11,21 @@ static void Mjpegd_FrameProc_Drop(Mjpegd_t *mjpegd);
 static void Mjpegd_FrameProc_ProcessRawFrame(Mjpegd_Frame_t* frame);
 
 /**
+ * @brief Return any broken frame.
+ * @note  This function is thread safe.
+ * @details Clear frame and return to frame buffer.
+ * @param frame broken frame to return.
+ */
+void Mjpegd_FrameProc_RecvBroken(Mjpegd_t *mjpegd,Mjpegd_Frame_t* frame)
+{
+    if(frame!=NULL)
+    {
+        Mjpegd_Frame_Clear(frame);
+        Mjpegd_FrameBuf_ReleaseIdle(mjpegd->FrameBuf,frame);
+    }
+}
+
+/**
  * @brief Return new frame captured by camera.
  * @note  This function is thread safe.
  * @details If previous frame is not yet processed, we drop previous frame.

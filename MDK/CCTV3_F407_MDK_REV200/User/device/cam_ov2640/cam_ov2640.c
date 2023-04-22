@@ -65,7 +65,8 @@ void Device_CamOV2640_DcmiRxDmaTcCallback(void *sender,void *arg,void *owner)
 #endif
     }
     else{
-        DBG_WARNING("Bad frame\n");
+        DBG_WARNING("Bad frame,Snaped len:%u ,trimmed len:%u\n",
+            rxlen,self->CamOV2640_Buffer_Len);
     }
 
     Callback_InvokeNowOrPending_Idx(self ,NULL, self->CamOV2640_Callbacks,
@@ -144,18 +145,19 @@ Device_CamOV2640_Status_t Device_CamOV2640_CaptureCmd(Device_CamOV2640_t* self,b
     if(en)
     {
         if(self->CamOV2640_Buffer==NULL||self->CamOV2640_Buffer_Len==0)
-            return DEVICE_CAMOV2640_ERR;
+            return DEVICE_CAMOV2640_ERR_ARG;
+        if(HAL_DCMI_IsEnabled(self->CamOV2640_DCMI)==false)
+            return DEVICE_CAMOV2640_ERR_DISABLED;
+        if(HAL_DCMI_IsCapturing(self->CamOV2640_DCMI))
+            return DEVICE_CAMOV2640_ERR_BUSY;
         
-        HAL_DCMI_Cmd(self->CamOV2640_DCMI,true);
         HAL_DCMI_StartDmaRecv(self->CamOV2640_DCMI,
             self->CamOV2640_Buffer,self->CamOV2640_Buffer_Len);
         HAL_DCMI_CaptureCmd(self->CamOV2640_DCMI,true);
     }
     else
     {
-        //TODO: stop dma when disable
         HAL_DCMI_CaptureCmd(self->CamOV2640_DCMI,false);
-        HAL_DCMI_Cmd(self->CamOV2640_DCMI,false);
     }
 
     return DEVICE_CAMOV2640_OK;
@@ -163,22 +165,24 @@ Device_CamOV2640_Status_t Device_CamOV2640_CaptureCmd(Device_CamOV2640_t* self,b
 
 void Device_CamOV2640_SetBuf(Device_CamOV2640_t* self,uint8_t *buf, uint16_t len)
 {
-    self->CamOV2640_Buffer = buf;
-    self->CamOV2640_Buffer_Len = len;
+    if(HAL_DCMI_IsCapturing(self->CamOV2640_DCMI)==false)
+    {
+        self->CamOV2640_Buffer = buf;
+        self->CamOV2640_Buffer_Len = len;
+    }
 }
 
-void Device_CamOV2640_PwdnCmd(Device_CamOV2640_t* self,bool en)
+void Device_CamOV2640_Cmd(Device_CamOV2640_t* self,bool en)
 {
+    HAL_DCMI_Cmd(self->CamOV2640_DCMI,en);
+
     if(self->CamOV2640_PWDN_pin!=NULL)
-        HAL_GPIO_WritePin(self->CamOV2640_PWDN_pin,en);
+        HAL_GPIO_WritePin(self->CamOV2640_PWDN_pin,!en);
 }
 
-bool Device_CamOV2640_IsPowerDown(Device_CamOV2640_t* self)
+bool Device_CamOV2640_IsEnabled(Device_CamOV2640_t* self)
 {
-    if(self->CamOV2640_PWDN_pin!=NULL)
-        return HAL_GPIO_ReadPin(self->CamOV2640_PWDN_pin);
-    
-    return false;
+    return HAL_DCMI_IsEnabled(self->CamOV2640_DCMI);
 }
 
 bool Device_CamOV2640_IsCapturing(Device_CamOV2640_t* self)

@@ -19,30 +19,48 @@ void Mjpegd_Camera_Init(Mjpegd_Camera_t *cam,Mjpegd_t *mjpegd)
         CAMOV2640_CALLBACK_NEWFRAME,&cam->Ov2640_RecvRawFrame_cb);
 }
 
-void Mjpegd_Camera_DoSnap(Mjpegd_Camera_t *cam,Mjpegd_Frame_t *frame)
+bool Mjpegd_Camera_DoSnap(Mjpegd_Camera_t *cam,Mjpegd_Frame_t *frame)
 {
     if(frame!=NULL)
     {
+        Device_CamOV2640_Status_t status;
+
+        //check if old frame is not released, should never happen
         void* oldframe=cam->HwCam_Ov2640->pExtension;
         if(oldframe)
         {
-            LWIP_DEBUGF(MJPEGD_DEBUG | LWIP_DBG_LEVEL_SERIOUS,
-                MJPEGD_DBG_ARG("DoSnap old frame not NULL %p\n",oldframe));
+            LWIP_DEBUGF(MJPEGD_DEBUG | LWIP_DBG_LEVEL_SEVERE,
+                MJPEGD_DBG_ARG("DoSnap old frame not NULL, Memory Leaked %p\n",oldframe));
         }
 
         Mjpegd_Frame_Clear(frame);
         cam->HwCam_Ov2640->pExtension = frame;
         //TODO: Set buf len without MJPEGD_FRAME_PAYLOAD_SPACE
         Device_CamOV2640_SetBuf(cam->HwCam_Ov2640,frame->payload,MJPEGD_FRAME_PAYLOAD_SPACE);
-        Device_CamOV2640_CaptureCmd(cam->HwCam_Ov2640,true);
+        status = Device_CamOV2640_CaptureCmd(cam->HwCam_Ov2640,true);
+
+        if(status==DEVICE_CAMOV2640_OK)
+            return true;
+        else
+        {   
+            //snap failed, maybe camera is not enabled
+            //remove frame from camera, frame should be released by caller
+            Device_CamOV2640_SetBuf(cam->HwCam_Ov2640,NULL,0);
+            cam->HwCam_Ov2640->pExtension = NULL;
+            
+            LWIP_DEBUGF(MJPEGD_DEBUG | LWIP_DBG_LEVEL_SERIOUS,
+                MJPEGD_DBG_ARG("Capture failed %d\n",status));
+        }
     }
+
+    return false;
 }
 
 void Mjpegd_Camera_Start(Mjpegd_Camera_t *cam)
 {
 	Device_FlashLight_Cmd(Periph_FlashLight_Top,true);
 	Device_FlashLight_Cmd(Periph_FlashLight_Bottom,true);
-    Device_CamOV2640_PwdnCmd(cam->HwCam_Ov2640,false);
+    Device_CamOV2640_Cmd(cam->HwCam_Ov2640,true);
 
     LWIP_DEBUGF(MJPEGD_DEBUG | LWIP_DBG_STATE,
         MJPEGD_DBG_ARG("Camera_Start %p\n",cam));
@@ -50,12 +68,12 @@ void Mjpegd_Camera_Start(Mjpegd_Camera_t *cam)
 
 void Mjpegd_Camera_Stop(Mjpegd_Camera_t *cam)
 {
+    Device_CamOV2640_Cmd(cam->HwCam_Ov2640,false);
     Device_CamOV2640_CaptureCmd(cam->HwCam_Ov2640,false);
     //TODO:Check if need to release frame,
     //normally stop capture will trigger dma complete callback
     //which will release frame
 
-    Device_CamOV2640_PwdnCmd(cam->HwCam_Ov2640,true);
 	Device_FlashLight_Cmd(Periph_FlashLight_Top,false);
 	Device_FlashLight_Cmd(Periph_FlashLight_Bottom,false);
 
@@ -64,9 +82,9 @@ void Mjpegd_Camera_Stop(Mjpegd_Camera_t *cam)
 
 }
 
-u8_t Mjpegd_Camera_IsStarted(Mjpegd_Camera_t *cam)
+u8_t Mjpegd_Camera_IsEnabled(Mjpegd_Camera_t *cam)
 {
-    return !Device_CamOV2640_IsPowerDown(cam->HwCam_Ov2640);
+    return Device_CamOV2640_IsEnabled(cam->HwCam_Ov2640);
 }
 
 u8_t Mjpegd_Camera_IsSnapping(Mjpegd_Camera_t *cam)
@@ -88,6 +106,8 @@ static void Cam2640_NewFrame_Handler(void *sender, void *arg, void *owner)
     Device_CamOV2640_t *cam2640 = (Device_CamOV2640_t*)sender;
     Mjpegd_t *mjpegd = (Mjpegd_t*)owner;
     Mjpegd_Frame_t *frame;
+
+    BSP_UNUSED_ARG(arg);
 
     if(cam2640==NULL || mjpegd==NULL)
     {
@@ -112,14 +132,18 @@ static void Cam2640_NewFrame_Handler(void *sender, void *arg, void *owner)
     if(frame!=NULL)
     {
         //start next capture
-        Mjpegd_Camera_DoSnap(mjpegd->Camera,frame);
+        if(Mjpegd_Camera_DoSnap(mjpegd->Camera,frame)==false)
+        {
+            //failed to start capture, release frame
+            Mjpegd_FrameProc_RecvBroken(mjpegd,frame);
+            LWIP_DEBUGF(MJPEGD_DEBUG | LWIP_DBG_LEVEL_SERIOUS , 
+                MJPEGD_DBG_ARG("NewFrame DoSnap failed\n"));
+        }
     }
     else
     {
         //no frame buffer available, stop capture
         LWIP_DEBUGF(MJPEGD_DEBUG | LWIP_DBG_LEVEL_SERIOUS , 
-            MJPEGD_DBG_ARG("Camera no idle frame\n"));
+            MJPEGD_DBG_ARG("NewFrame no idle frame\n"));
     }
-
-    BSP_UNUSED_ARG(arg);
 }

@@ -29,6 +29,9 @@ typedef struct {
     MJPEGD_SYSTIME_T _fps_timer;
     u16_t _fps_counter;
     u16_t _drop_counter;
+    //timer for idle
+    MJPEGD_SYSTIME_T _idle_timer;
+    u8_t _framebuf_cleared;
     //callback
     Mjpegd_Callback_t RecvNewFrame_cb;
 } Mjpegd_t;
@@ -40,7 +43,5 @@ typedef struct {
 
 err_t Mjpegd_Init(Mjpegd_t *mjpegd);
 void Mjpegd_Service(void *arg);
-
-extern Mjpegd_t* mjpeg_inst;
 
 #endif // __MJPEGD_H__

@@ -24,6 +24,26 @@ void Mjpegd_FrameBuf_Init(Mjpegd_FrameBuf_t* self)
         Mjpegd_Frame_Init(&self->_frames[i]);
 }
 
+//try to clear framebuf, return faile if any frame acquired by other
+bool Mjpegd_FrameBuf_TryClear(Mjpegd_FrameBuf_t* self)
+{
+    u8_t i;
+    Mjpegd_Frame_t *frame;
+    for (i = 0; i < self->_frames_len; i++)
+    {
+        frame = &self->_frames[i];
+
+        if(Mjpegd_Frame_TryLock(frame))
+        {
+            Mjpegd_Frame_Clear(frame);
+            Mjpegd_Frame_Unlock(frame);
+        }
+        else
+            return false;
+    }
+    return true;
+}
+
 void Mjpegd_FrameBuf_SetCallback(
     Mjpegd_FrameBuf_t* self, Mjpegd_FrameBuf_CallbackIdx_t cb_idx, 
     Mjpegd_Callback_t *callback)

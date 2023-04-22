@@ -1,6 +1,5 @@
 
 #include "eth/apps/mjpeg/mjpegd_request.h"
-#include "eth/apps/mjpeg/mjpegd_snap.h"
 #include "eth/apps/mjpeg/mjpegd_stream.h"
 #include "eth/apps/mjpeg/mjpegd_memutils.h"
 
@@ -223,7 +222,7 @@ Connection: close\r\n\
 </html>";
 
 /** http request handlers **/
-const request_handler_t mjpegd_request_handlers[__NOT_REQUEST_MAX]=
+const Mjpegd_RequestHandler_t mjpegd_request_handlers[__NOT_REQUEST_MAX]=
 {
     {REQUEST_NOTFOUND   ,"/404"         ,Http_Notfound_Response     ,MJPEGD_CHRARR_STRLEN(Http_Notfound_Response)       ,NULL                       ,NULL                           ,NULL                       },
     {REQUEST_TOOMANY    ,"/429"         ,HTTP_TooMany_Response      ,MJPEGD_CHRARR_STRLEN(HTTP_TooMany_Response)        ,NULL                       ,NULL                           ,NULL                       },
@@ -231,6 +230,6 @@ const request_handler_t mjpegd_request_handlers[__NOT_REQUEST_MAX]=
     {REQUEST_VIEW_SNAP  ,"/view/snap"   ,Http_ViewSnap_Response     ,MJPEGD_CHRARR_STRLEN(Http_ViewSnap_Response)       ,NULL                       ,NULL                           ,NULL                       },
     {REQUEST_VIEW_STREAM,"/view/stream" ,Http_ViewStream_Response   ,MJPEGD_CHRARR_STRLEN(Http_ViewStream_Response)     ,NULL                       ,NULL                           ,NULL                       },
     {REQUEST_VIEW_FPS   ,"/view/fps"    ,Http_ViewFps_Response      ,MJPEGD_CHRARR_STRLEN(Http_ViewFps_Response)        ,NULL                       ,NULL                           ,NULL                       },
-    {REQUEST_SNAP       ,"/snap"        ,Http_MjpegChunked_Response ,MJPEGD_CHRARR_STRLEN(Http_MjpegChunked_Response)   ,Mjpegd_Snap_NextFrame      ,NULL                           ,NULL                       },
-    {REQUEST_STREAM     ,"/stream"      ,Http_MjpegChunked_Response ,MJPEGD_CHRARR_STRLEN(Http_MjpegChunked_Response)   ,Mjpegd_Stream_NextFrame    ,Mjpegd_Stream_RecvRequest     ,Mjpegd_Stream_CloseRequest },
+    {REQUEST_SNAP       ,"/snap"        ,Http_MjpegChunked_Response ,MJPEGD_CHRARR_STRLEN(Http_MjpegChunked_Response)   ,Mjpegd_Stream_FrameSent    ,NULL                           ,NULL                       },
+    {REQUEST_STREAM     ,"/stream"      ,Http_MjpegChunked_Response ,MJPEGD_CHRARR_STRLEN(Http_MjpegChunked_Response)   ,Mjpegd_Stream_FrameSent    ,Mjpegd_Stream_RecvRequest      ,Mjpegd_Stream_CloseRequest },
 };

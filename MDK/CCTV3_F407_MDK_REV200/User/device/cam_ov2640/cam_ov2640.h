@@ -19,6 +19,9 @@
 typedef enum 
 {
     DEVICE_CAMOV2640_OK = 0,
+    DEVICE_CAMOV2640_ERR_DISABLED,
+    DEVICE_CAMOV2640_ERR_ARG,
+    DEVICE_CAMOV2640_ERR_BUSY,
     DEVICE_CAMOV2640_ERR,
 }Device_CamOV2640_Status_t;
 
@@ -64,8 +67,8 @@ void Device_CamOV2640_Service(Device_CamOV2640_t* self);
 //device specific function
 Device_CamOV2640_Status_t Device_CamOV2640_CaptureCmd(Device_CamOV2640_t* self,bool en);
 void Device_CamOV2640_SetBuf(Device_CamOV2640_t* self,uint8_t *buf, uint16_t len);
-void Device_CamOV2640_PwdnCmd(Device_CamOV2640_t* self,bool en);
-bool Device_CamOV2640_IsPowerDown(Device_CamOV2640_t* self);
+void Device_CamOV2640_Cmd(Device_CamOV2640_t* self,bool en);
+bool Device_CamOV2640_IsEnabled(Device_CamOV2640_t* self);
 bool Device_CamOV2640_IsCapturing(Device_CamOV2640_t* self);
 void Device_CamOV2640_SoftReset(Device_CamOV2640_t* self);
 void Device_CamOV2640_ReadID(Device_CamOV2640_t* self,CAM_OV2640_ID_t *id);

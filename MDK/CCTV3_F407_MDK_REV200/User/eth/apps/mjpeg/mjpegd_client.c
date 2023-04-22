@@ -28,6 +28,7 @@ ClientState_t* Mjpegd_Client_New(Mjpegd_t *mjpegd, struct tcp_pcb *pcb)
         mjpegd->_clients_list=cs;
 
         mjpegd->_client_count++;
+        mjpegd->_idle_timer = sys_now();
         LWIP_DEBUGF(MJPEGD_DEBUG | LWIP_DBG_STATE | LWIP_DBG_LEVEL_WARNING,
             MJPEGD_DBG_ARG("Alloc client %p, total %d\n",cs,mjpegd->_client_count));
     }
@@ -103,7 +104,7 @@ err_t Mjpegd_Client_ParseRequest(ClientState_t *cs,const char* req,const u16_t r
 
         for ( i = 0; i < MJPEGD_ARRLEN(mjpegd_request_handlers); i++)
         {
-            const request_handler_t* handler = &mjpegd_request_handlers[i];
+            const Mjpegd_RequestHandler_t* handler = &mjpegd_request_handlers[i];
             if (!MJPEGD_STRNCMP(req+4, handler->url, strlen(handler->url)))
             {
                 cs->request_handler = handler;
