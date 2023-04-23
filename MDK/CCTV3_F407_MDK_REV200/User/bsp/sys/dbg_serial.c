@@ -122,13 +122,13 @@ void DBG_Serial_SafeMode(DBG_Serial_t *self,bool en)
         self->safe_mode = true;
         //restart usart to stop any ongoing transfer
         HAL_USART_Cmd(self->hal_usart,false);
-        //reset all configure, including callbacks
+        //reset all configure and callbacks
         HAL_USART_Init(self->hal_usart);
         HAL_USART_Cmd(self->hal_usart,true);
     }
     else
     {
-        //restore all configure, including callbacks
+        //restore all configure and callbacks
         DBG_Serial_Init(self);
         DBG_Serial_Cmd(self,true);
     }
