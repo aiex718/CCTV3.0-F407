@@ -56,6 +56,8 @@ void DBG_Serial_Init(DBG_Serial_t *self)
     if(self->rx_con_queue!=NULL)
         Concurrent_Queue_Clear(self->rx_con_queue);
 
+    self->safe_mode = false;
+
     self->_tx_empty_cb.func = DBG_Serial_UsartTxEmptyCallback;
     self->_tx_empty_cb.owner = self;
 #if DBG_SERIAL_USING_USART_ISR
@@ -108,6 +110,30 @@ void DBG_Serial_Cmd(DBG_Serial_t *self,bool en)
             Concurrent_Queue_Clear(self->rx_con_queue);
     }
 }
+
+//This is a safemode function, it'll stop any ongoing transfer,
+//drop all data, and reset all configure, including callbacks.
+//Any transfer after this function call will use polling mode.
+//Typically for print info in serious hardware error handling.
+void DBG_Serial_SafeMode(DBG_Serial_t *self,bool en)
+{
+    if(en)
+    {
+        self->safe_mode = true;
+        //restart usart to stop any ongoing transfer
+        HAL_USART_Cmd(self->hal_usart,false);
+        //reset all configure, including callbacks
+        HAL_USART_Init(self->hal_usart);
+        HAL_USART_Cmd(self->hal_usart,true);
+    }
+    else
+    {
+        //restore all configure, including callbacks
+        DBG_Serial_Init(self);
+        DBG_Serial_Cmd(self,true);
+    }
+}
+
 
 /*
 Debug serial needs to trigger transfer manually when idle,
@@ -189,6 +215,7 @@ uint16_t DBG_Serial_ReadLine(DBG_Serial_t *self,uint8_t* buf,
     return 0;//only return len when '\n' is received
 }
 
+
 /*
 Due to the limitations of the concurrent_queue's preemption mechanism, 
 the fputc function has been designed as follows:
@@ -228,9 +255,13 @@ int fputc(int ch, FILE *f)
     HAL_USART_t *usart = DBG_Serial->hal_usart;
     if(usart != NULL && HAL_USART_IsEnabled(usart))
     {
-        while( 
-            Concurrent_Queue_TryPush(DBG_Serial->tx_con_queue,(uint8_t)ch)==false && 
-            SysCtrl_IsThreadInIRq() == false );
+        if(DBG_Serial->safe_mode)
+            HAL_USART_WriteByte_Polling(usart,(uint8_t)ch);
+        else
+        {
+            while( 
+                Concurrent_Queue_TryPush(DBG_Serial->tx_con_queue,(uint8_t)ch)==false && 
+                SysCtrl_IsThreadInIRq() == false );
                 //yield();
 #if DBG_SERIAL_USING_USART_ISR
     #if DBG_SERIAL_ENABLE_DMA
@@ -239,6 +270,7 @@ int fputc(int ch, FILE *f)
             HAL_USART_TxDmaWake(usart);
     #endif
 #endif
+        }
     }
 	return (ch);
 }
@@ -246,7 +278,10 @@ int fputc(int ch, FILE *f)
 int fgetc(FILE *f)
 {
 	uint8_t ch=0;
-    while (Concurrent_Queue_TryPop(DBG_Serial->rx_con_queue,&ch) == false);
+    if(DBG_Serial->safe_mode)
+        HAL_USART_ReadByte_Polling(DBG_Serial->hal_usart,&ch);
+    else
+        while (Concurrent_Queue_TryPop(DBG_Serial->rx_con_queue,&ch) == false);
 	return (int)ch;
 }
 

@@ -38,36 +38,70 @@ void HAL_USART_Init(HAL_USART_t* usart)
     usart->_last_rx_time = 0;
 }
 
+void HAL_USART_Cmd(HAL_USART_t* usart, bool en)
+{
+    USART_Cmd((usart)->USARTx,(en)?ENABLE:DISABLE);
+
+    if(en==false)
+    {   
+        if(HAL_USART_IsTxStreamEnabled(usart))
+            HAL_USART_TxStreamCmd(usart,false);
+        //this will trigger TxEmptyCallback
+        if(HAL_USART_IsTxDmaEnabled(usart))
+            HAL_DMA_Cmd(usart->USART_TxDma_Cfg,false);
+        if(usart->USART_Tx_Buf)
+            Buffer_Clear(usart->USART_Tx_Buf);
+
+        if(HAL_USART_IsRxStreamEnabled(usart))
+            HAL_USART_RxStreamCmd(usart,false);
+        if(HAL_USART_IsRxDmaEnabled(usart))
+            HAL_DMA_Cmd(usart->USART_RxDma_Cfg,false);
+        if(usart->USART_Rx_Buf)
+            Buffer_Clear(usart->USART_Rx_Buf);
+    }
+}
+
 void HAL_USART_SetCallback(HAL_USART_t* usart, HAL_USART_CallbackIdx_t cb_idx, Callback_t* callback)
 {
     if(cb_idx < __NOT_CALLBACK_USART_MAX)
         usart->USART_Callbacks[cb_idx] = callback;
 }
 
-void HAL_USART_WriteByte_Polling(const HAL_USART_t* usart, uint8_t data)
+bool HAL_USART_WriteByte_Polling(const HAL_USART_t* usart, uint8_t data)
 {
+    if( HAL_USART_IsEnabled(usart)==false || 
+        HAL_USART_IsTxEnabled(usart)==false ||
+        HAL_USART_IsTxDmaEnabled(usart) || 
+        HAL_USART_IsTxStreamEnabled(usart) )
+        return false;
+
     while(USART_GetFlagStatus(usart->USARTx, USART_FLAG_TXE) == RESET);
     USART_SendData(usart->USARTx, data);
+
+    return true;
 }
 
 bool HAL_USART_WriteByte(const HAL_USART_t* usart, uint8_t data)
 {
-    if(HAL_USART_IsTxDmaEnabled(usart)) 
+    if( HAL_USART_IsEnabled(usart)==false || 
+        HAL_USART_IsTxEnabled(usart)==false ||
+        HAL_USART_IsTxDmaEnabled(usart) )
         return false;
-    else 
-    {
-        bool ret = Buffer_Queue_Push_uint8_t(usart->USART_Tx_Buf, data);
-        if(HAL_USART_IsTransmitting(usart)==false) 
-            HAL_USART_TxStreamCmd(usart,true);
-        return ret;
-    }
+    
+    bool ret = Buffer_Queue_Push_uint8_t(usart->USART_Tx_Buf, data);
+    if(HAL_USART_IsTransmitting(usart)==false) 
+        HAL_USART_TxStreamCmd(usart,true);
+    return ret;
 }
 
 uint16_t HAL_USART_Write(const HAL_USART_t* usart, uint8_t* data, uint16_t len)
 {
-    if(HAL_USART_IsTxDmaEnabled(usart)) 
+    if( HAL_USART_IsEnabled(usart)==false || 
+        HAL_USART_IsTxEnabled(usart)==false ||
+        HAL_USART_IsTxDmaEnabled(usart) )
         return 0;
-    else if(len)
+    
+    if(len)
     {
         uint16_t ret = Buffer_Queue_PushArray_uint8_t(usart->USART_Tx_Buf, data, len);
         if(HAL_USART_IsTransmitting(usart)==false) 
@@ -77,15 +111,24 @@ uint16_t HAL_USART_Write(const HAL_USART_t* usart, uint8_t* data, uint16_t len)
     return 0;
 }
 
-void HAL_USART_ReadByte_Polling(const HAL_USART_t* usart, uint8_t* data)
+bool HAL_USART_ReadByte_Polling(const HAL_USART_t* usart, uint8_t* data)
 {
+    if( HAL_USART_IsEnabled(usart)==false || 
+        HAL_USART_IsRxEnabled(usart)==false ||
+        HAL_USART_IsRxDmaEnabled(usart) || 
+        HAL_USART_IsRxStreamEnabled(usart) )
+        return false;
+
     while(USART_GetFlagStatus(usart->USARTx, USART_FLAG_RXNE) == RESET);
     *data = USART_ReceiveData(usart->USARTx);
+    return true;
 }
 
 bool HAL_USART_ReadByte(const HAL_USART_t* usart, uint8_t* data)
 {
-    if(HAL_USART_IsRxDmaEnabled(usart)) 
+    if( HAL_USART_IsEnabled(usart)==false || 
+        HAL_USART_IsRxEnabled(usart)==false ||
+        HAL_USART_IsRxDmaEnabled(usart) )
         return false;
     else
         return Buffer_Queue_Pop_uint8_t(usart->USART_Rx_Buf, data);
@@ -93,7 +136,9 @@ bool HAL_USART_ReadByte(const HAL_USART_t* usart, uint8_t* data)
 
 uint16_t HAL_USART_Read(const HAL_USART_t* usart, uint8_t* data, uint16_t len)
 {
-    if(HAL_USART_IsRxDmaEnabled(usart)) 
+    if( HAL_USART_IsEnabled(usart)==false || 
+        HAL_USART_IsRxEnabled(usart)==false ||
+        HAL_USART_IsRxDmaEnabled(usart) )
         return 0;
     else
         return Buffer_Queue_PopArray_uint8_t(usart->USART_Rx_Buf, data, len);
@@ -102,8 +147,13 @@ uint16_t HAL_USART_Read(const HAL_USART_t* usart, uint8_t* data, uint16_t len)
 HAL_USART_Status_t HAL_USART_TxStreamCmd(const HAL_USART_t* usart, bool en)
 {
     USART_TypeDef *usart_hw = usart->USARTx;
+
+    if( HAL_USART_IsEnabled(usart)==false || 
+        HAL_USART_IsTxEnabled(usart)==false)
+        return HAL_USART_DISABLED;
     if(HAL_USART_IsTransmitting(usart)) 
         return HAL_USART_BUSY;
+
     if (en)
     {
         if(usart->USART_Tx_Buf == NULL)
@@ -127,6 +177,9 @@ HAL_USART_Status_t HAL_USART_TxStreamCmd(const HAL_USART_t* usart, bool en)
 HAL_USART_Status_t HAL_USART_RxStreamCmd(const HAL_USART_t* usart, bool en)
 {
     USART_TypeDef *usart_hw = usart->USARTx;
+    if( HAL_USART_IsEnabled(usart)==false || 
+        HAL_USART_IsRxEnabled(usart)==false)
+        return HAL_USART_DISABLED;
     if(HAL_USART_IsRxDmaEnabled(usart)) 
         return HAL_USART_BUSY;
     else if (en)
@@ -185,7 +238,10 @@ HAL_USART_Status_t HAL_USART_DmaWrite(const HAL_USART_t* usart)
     Buffer_uint8_t *queue = usart->USART_Tx_Buf;
     USART_TypeDef *hw_USART = usart->USARTx;
 
-    if(HAL_USART_IsTransmitting(usart)) 
+    if( HAL_USART_IsEnabled(usart)==false || 
+        HAL_USART_IsTxEnabled(usart)==false)
+        return HAL_USART_DISABLED;
+    else if(HAL_USART_IsTransmitting(usart)) 
         return HAL_USART_BUSY;
     else if(dma_cfg==NULL || queue==NULL)
         return HAL_USART_BAD_ARGS;
@@ -229,7 +285,10 @@ HAL_USART_Status_t HAL_USART_DmaRead(const HAL_USART_t* usart,uint16_t len)
     const HAL_DMA_t *dma_cfg = usart->USART_RxDma_Cfg;
     USART_TypeDef *usart_hw = usart->USARTx;
     
-    if(HAL_USART_IsReceiving(usart)) 
+    if( HAL_USART_IsEnabled(usart)==false || 
+        HAL_USART_IsRxEnabled(usart)==false)
+        return HAL_USART_DISABLED;
+    else if(HAL_USART_IsReceiving(usart)) 
         return HAL_USART_BUSY;
     else if(dma_cfg==NULL || queue==NULL)
         return HAL_USART_BAD_ARGS;
@@ -270,6 +329,9 @@ HAL_USART_Status_t HAL_USART_TxStreamWake(const HAL_USART_t* usart)
 }
 HAL_USART_Status_t HAL_USART_TxDmaWake(const HAL_USART_t* usart)
 {
+    if( HAL_USART_IsEnabled(usart)==false || 
+        HAL_USART_IsTxEnabled(usart)==false)
+        return HAL_USART_DISABLED;
     if(HAL_USART_IsTransmitting(usart)) 
         return HAL_USART_BUSY;
     

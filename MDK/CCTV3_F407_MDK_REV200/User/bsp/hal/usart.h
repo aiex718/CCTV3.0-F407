@@ -23,6 +23,7 @@ typedef enum
     HAL_USART_BUF_NOT_EMPTY ,
     HAL_USART_TOO_MANY      ,
     HAL_USART_CONFLICT      ,
+    HAL_USART_DISABLED      ,
 }HAL_USART_Status_t;
 
 typedef enum 
@@ -88,16 +89,14 @@ __BSP_STRUCT_ALIGN typedef struct
      HAL_USART_IsEnabled(usart) && HAL_USART_IsRxEnabled(usart) &&          \
     (HAL_USART_IsRxDmaEnabled(usart) || HAL_USART_IsRxStreamEnabled(usart)) )
 
-#define HAL_USART_Cmd(usart,en) USART_Cmd((usart)->USARTx,(en)?ENABLE:DISABLE)
-#define HAL_USART_ClearCallback(usart,cb_idx) HAL_USART_SetCallback((usart),(cb_idx),NULL)
-
 
 void HAL_USART_Init(HAL_USART_t* usart);
+void HAL_USART_Cmd(HAL_USART_t* usart, bool en);
 void HAL_USART_SetCallback(HAL_USART_t* usart, HAL_USART_CallbackIdx_t cb_idx, Callback_t* callback); 
-void HAL_USART_WriteByte_Polling(const HAL_USART_t* usart, uint8_t data);
+bool HAL_USART_WriteByte_Polling(const HAL_USART_t* usart, uint8_t data);
 bool HAL_USART_WriteByte(const HAL_USART_t* usart, uint8_t data);
 uint16_t HAL_USART_Write(const HAL_USART_t* usart, uint8_t* data, uint16_t len);
-void HAL_USART_ReadByte_Polling(const HAL_USART_t* usart, uint8_t* data);
+bool HAL_USART_ReadByte_Polling(const HAL_USART_t* usart, uint8_t* data);
 bool HAL_USART_ReadByte(const HAL_USART_t* usart, uint8_t* data);
 uint16_t HAL_USART_Read(const HAL_USART_t* usart, uint8_t* data, uint16_t len);
 HAL_USART_Status_t HAL_USART_RxStreamCmd(const HAL_USART_t* usart, bool en);
