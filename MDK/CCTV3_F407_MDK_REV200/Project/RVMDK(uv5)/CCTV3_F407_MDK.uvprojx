@@ -1151,6 +1151,11 @@
               <FileType>1</FileType>
               <FilePath>..\..\User\bsp\sys\system_its.c</FilePath>
             </File>
+            <File>
+              <FileName>mem_guard.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\User\bsp\sys\mem_guard.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>

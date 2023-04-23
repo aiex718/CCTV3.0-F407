@@ -407,7 +407,8 @@ FPU_IRQHandler
                  EXPORT  __initial_sp
                  EXPORT  __heap_base
                  EXPORT  __heap_limit
-                
+                 EXPORT Stack_Mem
+
                  ELSE
                 
                  IMPORT  __use_two_region_memory
