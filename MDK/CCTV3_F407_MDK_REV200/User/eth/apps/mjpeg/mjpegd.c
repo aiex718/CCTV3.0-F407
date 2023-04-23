@@ -27,6 +27,7 @@ static err_t Mjpegd_SendData(struct tcp_pcb *pcb, ClientState_t *cs);
 static void Mjpegd_CloseConn(struct tcp_pcb *pcb, ClientState_t *cs);
 static void Mjpegd_CheckIdle(Mjpegd_t *mjpegd);
 static void Mjpegd_ShowFps(Mjpegd_t *mjpegd);
+static void Mjpegd_ShowDrop(Mjpegd_t *mjpegd);
 
 /** callbacks **/
 static void Mjpegd_RecvNewFrame_handler(void *sender, void *arg, void *owner);
@@ -109,6 +110,7 @@ static err_t Mjpegd_LwipAccept_Handler(void *arg, struct tcp_pcb *newpcb, err_t 
 {
     ClientState_t* cs;
     Mjpegd_t *mjpegd = (Mjpegd_t*)arg;
+    char ip_str[IP4ADDR_STRLEN_MAX];
 
     try
     {
@@ -117,11 +119,11 @@ static err_t Mjpegd_LwipAccept_Handler(void *arg, struct tcp_pcb *newpcb, err_t 
         throwif(newpcb == NULL,FATAL_ERROR_NULL_PCB);
         tcp_setprio(newpcb, MJPEGD_STREAM_TCP_PRIO);
 
-        LWIP_DEBUGF(MJPEGD_DEBUG | LWIP_DBG_TRACE,
-            MJPEGD_DBG_ARG("http_accepted %p / %p\n", (void*)newpcb, arg));
+        ip4addr_ntoa_r(&(newpcb->remote_ip), ip_str, sizeof(ip_str));
 
         LWIP_DEBUGF(MJPEGD_DEBUG | LWIP_DBG_STATE,
-            MJPEGD_DBG_ARG("New client %s:%d\n", ipaddr_ntoa(&(newpcb->remote_ip)),newpcb->remote_port));
+            MJPEGD_DBG_ARG("New client pcb %p %s:%d\n",
+                newpcb,ip_str,newpcb->remote_port));
 
         cs = Mjpegd_Client_New(mjpegd,newpcb);
         throwif(cs==NULL,NEW_CLIENT_ERROR);
@@ -143,13 +145,13 @@ static err_t Mjpegd_LwipAccept_Handler(void *arg, struct tcp_pcb *newpcb, err_t 
     }
     catch(FATAL_ERROR_NULL_MJPEG)
     {
-        err = ERR_MEM;
+        err = ERR_ARG;
         LWIP_DEBUGF(MJPEGD_DEBUG | LWIP_DBG_LEVEL_SERIOUS , 
             MJPEGD_DBG_ARG("accept mjpeg NULL\n"));
     }
     catch(FATAL_ERROR_NULL_PCB)
     {
-        err = ERR_MEM;
+        err = ERR_ARG;
         LWIP_DEBUGF(MJPEGD_DEBUG | LWIP_DBG_LEVEL_SERIOUS , 
             MJPEGD_DBG_ARG("accept Main or accept pcb NULL\n"));
     }
@@ -171,8 +173,8 @@ static err_t Mjpegd_LwipRecv_Handler(void *arg, struct tcp_pcb *pcb, struct pbuf
     
     try
     {
-        //recv pcb == null, client close conn
         throwif(cs == NULL,BAD_CLIENT_NULL);
+        //if recv pbuf == null, client close conn
         throwif(p == NULL,CONN_CLOSED);
         tcp_recved(pcb, p->tot_len);
 
@@ -207,18 +209,21 @@ static err_t Mjpegd_LwipRecv_Handler(void *arg, struct tcp_pcb *pcb, struct pbuf
         if(err==ERR_USE)//too many connection
             cs->request_handler = &mjpegd_request_handlers[REQUEST_TOOMANY];
         else
-            throwif(err != ERR_OK,ERR_RECV_REQUEST_CALLBACK_FAIL);
+            throwif(err != ERR_OK,ERR_RECV_REQUEST_FAIL);
         
         err = Mjpegd_Client_BuildResponse(cs);
-        throwif(err!=ERR_OK,ERR_INIT_RESPONSE_FAIL);
+        throwif(err!=ERR_OK,ERR_BUILD_RESPONSE_FAIL);
         
         err = Mjpegd_SendData(pcb,cs);
         throwif(err!=ERR_OK,ERR_SEND_DATA);
     }
     catch(CONN_CLOSED)
-    {
+    {   
+        char ip_str[IP4ADDR_STRLEN_MAX];
+        ip4addr_ntoa_r(&(pcb->remote_ip), ip_str, sizeof(ip_str));
+
         LWIP_DEBUGF(MJPEGD_DEBUG | LWIP_DBG_STATE,
-            MJPEGD_DBG_ARG("recv Client closed %s:%d\n", ipaddr_ntoa(&(pcb->remote_ip)),pcb->remote_port));
+            MJPEGD_DBG_ARG("recv Client closed %s:%d\n",ip_str,pcb->remote_port));
         err=ERR_CLSD;
     }
     catch(ERR_CONN_ERROR)
@@ -234,8 +239,11 @@ static err_t Mjpegd_LwipRecv_Handler(void *arg, struct tcp_pcb *pcb, struct pbuf
     }
     catch(BAD_CLIENT_MULTI_REQUEST)
     {
+        char ip_str[IP4ADDR_STRLEN_MAX];
+        ip4addr_ntoa_r(&(pcb->remote_ip), ip_str, sizeof(ip_str));
+
         LWIP_DEBUGF(MJPEGD_DEBUG | LWIP_DBG_LEVEL_WARNING,
-            MJPEGD_DBG_ARG("recv BAD_CLIENT_MULTI_REQUEST %s:%d\n", ipaddr_ntoa(&(pcb->remote_ip)),pcb->remote_port));
+            MJPEGD_DBG_ARG("recv BAD_CLIENT_MULTI_REQUEST %s:%d\n", ip_str,pcb->remote_port));
         err=ERR_OK;
     }
     catch(ERR_PARSE_REQUEST_FAIL)
@@ -248,12 +256,12 @@ static err_t Mjpegd_LwipRecv_Handler(void *arg, struct tcp_pcb *pcb, struct pbuf
         LWIP_DEBUGF(MJPEGD_DEBUG | LWIP_DBG_LEVEL_WARNING,
             MJPEGD_DBG_ARG("recv ERR_NULL_REQUEST_HANDLER %s\n", lwip_strerr(err)));
     }
-    catch(ERR_RECV_REQUEST_CALLBACK_FAIL)
+    catch(ERR_RECV_REQUEST_FAIL)
     {
         LWIP_DEBUGF(MJPEGD_DEBUG | LWIP_DBG_LEVEL_WARNING,
             MJPEGD_DBG_ARG("recv ERR_RECV_REQUEST_CALLBACK_FAIL %s\n", lwip_strerr(err)));
     }
-    catch(ERR_INIT_RESPONSE_FAIL)
+    catch(ERR_BUILD_RESPONSE_FAIL)
     {
         LWIP_DEBUGF(MJPEGD_DEBUG | LWIP_DBG_LEVEL_SERIOUS,
             MJPEGD_DBG_ARG("recv ERR_INIT_RESPONSE_FAIL %s\n", lwip_strerr(err)));
@@ -286,6 +294,7 @@ static err_t Mjpegd_LwipSent_Handler(void *arg, struct tcp_pcb *pcb, u16_t len)
 
     try
     {
+        throwif(cs == NULL,BAD_CLIENT_NULL);
         throwif(cs == NULL,BAD_CLIENT_NULL);
         cs->retries=0;
         err = Mjpegd_SendData(pcb,cs);//try send more data
@@ -325,6 +334,9 @@ static err_t Mjpegd_LwipPoll_Handler(void *arg, struct tcp_pcb *pcb)
     try
     {
         throwif(cs == NULL,NULL_CLIENT);
+        throwif(pcb == NULL,NULL_PCB);
+        throwif(cs->conn_state == CS_CLOSING,CONN_CLOSING);
+        throwif(cs->conn_state == CS_TCP_ERR,CONN_TCP_ERR);
         throwif(++(cs->retries) > MJPEGD_MAX_RETRIES,CLIENT_TIMEOUT);
 
         // if(cs->conn_state == CS_RECEIVED)
@@ -345,10 +357,28 @@ static err_t Mjpegd_LwipPoll_Handler(void *arg, struct tcp_pcb *pcb)
             MJPEGD_DBG_ARG("poll NULL_CLIENT\n"));
         err = ERR_ARG;
     }
+    catch(NULL_PCB)
+    {
+        LWIP_DEBUGF(MJPEGD_DEBUG | LWIP_DBG_LEVEL_SERIOUS,
+            MJPEGD_DBG_ARG("poll NULL_PCB\n"));
+        err = ERR_ARG;
+    }
+    catch(CONN_CLOSING)
+    {
+        LWIP_DEBUGF(MJPEGD_DEBUG | LWIP_DBG_LEVEL_WARNING,
+            MJPEGD_DBG_ARG("poll CONN_CLOSING %p\n",cs ));
+        err = ERR_CLSD;
+    }
+    catch(CONN_TCP_ERR)
+    {
+        LWIP_DEBUGF(MJPEGD_DEBUG | LWIP_DBG_LEVEL_WARNING,
+            MJPEGD_DBG_ARG("poll CONN_TCP_ERR %p\n",cs ));
+        err = ERR_CLSD;
+    }
     catch(CLIENT_TIMEOUT)
     {
         LWIP_DEBUGF(MJPEGD_DEBUG | LWIP_DBG_LEVEL_WARNING,
-            MJPEGD_DBG_ARG("poll CLIENT_TIMEOUT %s:%d\n", ipaddr_ntoa(&(pcb->remote_ip)),pcb->remote_port));
+            MJPEGD_DBG_ARG("poll CLIENT_TIMEOUT %p\n",cs ));        
         err = ERR_TIMEOUT;
     }
     // catch(ERR_SEND_DATA_FAIL)
@@ -359,7 +389,12 @@ static err_t Mjpegd_LwipPoll_Handler(void *arg, struct tcp_pcb *pcb)
     finally
     {
         if(err!=ERR_OK)
+        {
+            LWIP_DEBUGF(MJPEGD_DEBUG | LWIP_DBG_LEVEL_WARNING,
+                MJPEGD_DBG_ARG("poll closing cs %p,pcb %p, %s:%d\n", 
+                    cs,pcb,ipaddr_ntoa(&(pcb->remote_ip)),pcb->remote_port));
             Mjpegd_CloseConn(pcb, cs);
+        }
 
         return err;
     }
@@ -393,20 +428,24 @@ static err_t Mjpegd_SendData(struct tcp_pcb *pcb, ClientState_t *cs)
     try
     {
         throwif(cs==NULL ,NULL_CS);
+        throwif(cs->conn_state!=CS_RECEIVED ,CLIENT_NOT_RECEIVED);
         throwif(cs->request_handler==NULL ,NULL_REQUEST_HANDLER);        
 
         //check if we have data left to send
         if(client_file_isvalid(cs))
             left_len = client_file_bytestosend(cs);
 
-        //check EOF and next file
+        //check EOF and try to get next file
         if(left_len == 0)
         {
-            //try to get next file
-            throwif(cs->get_nextfile_func==NULL,EOF_REACHED);//no more file
+            //no more file
+            throwif(cs->get_nextfile_func==NULL,EOF_REACHED);
             err = cs->get_nextfile_func(cs);
-            throwif(err==ERR_CLSD,EOF_REACHED);//handler request to close connection
+            //handler request to close connection
+            throwif(err==ERR_CLSD,EOF_REACHED);
+            //next file not ready
             throwif(err==ERR_INPROGRESS,ERR_GET_NEXTFILE_INPROGRESS);
+            //next file failed
             throwif(err!=ERR_OK,ERR_GET_NEXTFILE_FAIL);
             //check again in case something went wrong in get_nextfile_func
             throwif(!client_file_isvalid(cs),BAD_NEXT_FILE);
@@ -449,6 +488,12 @@ static err_t Mjpegd_SendData(struct tcp_pcb *pcb, ClientState_t *cs)
             MJPEGD_DBG_ARG("send NULL_CLIENT\n"));
         err=ERR_ARG;
     }
+    catch(CLIENT_NOT_RECEIVED)
+    {
+        LWIP_DEBUGF(MJPEGD_DEBUG | LWIP_DBG_LEVEL_SERIOUS,
+            MJPEGD_DBG_ARG("send CLIENT_NOT_RECEIVED\n"));
+        err=ERR_ARG;
+    }
     catch(NULL_REQUEST_HANDLER)
     {
         LWIP_DEBUGF(MJPEGD_DEBUG | LWIP_DBG_LEVEL_SERIOUS,
@@ -475,9 +520,12 @@ static err_t Mjpegd_SendData(struct tcp_pcb *pcb, ClientState_t *cs)
         if (err==ERR_MEM)
         {
             //no enough ram, try again later
-            //happen quite often when streaming
+            //happen quite often when lwip tcp pool usage is high
+            //too many streaming clients?
             LWIP_DEBUGF(MJPEGD_DEBUG | LWIP_DBG_TRACE,
                MJPEGD_DBG_ARG("send TCP_WRITE_ERROR out of ram\n"));
+
+            err=ERR_OK;
         }
         else
         {
@@ -491,7 +539,7 @@ static err_t Mjpegd_SendData(struct tcp_pcb *pcb, ClientState_t *cs)
         err=ERR_OK;  
         LWIP_DEBUGF(MJPEGD_DEBUG | LWIP_DBG_STATE,
             MJPEGD_DBG_ARG("send_data EOF reached, closing %s\n",mjpegd_strreq(cs->request_handler->req)));   
-        Mjpegd_CloseConn(pcb,cs);
+        cs->conn_state = CS_CLOSING;
     }
     finally
     {
@@ -499,38 +547,49 @@ static err_t Mjpegd_SendData(struct tcp_pcb *pcb, ClientState_t *cs)
     }
 }
 
+/**
+ * @brief Close a client and pcb
+ * @warning Do not call during client_list iteration,
+ *          This function will remove cs from the list.
+ */
 static void Mjpegd_CloseConn(struct tcp_pcb *pcb, ClientState_t *cs)
 {
     err_t err=ERR_OK;
-    LWIP_DEBUGF(MJPEGD_DEBUG | LWIP_DBG_STATE,
-        MJPEGD_DBG_ARG("Closing connection %p %s:%d\n",pcb , ipaddr_ntoa(&(pcb->remote_ip)),pcb->remote_port));
     
     if(cs!=NULL)
     {
-        cs->conn_state = CS_CLOSING;
-        if(cs->request_handler->clsd_request_func!=NULL)
+        cs->conn_state = CS_CLOSED;
+        if(cs->request_handler != NULL &&
+            cs->request_handler->clsd_request_func!=NULL)
             cs->request_handler->clsd_request_func(cs);
+        Mjpegd_Client_Free(cs);
+        cs=NULL;
     }
 
     if(pcb!=NULL)
     {
+        char ip_str[IP4ADDR_STRLEN_MAX];
+        ip4addr_ntoa_r(&(pcb->remote_ip), ip_str, sizeof(ip_str));
+
+        LWIP_DEBUGF(MJPEGD_DEBUG | LWIP_DBG_STATE,
+            MJPEGD_DBG_ARG("CloseConn cs %p, pcb %p %s:%d\n"
+                ,cs,pcb,ip_str,pcb->remote_port));
+
         tcp_arg(pcb, NULL);
         tcp_recv(pcb, NULL);
         tcp_err(pcb, NULL);
-        tcp_poll(pcb, NULL, 0);
+        tcp_poll(pcb, NULL, 10);
         tcp_sent(pcb, NULL);
         err = tcp_close(pcb);
     }
 
-    Mjpegd_Client_Free(cs);
-    cs=NULL;
-
     if (err != ERR_OK) 
     {
         LWIP_DEBUGF(MJPEGD_DEBUG | LWIP_DBG_LEVEL_WARNING,
-            MJPEGD_DBG_ARG("Error %d closing %p %s:%d\n", lwip_strerr(err) ,pcb, ipaddr_ntoa(&(pcb->remote_ip)),pcb->remote_port));
+            MJPEGD_DBG_ARG("Error %s closing pcb %p\n", 
+                lwip_strerr(err) ,pcb));
             /* error closing, try again later in poll */
-        tcp_poll(pcb, Mjpegd_LwipPoll_Handler, 0);
+        tcp_poll(pcb, Mjpegd_LwipPoll_Handler, 10);
     }
 }
 
@@ -612,6 +671,19 @@ static void Mjpegd_ShowFps(Mjpegd_t *mjpegd)
     }
 }
 
+void Mjpegd_ShowDrop(Mjpegd_t *mjpegd)
+{
+    u16_t drop_cnt = mjpegd->_drop_counter;
+
+    if(drop_cnt >= MJPEGD_FRAMEDROP_WARNING_THRESHOLD)
+    {
+        LWIP_DEBUGF(MJPEGD_FRAMEBUF_DEBUG | LWIP_DBG_LEVEL_SEVERE, 
+            MJPEGD_DBG_ARG("Frame dropped %d, proc too slow?\n",mjpegd->_drop_counter));
+        
+        MJPEGD_ATOMIC_XCHG(&mjpegd->_drop_counter,0);
+    }
+}
+
 /**
  * @brief MJPEGD service loop, regist to lwip timeout to execute periodically   
  * @param arg 
@@ -624,6 +696,7 @@ void Mjpegd_Service(void* arg)
     Mjpegd_FrameProc_ProcPending(mjpegd);
     Mjpegd_CheckIdle(mjpegd);
     Mjpegd_ShowFps(mjpegd);
+    Mjpegd_ShowDrop(mjpegd);
 
     sys_timeout(MJPEGD_SERVICE_PERIOD, Mjpegd_Service, mjpegd);
 }
@@ -650,6 +723,7 @@ static void Mjpegd_RecvNewFrame_handler(void *sender, void *arg, void *owner)
     {
         //check if stream client transfer done
         if(cs->conn_state==CS_RECEIVED && cs->frame == NULL && 
+            cs->request_handler !=NULL &&
            (cs->request_handler->req == REQUEST_STREAM ||
             cs->request_handler->req == REQUEST_SNAP) )
         {

@@ -7,7 +7,6 @@
 
 
 //private functions
-static void Mjpegd_FrameProc_Drop(Mjpegd_t *mjpegd);
 static void Mjpegd_FrameProc_ProcessRawFrame(Mjpegd_Frame_t* frame);
 
 /**
@@ -46,7 +45,7 @@ void Mjpegd_FrameProc_RecvRaw(Mjpegd_t *mjpegd,Mjpegd_Frame_t* frame)
 
     if(frame!=NULL)
     {
-        Mjpegd_FrameProc_Drop(mjpegd);
+        MJPEGD_ATOMIC_INC(&mjpegd->_drop_counter);
         Mjpegd_Frame_Clear(frame);
         Mjpegd_FrameBuf_ReleaseIdle(mjpegd->FrameBuf,frame);
     }
@@ -81,7 +80,7 @@ Mjpegd_Frame_t* Mjpegd_FrameProc_NextFrame(Mjpegd_t *mjpegd,Mjpegd_Frame_t* fram
 
     if(next_frame!=NULL)
     {
-        Mjpegd_FrameProc_Drop(mjpegd);
+        MJPEGD_ATOMIC_INC(&mjpegd->_drop_counter);
         Mjpegd_Frame_Clear(next_frame);
     }
     else
@@ -110,23 +109,6 @@ void Mjpegd_FrameProc_ProcPending(Mjpegd_t *mjpegd)
             MJPEGD_DBG_ARG("ProcPending %p, _sem=%d\n",local_frame,local_frame->_sem));
         
         MJPEGD_ATOMIC_INC(&mjpegd->_fps_counter);
-    }
-}
-
-/**
- * @brief Add drop counter and show warning message if too many frames dropped.
- * @note  This function is thread safe.
- */
-static void Mjpegd_FrameProc_Drop(Mjpegd_t *mjpegd)
-{
-    u16_t drop_cnt = MJPEGD_ATOMIC_INC(&mjpegd->_drop_counter);
-
-    if(drop_cnt >= MJPEGD_FRAMEDROP_WARNING_THRESHOLD)
-    {
-        LWIP_DEBUGF(MJPEGD_FRAMEBUF_DEBUG | LWIP_DBG_LEVEL_SEVERE, 
-            MJPEGD_DBG_ARG("Frame dropped %d, proc too slow?\n",mjpegd->_drop_counter));
-        
-        MJPEGD_ATOMIC_XCHG(&mjpegd->_drop_counter,0);
     }
 }
 

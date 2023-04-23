@@ -92,6 +92,7 @@ err_t Mjpegd_Client_ParseRequest(ClientState_t *cs,const char* req,const u16_t r
     try
     {
         char *line_end;
+        const Mjpegd_RequestHandler_t* handler;
         u8_t i;
         throwif (cs==NULL,NULL_CLIENT);
 
@@ -104,7 +105,7 @@ err_t Mjpegd_Client_ParseRequest(ClientState_t *cs,const char* req,const u16_t r
 
         for ( i = 0; i < MJPEGD_ARRLEN(mjpegd_request_handlers); i++)
         {
-            const Mjpegd_RequestHandler_t* handler = &mjpegd_request_handlers[i];
+            handler = &mjpegd_request_handlers[i];
             if (!MJPEGD_STRNCMP(req+4, handler->url, strlen(handler->url)))
             {
                 cs->request_handler = handler;

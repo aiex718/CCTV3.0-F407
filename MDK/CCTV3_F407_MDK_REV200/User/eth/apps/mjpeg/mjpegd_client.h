@@ -23,7 +23,9 @@ typedef enum
     CS_NONE = 0,
     CS_ACCEPTED,
     CS_RECEIVED,
-    CS_CLOSING
+    CS_CLOSING,
+    CS_CLOSED,
+    CS_TCP_ERR,
 }conn_state_enum;
 typedef s8_t conn_state_t;
 

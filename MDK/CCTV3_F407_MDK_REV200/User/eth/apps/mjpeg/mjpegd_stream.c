@@ -21,17 +21,22 @@ void Mjpegd_Stream_Output(Mjpegd_t *mjpegd)
         if( cs->conn_state==CS_RECEIVED && 
             cs->pcb!=NULL && 
             cs->pcb->unsent !=NULL && 
+            cs->request_handler !=NULL &&
             (cs->request_handler->req == REQUEST_STREAM || 
             cs->request_handler->req == REQUEST_SNAP))
         {
             err = tcp_output(cs->pcb);
-            if(err != ERR_OK)
+
+            if(err==ERR_BUF)
             {
-                if(err!=ERR_BUF)
-                {
-                    LWIP_DEBUGF(MJPEGD_DEBUG | LWIP_DBG_LEVEL_WARNING,
-                        MJPEGD_DBG_ARG("stream_output TCP_OUTPUT %s\n",lwip_strerr(err)));
-                }
+                ;//do nothing, try in next loop
+            }
+            else if(err != ERR_OK)
+            {
+                LWIP_DEBUGF(MJPEGD_DEBUG | LWIP_DBG_LEVEL_WARNING,
+                    MJPEGD_DBG_ARG("output closing cs %p TCP_ERR %s\n",
+                        cs,lwip_strerr(err)));
+                cs->conn_state = CS_TCP_ERR;
             }
         }
     }
