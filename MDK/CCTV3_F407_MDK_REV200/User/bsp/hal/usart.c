@@ -46,16 +46,23 @@ void HAL_USART_Cmd(HAL_USART_t* usart, bool en)
     {   
         if(HAL_USART_IsTxStreamEnabled(usart))
             HAL_USART_TxStreamCmd(usart,false);
-        //this will trigger TxEmptyCallback
+        //this will trigger Tx_Empty callback
         if(HAL_USART_IsTxDmaEnabled(usart))
+        {
+            USART_DMACmd(usart->USARTx, USART_DMAReq_Tx, DISABLE);
             HAL_DMA_Cmd(usart->USART_TxDma_Cfg,false);
+        }
         if(usart->USART_Tx_Buf)
             Buffer_Clear(usart->USART_Tx_Buf);
 
         if(HAL_USART_IsRxStreamEnabled(usart))
             HAL_USART_RxStreamCmd(usart,false);
+        //this will trigger RX_TIMEOUT callback
         if(HAL_USART_IsRxDmaEnabled(usart))
+        {
+            USART_DMACmd(usart->USARTx, USART_DMAReq_Rx, DISABLE);
             HAL_DMA_Cmd(usart->USART_RxDma_Cfg,false);
+        }
         if(usart->USART_Rx_Buf)
             Buffer_Clear(usart->USART_Rx_Buf);
     }
