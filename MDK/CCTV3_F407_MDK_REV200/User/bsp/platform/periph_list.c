@@ -5,13 +5,15 @@
 
 #include "bsp/hal/rcc.h"
 
+#define __ANY_CAST_VAR(type) (type*)&
+#define __ANY_CAST_CONST(type) (const type*)&
 #define __VAR_CAST_VAR(type) (type*)&(type)
 #define __VAR_ARRAY_CAST_VAR(type,len) (type*)&(type[len])
 #define __CONST_CAST_VAR(type) (type*)&(const type)
 #define __CONST_ARRAY_CAST_VAR(type) (type*)&(const type[])
 
 //GPIO LEDs
-HAL_GPIO_pin_t *LED_Load_pin = __CONST_CAST_VAR(HAL_GPIO_pin_t)
+const HAL_GPIO_pin_t _Periph_LED_Load_pin = 
 {
 	.GPIOx = GPIOC,
 	.GPIO_RCC_cmd = __CONST_CAST_VAR(HAL_RCC_Cmd_t){
@@ -26,9 +28,10 @@ HAL_GPIO_pin_t *LED_Load_pin = __CONST_CAST_VAR(HAL_GPIO_pin_t)
 	},
 	.GPIO_AF_PinSource = 0,
 	.GPIO_AF_Mapping = 0,
-};
+};//_Periph_LED_Load_pin
+const HAL_GPIO_pin_t *Periph_LED_Load_pin = &_Periph_LED_Load_pin;
 
-HAL_GPIO_pin_t *LED_STAT_pin = __CONST_CAST_VAR(HAL_GPIO_pin_t)
+const HAL_GPIO_pin_t _Periph_LED_STAT_pin = 
 {	
 	.GPIOx = GPIOC,
 	.GPIO_RCC_cmd = __CONST_CAST_VAR(HAL_RCC_Cmd_t){
@@ -43,10 +46,11 @@ HAL_GPIO_pin_t *LED_STAT_pin = __CONST_CAST_VAR(HAL_GPIO_pin_t)
 	},
 	.GPIO_AF_PinSource = 0,
 	.GPIO_AF_Mapping = 0,
-};
+};//_Periph_LED_STAT_pin
+const HAL_GPIO_pin_t *Periph_LED_STAT_pin = &_Periph_LED_STAT_pin;
 
 //GPIO Buttons
-HAL_GPIO_pin_t *Button_Wkup_pin = __CONST_CAST_VAR(HAL_GPIO_pin_t)
+const HAL_GPIO_pin_t _Periph_Button_Wkup_pin = 
 {
 	.GPIOx = GPIOA,
 	.GPIO_RCC_cmd = __CONST_CAST_VAR(HAL_RCC_Cmd_t){
@@ -62,8 +66,9 @@ HAL_GPIO_pin_t *Button_Wkup_pin = __CONST_CAST_VAR(HAL_GPIO_pin_t)
 	.GPIO_AF_PinSource = 0,
 	.GPIO_AF_Mapping = 0,
 };
+const HAL_GPIO_pin_t *Periph_Button_Wkup_pin = &_Periph_Button_Wkup_pin;
 
-DBG_Serial_t* DBG_Serial= __VAR_CAST_VAR(DBG_Serial_t)
+DBG_Serial_t _DBG_Serial=
 {
 	.tx_con_queue = __VAR_CAST_VAR(Concurrent_Queue_uint8_t)
 	{
@@ -166,7 +171,6 @@ DBG_Serial_t* DBG_Serial= __VAR_CAST_VAR(DBG_Serial_t)
 				.DMA_MemoryBurst = DMA_MemoryBurst_INC8,
 				.DMA_PeripheralBurst = DMA_PeripheralBurst_Single,
 			},
-			//TODO: set unused DMA_NVIC_InitCfg to null
 			.DMA_NVIC_InitCfg = __CONST_CAST_VAR(NVIC_InitTypeDef)
 			{
 				.NVIC_IRQChannel = DMA1_Stream3_IRQn,
@@ -200,7 +204,6 @@ DBG_Serial_t* DBG_Serial= __VAR_CAST_VAR(DBG_Serial_t)
 				.DMA_MemoryBurst = DMA_MemoryBurst_INC8,
 				.DMA_PeripheralBurst = DMA_PeripheralBurst_Single,
 			},
-			//TODO: set unused DMA_NVIC_InitCfg to null
 			.DMA_NVIC_InitCfg = __CONST_CAST_VAR(NVIC_InitTypeDef)
 			{
 				.NVIC_IRQChannel = DMA1_Stream1_IRQn,
@@ -229,4 +232,6 @@ DBG_Serial_t* DBG_Serial= __VAR_CAST_VAR(DBG_Serial_t)
 		.USART_Rx_Timeout = 100,
 		.pExtension = NULL,
 	},//hal_usart
-};
+};//_DBG_Serial
+DBG_Serial_t* DBG_Serial= &_DBG_Serial;
+
