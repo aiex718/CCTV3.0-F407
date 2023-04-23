@@ -69,16 +69,17 @@ a lot of data that needs to be copied, this should be set high. */
 #define MEMP_NUM_PBUF           36
 /* MEMP_NUM_UDP_PCB: the number of UDP protocol control blocks. One
    per active UDP "connection". */
-#define MEMP_NUM_UDP_PCB        3
+#define MEMP_NUM_UDP_PCB        6
 /* MEMP_NUM_TCP_PCB: the number of simulatenously active TCP
    connections. */
-#define MEMP_NUM_TCP_PCB        12
+#define MEMP_NUM_TCP_PCB        20//16
 /* MEMP_NUM_TCP_PCB_LISTEN: the number of listening TCP
    connections. */
 #define MEMP_NUM_TCP_PCB_LISTEN 6
 /* MEMP_NUM_TCP_SEG: the number of simultaneously queued TCP
    segments. */
-#define MEMP_NUM_TCP_SEG        12
+//NOTE: Each stream client use 2 TCP_SEG
+#define MEMP_NUM_TCP_SEG        12//24
 /* MEMP_NUM_SYS_TIMEOUT: the number of simulateously active
    timeouts. */
 #define MEMP_NUM_SYS_TIMEOUT    12
@@ -230,8 +231,8 @@ The STM32F4x7 allows computing and verifying the IP, UDP, TCP and ICMP checksums
 // #define PBUF_DEBUG                     LWIP_DBG_ON
 // #define TCP_DEBUG                      LWIP_DBG_ON
 
-#define HTTPD_DEBUG                      LWIP_DBG_ON
-
+// #define TCP_OUTPUT_DEBUG               LWIP_DBG_ON
+// #define TCP_INPUT_DEBUG                LWIP_DBG_ON
 // #define TCP_FR_DEBUG                   LWIP_DBG_ON
 // #define TCP_RTO_DEBUG                  LWIP_DBG_ON
 // #define TCP_CWND_DEBUG                 LWIP_DBG_ON
@@ -239,18 +240,18 @@ The STM32F4x7 allows computing and verifying the IP, UDP, TCP and ICMP checksums
 // #define TCP_RST_DEBUG                  LWIP_DBG_ON
 // #define TCP_QLEN_DEBUG                 LWIP_DBG_ON
 
-// #define TCP_OUTPUT_DEBUG               LWIP_DBG_ON
+
 // #define NETIF_DEBUG                    LWIP_DBG_ON
 // #define RAW_DEBUG                       LWIP_DBG_ON
 // #define TCPIP_DEBUG                     LWIP_DBG_ON
 
-// #define TCP_INPUT_DEBUG                LWIP_DBG_ON
 // #define IP_DEBUG                       LWIP_DBG_ON
+#define HTTPD_DEBUG                      LWIP_DBG_ON
 #define MJPEGD_DEBUG                      LWIP_DBG_ON
 #define MJPEGD_FRAMEBUF_DEBUG             LWIP_DBG_ON
 
 #define LWIP_DBG_MIN_LEVEL       LWIP_DBG_LEVEL_ALL//LWIP_DBG_LEVEL_WARNING //LWIP_DBG_LEVEL_SEVERE 
-#define LWIP_DBG_TYPES_ON        (LWIP_DBG_LEVEL_SEVERE|LWIP_DBG_STATE)//(LWIP_DBG_ON|LWIP_DBG_STATE)//|LWIP_DBG_TRACE)
+#define LWIP_DBG_TYPES_ON        (LWIP_DBG_LEVEL_SEVERE|LWIP_DBG_STATE)//|LWIP_DBG_TRACE)
 
 
 #endif /* __LWIPOPTS_H__ */
