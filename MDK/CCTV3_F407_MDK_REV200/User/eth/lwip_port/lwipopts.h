@@ -81,7 +81,7 @@ a lot of data that needs to be copied, this should be set high. */
 #define MEMP_NUM_TCP_SEG        12//24
 /* MEMP_NUM_SYS_TIMEOUT: the number of simulateously active
    timeouts. */
-#define MEMP_NUM_SYS_TIMEOUT    12
+#define MEMP_NUM_SYS_TIMEOUT    20
 
 
 /* ---------- Pbuf options ---------- */
@@ -127,6 +127,8 @@ a lot of data that needs to be copied, this should be set high. */
    turning this on does currently not work. */
 #define LWIP_DHCP               1
 
+/* DNS options */
+//#define LWIP_DNS                1
 
 /* ---------- UDP options ---------- */
 #define LWIP_UDP                1
@@ -240,20 +242,25 @@ The STM32F4x7 allows computing and verifying the IP, UDP, TCP and ICMP checksums
 // #define TCP_QLEN_DEBUG                 LWIP_DBG_ON
 
 
+// #define IP_DEBUG                       LWIP_DBG_ON
 // #define NETIF_DEBUG                    LWIP_DBG_ON
 // #define RAW_DEBUG                       LWIP_DBG_ON
 // #define TCPIP_DEBUG                     LWIP_DBG_ON
 
-// #define IP_DEBUG                       LWIP_DBG_ON
-#define HTTPD_DEBUG                      LWIP_DBG_ON
+//#define TIMERS_DEBUG                      (LWIP_DBG_ON|LWIP_DBG_LEVEL_SEVERE|LWIP_DBG_STATE|LWIP_DBG_TRACE)
+//#define LWIP_DEBUG_TIMERNAMES             LWIP_DBG_ON
+
+//#define DHCP_DEBUG                        LWIP_DBG_ON
+#define HTTPD_DEBUG                       LWIP_DBG_ON
 #define MJPEGD_DEBUG                      LWIP_DBG_ON
-#define MJPEGD_FRAMEBUF_DEBUG             LWIP_DBG_ON
+//#define MJPEGD_FRAMEBUF_DEBUG             LWIP_DBG_ON
 
 #define LWIP_DBG_MIN_LEVEL       LWIP_DBG_LEVEL_ALL//LWIP_DBG_LEVEL_WARNING //LWIP_DBG_LEVEL_SEVERE 
 #define LWIP_DBG_TYPES_ON        (LWIP_DBG_LEVEL_SEVERE|LWIP_DBG_STATE)//|LWIP_DBG_TRACE)
 
 //Mjpegd options
 #define MJPEGD_ALLOW_STREAM_CORS 1
+#define MJPEGD_SHOWFPS_PERIOD 3//n^2 seconds
 
 #endif /* __LWIPOPTS_H__ */
 
