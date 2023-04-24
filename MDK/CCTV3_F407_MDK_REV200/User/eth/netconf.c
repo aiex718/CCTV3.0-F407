@@ -159,7 +159,7 @@ static void Netconf_Service(void* arg)
 		Netconf_CheckDHCPStatus();
 	Netconf_CheckIPaddress();
 	ETH_CheckLinkStatus();
-	sys_timeout(CHECK_LINK_PERIOD, Netconf_Service, NULL);
+	sys_timeout(NETCONF_CHECK_LINK_PERIOD, Netconf_Service, NULL);
 }
 
 

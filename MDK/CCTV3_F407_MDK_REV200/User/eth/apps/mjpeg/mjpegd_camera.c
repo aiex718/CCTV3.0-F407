@@ -68,17 +68,14 @@ void Mjpegd_Camera_Start(Mjpegd_Camera_t *cam)
 void Mjpegd_Camera_Stop(Mjpegd_Camera_t *cam)
 {
     Device_CamOV2640_Cmd(cam->HwCam_Ov2640,false);
-    Device_CamOV2640_CaptureCmd(cam->HwCam_Ov2640,false);
-    //TODO:Check if need to release frame,
-    //normally stop capture will trigger dma complete callback
+    //stop capture will trigger dma tc callback
     //which will release frame
-
+    Device_CamOV2640_CaptureCmd(cam->HwCam_Ov2640,false);
 	Device_FlashLight_Cmd(Periph_FlashLight_Top,false);
 	Device_FlashLight_Cmd(Periph_FlashLight_Bottom,false);
 
     LWIP_DEBUGF(MJPEGD_DEBUG | LWIP_DBG_STATE,
         MJPEGD_DBG_ARG("Camera_Stop %p\n",cam));
-
 }
 
 u8_t Mjpegd_Camera_IsEnabled(Mjpegd_Camera_t *cam)

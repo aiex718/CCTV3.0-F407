@@ -306,7 +306,7 @@ err_t Mjpegd_Request_Parse(ClientState_t *cs, char *req, u16_t req_len)
         if (cs->request_handler->req != REQUEST_NOTFOUND)
         {
             // we have a valid request, parse url parameters
-            char *param_head = (char *)strchr(req, '?');
+            char *param_head = (char *)MJPEGD_STRCHR(req, '?');
             if (param_head != NULL)
             {
                 char *params[MJPEGD_MAX_URL_PARAMETERS];
@@ -418,7 +418,7 @@ static u8_t Mjpegd_Request_ParseParams(char *url_params,
         equals = pair;
         /* Find the start of the next name=value pair and replace the delimiter
          * with a 0 to terminate the previous pair string. */
-        pair = strchr(pair, '&');
+        pair = MJPEGD_STRCHR(pair, '&');
         if (pair)
         {
             *pair = '\0';
@@ -428,7 +428,7 @@ static u8_t Mjpegd_Request_ParseParams(char *url_params,
         {
             /* We didn't find a new parameter so find the end of the URI and
              * replace the space with a '\0' */
-            pair = strchr(equals, ' ');
+            pair = MJPEGD_STRCHR(equals, ' ');
             if (pair)
             {
                 *pair = '\0';
@@ -438,7 +438,7 @@ static u8_t Mjpegd_Request_ParseParams(char *url_params,
         }
         /* Now find the '=' in the previous pair, replace it with '\0' and save
          * the parameter value string. */
-        equals = strchr(equals, '=');
+        equals = MJPEGD_STRCHR(equals, '=');
         if (equals)
         {
             *equals = '\0';

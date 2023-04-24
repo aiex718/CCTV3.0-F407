@@ -12,6 +12,7 @@
 #define MJPEGD_MEMCPY MEMCPY
 #define MJPEGD_STRNCMP strncmp
 #define MJPEGD_STRNSTR strnstr
+#define MJPEGD_STRCHR strchr
 #define MJPEGD_MEMSET memset
 #define MJPEGD_ATOI atoi
 

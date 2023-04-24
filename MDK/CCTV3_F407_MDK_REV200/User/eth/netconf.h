@@ -39,8 +39,15 @@
 #include "bsp/sys/dbg_serial.h"
 /* Exported types ------------------------------------------------------------*/
 /* Exported constants --------------------------------------------------------*/
-#define CHECK_LINK_PERIOD 250
-#define DHCP_EN 1
+
+//Check phy interval
+#ifndef NETCONF_CHECK_LINK_PERIOD
+  #define NETCONF_CHECK_LINK_PERIOD 1000
+#endif
+
+#ifndef DHCP_EN
+  #define DHCP_EN 0
+#endif
 
 //TODO:Get UID for mac
 //Mac address
@@ -68,13 +75,6 @@
 #define GW_ADDR1                      0
 #define GW_ADDR2                      0
 #define GW_ADDR3                      0
-
-//Check phy interval
-#ifndef CHECK_LINK_PERIOD
-  #define CHECK_LINK_PERIOD        1000
-#endif
-
-
 
 /* MII and RMII mode selection ***********/
 #define RMII_MODE  
