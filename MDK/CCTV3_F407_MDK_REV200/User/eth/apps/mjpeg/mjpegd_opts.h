@@ -3,18 +3,44 @@
 
 #include "lwip/opt.h"
 
+/*  Total stream clients limit, if exceed, new client will get a 429 error.
+    Snap clients are not limited by MJPEGD_STREAM_CLIENT_LIMIT.
+    
+    Note: Each stream client use 2 TCP_SEG and 1 TCP_PCB,
+    edit lwipopts.h to fit your needs. */
 #ifndef MJPEGD_STREAM_CLIENT_LIMIT
-    #define MJPEGD_STREAM_CLIENT_LIMIT 3
+    #define MJPEGD_STREAM_CLIENT_LIMIT 5
 #endif
 
-//this is the size of each frame
-//for 320x240 and default Qs, 12K is pretty enough
-//actual available size is MJPEGD_FRAME_MEM_SPACE - MJPEGD_FRAME_HEADER_SPACE
+/*  The MJPEGD_FRAMEBUF_LEN is the max number of frames that can be buffered.
+    Total ram usage is MJPEGD_FRAMEBUF_LEN * MJPEGD_FRAME_MEM_SPACE.
+    Each frame is not exclusive to one client, it's shared by multiple clients.
+
+    Depending on your clients network speed and packet loss rate,
+    if all clients are fast, you can set a smaller buffer length,
+    better not less than 3.
+    
+    The most secure buffer length is MJPEGD_STREAM_CLIENT_LIMIT+2.
+    Each client can have 1 buffer frame at worst case,
+    1 pending frame waiting to be processed by mjpegd_service,
+    and 1 frame is being captured by camera.   */
+#ifndef MJPEGD_FRAMEBUF_LEN
+    #define MJPEGD_FRAMEBUF_LEN (MJPEGD_STREAM_CLIENT_LIMIT+2)
+#endif
+
+/* Total client limit, including stream and snap clients */
+#ifndef MJPEGD_TOTAL_CLIENT_LIMIT
+    #define MJPEGD_TOTAL_CLIENT_LIMIT MJPEGD_STREAM_CLIENT_LIMIT+3
+#endif
+
+/*  this is the size of each frame
+    for 320x240 and default Qs, 12K is pretty enough
+    actual available size is MJPEGD_FRAME_MEM_SPACE - MJPEGD_FRAME_HEADER_SPACE */
 #ifndef MJPEGD_FRAME_MEM_SPACE
-    #define MJPEGD_FRAME_MEM_SPACE (12*1024) //10K
+    #define MJPEGD_FRAME_MEM_SPACE (12*1024) //12K
 #endif
 
-//we reserve some space for mjpeg header
+/* we reserve some space for mjpeg header */
 #ifndef MJPEGD_FRAME_HEADER_SPACE
     #define MJPEGD_FRAME_HEADER_SPACE 128
 #endif
@@ -27,6 +53,10 @@
     #define MJPEGD_FRAMEDROP_WARNING_THRESHOLD 10
 #endif
 
+#ifndef MJPEGD_ALLOW_STREAM_CORS
+    #define MJPEGD_ALLOW_STREAM_CORS 0
+#endif
+
 #ifndef MJPEGD_FPS_PERIOD
     #define MJPEGD_FPS_PERIOD 3 //(2^n) seconds
 #endif
@@ -35,10 +65,15 @@
     #define MJPEGD_SERVICE_PERIOD 10//10ms
 #endif
 
+#ifndef MJPEGD_MAX_URL_PARAMETERS 
+    #define MJPEGD_MAX_URL_PARAMETERS 6
+#endif
+
 #ifndef MJPEGD_SYSTIME_T
     #define MJPEGD_SYSTIME_T u32_t
 #endif
-//poll interval is n*2*TCP_TMR_INTERVAL
+
+//poll interval is n*2*TCP_TMR_INTERVAL(typically 250ms)
 #ifndef MJPEGD_POLL_INTERVAL
     #define MJPEGD_POLL_INTERVAL 2 //2*2*250=1000ms
 #endif
@@ -53,7 +88,7 @@
 #endif
 
 #ifndef MJPEGD_STREAM_TCP_PRIO
-#define MJPEGD_STREAM_TCP_PRIO TCP_PRIO_MIN
+    #define MJPEGD_STREAM_TCP_PRIO TCP_PRIO_MIN
 #endif
 
 #ifndef MJPEGD_MIN_REQ_LEN
@@ -63,9 +98,5 @@
 #ifndef MJPEGD_IDLE_TIMEOUT
     #define MJPEGD_IDLE_TIMEOUT 30000 //30s
 #endif
-
-#define MJPEGD_FRAME_PAYLOAD_SPACE (MJPEGD_FRAME_MEM_SPACE - MJPEGD_FRAME_HEADER_SPACE)
-#define MJPEGD_FRAME_SEMAPHORE_MAX MJPEGD_STREAM_CLIENT_LIMIT
-#define MJPEGD_FRAMEBUF_LEN (MJPEGD_STREAM_CLIENT_LIMIT)
 
 #endif

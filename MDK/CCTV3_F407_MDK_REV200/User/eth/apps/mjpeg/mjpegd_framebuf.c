@@ -94,7 +94,7 @@ Mjpegd_Frame_t* Mjpegd_FrameBuf_GetLatest(Mjpegd_FrameBuf_t* self,
                 {
                     //if newest frame is outdated, other frames are also outdated
                     //no need to check other frames
-                    LWIP_DEBUGF(MJPEGD_FRAMEBUF_DEBUG | LWIP_DBG_LEVEL_SERIOUS , 
+                    LWIP_DEBUGF(MJPEGD_FRAMEBUF_DEBUG | LWIP_DBG_TRACE , 
                         MJPEGD_DBG_ARG("all frame outdated\n"));
                     frame = NULL;
                     break;

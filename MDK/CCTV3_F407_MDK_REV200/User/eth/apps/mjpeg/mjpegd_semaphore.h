@@ -3,6 +3,7 @@
 
 #include "bsp/sys/semaphore.h"
 
+#define MJPEGD_FRAME_SEMAPHORE_MAX MJPEGD_STREAM_CLIENT_LIMIT
 typedef Semaphore_t Mjpegd_Semaphore_t;
 
 __STATIC_INLINE void Mjpegd_Semaphore_Init(Mjpegd_Semaphore_t *sem,u8_t val)

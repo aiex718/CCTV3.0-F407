@@ -78,7 +78,6 @@ a lot of data that needs to be copied, this should be set high. */
 #define MEMP_NUM_TCP_PCB_LISTEN 6
 /* MEMP_NUM_TCP_SEG: the number of simultaneously queued TCP
    segments. */
-//NOTE: Each stream client use 2 TCP_SEG
 #define MEMP_NUM_TCP_SEG        12//24
 /* MEMP_NUM_SYS_TIMEOUT: the number of simulateously active
    timeouts. */
@@ -253,6 +252,8 @@ The STM32F4x7 allows computing and verifying the IP, UDP, TCP and ICMP checksums
 #define LWIP_DBG_MIN_LEVEL       LWIP_DBG_LEVEL_ALL//LWIP_DBG_LEVEL_WARNING //LWIP_DBG_LEVEL_SEVERE 
 #define LWIP_DBG_TYPES_ON        (LWIP_DBG_LEVEL_SEVERE|LWIP_DBG_STATE)//|LWIP_DBG_TRACE)
 
+//Mjpegd options
+#define MJPEGD_ALLOW_STREAM_CORS 1
 
 #endif /* __LWIPOPTS_H__ */
 
