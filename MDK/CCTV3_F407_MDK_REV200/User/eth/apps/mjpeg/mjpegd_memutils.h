@@ -2,6 +2,7 @@
 #define __MJPEGD_MACRO_H__
 
 #include "bsp/sys/atomic.h"
+#include "stdlib.h"
 #include "string.h"
 
 #define MJPEGD_MIN(a,b) (((a)<(b))?(a):(b))
@@ -12,7 +13,7 @@
 #define MJPEGD_STRNCMP strncmp
 #define MJPEGD_STRNSTR strnstr
 #define MJPEGD_MEMSET memset
-
+#define MJPEGD_ATOI atoi
 
 #define MJPEGD_ATOMIC_XCHG(p,val) Atomic_Exchange((p),(val))
 #define MJPEGD_ATOMIC_INC(p) Atomic_Increment((p))

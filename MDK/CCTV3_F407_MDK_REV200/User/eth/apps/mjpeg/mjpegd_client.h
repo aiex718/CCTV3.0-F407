@@ -51,6 +51,9 @@ struct ClientState_struct
     MJPEGD_SYSTIME_T previous_frame_time;
     u8_t retries;
 
+    //time_period for fps control
+    MJPEGD_SYSTIME_T previous_transfer_time;
+    u16_t fps_period;
     //private linklist
     ClientState_t *_next;
 };
@@ -58,7 +61,5 @@ struct ClientState_struct
 ClientState_t* Mjpegd_Client_New(Mjpegd_t *mjpegd, struct tcp_pcb *pcb);
 void Mjpegd_Client_Free(ClientState_t *cs);
 
-err_t Mjpegd_Client_ParseRequest(ClientState_t *cs,const char* req,const u16_t req_len);
-err_t Mjpegd_Client_BuildResponse(ClientState_t *cs);
 
 #endif // __MJPEGD_CLIENT_H__

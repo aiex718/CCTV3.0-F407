@@ -196,7 +196,7 @@ static err_t Mjpegd_LwipRecv_Handler(void *arg, struct tcp_pcb *pcb, struct pbuf
                 MJPEGD_DBG_ARG("incomplete requset\n"));
         }
 
-        err = Mjpegd_Client_ParseRequest(cs,(const char*)p->payload,p->len);
+        err = Mjpegd_Request_Parse(cs,p->payload,p->len);
         throwif(err != ERR_OK,ERR_PARSE_REQUEST_FAIL);
         throwif(cs->request_handler==NULL,ERR_NULL_REQUEST_HANDLER);
 
@@ -211,7 +211,7 @@ static err_t Mjpegd_LwipRecv_Handler(void *arg, struct tcp_pcb *pcb, struct pbuf
         else
             throwif(err != ERR_OK,ERR_RECV_REQUEST_FAIL);
         
-        err = Mjpegd_Client_BuildResponse(cs);
+        err = Mjpegd_Request_BuildResponse(cs);
         throwif(err!=ERR_OK,ERR_BUILD_RESPONSE_FAIL);
         
         err = Mjpegd_SendData(pcb,cs);
@@ -593,6 +593,73 @@ static void Mjpegd_CloseConn(struct tcp_pcb *pcb, ClientState_t *cs)
     }
 }
 
+/**
+ * @brief Assign latest frame to stream clients whos frame is empty 
+ *        and previous_transfer_time >= fps_period.
+ * @note tcp_out is performed in mjpegd_service() loop.
+ */
+static void Mjpegd_AssignNewframe(Mjpegd_t *mjpegd)
+{
+    Mjpegd_FrameBuf_t* frame_buf = mjpegd->FrameBuf;
+    ClientState_t* cs;
+    MJPEGD_SYSTIME_T now = sys_now();
+
+    for (cs=mjpegd->_clients_list; cs!=NULL; cs=cs->_next)
+    {
+        //check if stream client transfer done
+        if( cs->conn_state==CS_RECEIVED && cs->frame == NULL && 
+            cs->request_handler !=NULL && 
+            now - cs->previous_transfer_time >= cs->fps_period &&
+           (cs->request_handler->req == REQUEST_STREAM ||
+            cs->request_handler->req == REQUEST_SNAP) )
+        {
+            err_t err;
+
+            try
+            {
+                cs->frame=Mjpegd_FrameBuf_GetLatest(frame_buf,cs->previous_frame_time);
+                throwif(cs->frame==NULL,GET_FRAME_FAIL);
+                throwif(!Mjpegd_Frame_IsValid(cs->frame),BAD_FRAME);
+                
+                if(cs->request_handler->req == REQUEST_STREAM)
+                    client_assign_file(cs,cs->frame->head, Mjpegd_Frame_StreamSize(cs->frame));
+                else 
+                    client_assign_file(cs,cs->frame->head, Mjpegd_Frame_SnapSize(cs->frame));
+                //record frame time
+                cs->previous_frame_time = cs->frame->capture_time;
+                cs->previous_transfer_time = now;
+
+                err = Mjpegd_SendData(cs->pcb,cs);
+                throwif(err!=ERR_OK,ERR_SEND_ERR);
+            }
+            catch(GET_FRAME_FAIL)
+            {
+                //frame not available, try again later
+                LWIP_DEBUGF(MJPEGD_DEBUG | LWIP_DBG_TRACE,
+                    MJPEGD_DBG_ARG("newframe_handler GET_FRAME_FAIL\n"));
+            }
+            catch(BAD_FRAME)
+            {
+                //bad frame,release and try again later
+                Mjpegd_FrameBuf_Release(frame_buf,cs->frame);
+                cs->frame = NULL;
+                
+                LWIP_DEBUGF(MJPEGD_DEBUG | LWIP_DBG_LEVEL_SERIOUS,
+                    MJPEGD_DBG_ARG("newframe_handler BAD_FRAME, try later\n"));
+            }
+            catch(ERR_SEND_ERR)
+            {
+                LWIP_DEBUGF(MJPEGD_DEBUG | LWIP_DBG_LEVEL_SERIOUS,
+                    MJPEGD_DBG_ARG("newframe_handler send %s\n",lwip_strerr(err)));
+            }
+            finally
+            {
+                ;
+            }
+        }
+    }
+}
+
 //stop camera if no client connected for a while
 static void Mjpegd_CheckIdle(Mjpegd_t *mjpegd)
 {
@@ -671,7 +738,7 @@ static void Mjpegd_ShowFps(Mjpegd_t *mjpegd)
     }
 }
 
-void Mjpegd_ShowDrop(Mjpegd_t *mjpegd)
+static void Mjpegd_ShowDrop(Mjpegd_t *mjpegd)
 {
     u16_t drop_cnt = mjpegd->_drop_counter;
 
@@ -692,8 +759,10 @@ void Mjpegd_Service(void* arg)
 {
     Mjpegd_t *mjpegd = (Mjpegd_t*)arg;
 
-    Mjpegd_Stream_Output(mjpegd);
     Mjpegd_FrameProc_ProcPending(mjpegd);
+    Mjpegd_AssignNewframe(mjpegd);
+    Mjpegd_Stream_Output(mjpegd);
+
     Mjpegd_CheckIdle(mjpegd);
     Mjpegd_ShowFps(mjpegd);
     Mjpegd_ShowDrop(mjpegd);
@@ -702,77 +771,14 @@ void Mjpegd_Service(void* arg)
 }
 
 /**
- * @brief Callback when new frame arrived, assign to stream clients whos frame is empty.
- * @note tcp_out is performed in mjpegd_service() loop.
+ * @brief Callback when new frame arrived.
  * @note This function should regist to FRAMEBUF_CALLBACK_RX_NEWFRAME callback.
- * @warning Current implementation is not thread-safe, do not run this handler
- *          outside lwip tcpip_thread.
  * @param sender source frame_buf.
  * @param arg new arrived frame, not use in this function.
+ * @param owner mjpegd instance.
  */
 static void Mjpegd_RecvNewFrame_handler(void *sender, void *arg, void *owner)
 {
-    Mjpegd_FrameBuf_t* frame_buf = (Mjpegd_FrameBuf_t*)sender;
-    //Mjpegd_Frame_t* new_frame = (Mjpegd_Frame_t*)arg;
-    Mjpegd_t *mjpegd = (Mjpegd_t*)owner;
-    ClientState_t* cs;
-
-    BSP_UNUSED_ARG(arg);
-
-    for (cs=mjpegd->_clients_list; cs!=NULL; cs=cs->_next)
-    {
-        //check if stream client transfer done
-        if(cs->conn_state==CS_RECEIVED && cs->frame == NULL && 
-            cs->request_handler !=NULL &&
-           (cs->request_handler->req == REQUEST_STREAM ||
-            cs->request_handler->req == REQUEST_SNAP) )
-        {
-            err_t err;
-
-            try
-            {               
-                cs->frame=Mjpegd_FrameBuf_GetLatest(frame_buf,cs->previous_frame_time);
-                throwif(cs->frame==NULL,GET_FRAME_FAIL);
-                throwif(!Mjpegd_Frame_IsValid(cs->frame),BAD_FRAME);
-
-                
-                if(cs->request_handler->req == REQUEST_STREAM)
-                    client_assign_file(cs,cs->frame->head, Mjpegd_Frame_StreamSize(cs->frame));
-                else 
-                    client_assign_file(cs,cs->frame->head, Mjpegd_Frame_SnapSize(cs->frame));
-                //record frame time
-                cs->previous_frame_time = cs->frame->capture_time;
-
-                err = Mjpegd_SendData(cs->pcb,cs);
-                throwif(err!=ERR_OK,ERR_SEND_ERR);
-            }
-            catch(GET_FRAME_FAIL)
-            {
-                //frame not available, try again later
-                LWIP_DEBUGF(MJPEGD_DEBUG | LWIP_DBG_LEVEL_WARNING,
-                    MJPEGD_DBG_ARG("newframe_handler GET_FRAME_FAIL\n"));
-            }
-            catch(BAD_FRAME)
-            {
-                //bad frame,release and try again later
-                Mjpegd_FrameBuf_Release(frame_buf,cs->frame);
-                cs->frame = NULL;
-                
-                LWIP_DEBUGF(MJPEGD_DEBUG | LWIP_DBG_LEVEL_SERIOUS,
-                    MJPEGD_DBG_ARG("newframe_handler BAD_FRAME, try later\n"));
-
-                err=ERR_INPROGRESS;
-            }
-            catch(ERR_SEND_ERR)
-            {
-                LWIP_DEBUGF(MJPEGD_DEBUG | LWIP_DBG_LEVEL_SERIOUS,
-                    MJPEGD_DBG_ARG("newframe_handler send %s\n",lwip_strerr(err)));
-            }
-            finally
-            {
-                ;
-            }
-        }
-    }
+    Mjpegd_AssignNewframe((Mjpegd_t*)owner);
 }
 

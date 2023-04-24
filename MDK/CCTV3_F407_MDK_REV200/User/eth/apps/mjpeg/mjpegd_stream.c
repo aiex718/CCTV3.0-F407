@@ -13,6 +13,7 @@
  */
 void Mjpegd_Stream_Output(Mjpegd_t *mjpegd)
 {
+    MJPEGD_SYSTIME_T now = sys_now();
     ClientState_t* cs;
     err_t err;
 
@@ -20,11 +21,12 @@ void Mjpegd_Stream_Output(Mjpegd_t *mjpegd)
     {
         if( cs->conn_state==CS_RECEIVED && 
             cs->pcb!=NULL && 
-            cs->pcb->unsent !=NULL && 
             cs->request_handler !=NULL &&
+            cs->pcb->unsent !=NULL &&
             (cs->request_handler->req == REQUEST_STREAM || 
             cs->request_handler->req == REQUEST_SNAP))
         {
+            //force output
             err = tcp_output(cs->pcb);
 
             if(err==ERR_BUF)
@@ -63,27 +65,25 @@ err_t Mjpegd_Stream_FrameSent(void* client_state)
         frame_buf = mjpegd->FrameBuf;
         throwif(frame_buf==NULL,NULL_FRAMEBUF);
         throwif(cs->request_handler==NULL,NULL_REQUEST_HANDLER);
-
+        
         //clear client file
         client_assign_file(cs,NULL,0);
+        err=ERR_INPROGRESS;
 
-        //if cs->frame not null, it's already transfered, release it
         if(cs->frame!=NULL)
         {
             Mjpegd_FrameBuf_Release(frame_buf,cs->frame);
             cs->frame = NULL;
-            
-            //if client is a snap request, we already done transfer 1 frame
-            //clear get_nextfile_func to trigger connection close
+
+            //if client is a snap reques and frame not null
+            //we already done transfer 1 frame
+            //clear get_nextfile_func and return ERR_CLSD
             if(cs->request_handler->req == REQUEST_SNAP)
             {
                 cs->get_nextfile_func=NULL;
                 err = ERR_CLSD;
             }
-        }
-        
-
-        err=ERR_INPROGRESS;
+        }   
     }
     catch(NULL_CS)
     {
@@ -191,7 +191,7 @@ err_t Mjpegd_Stream_CloseRequest(void* client_state)
         
         mjpegd->_stream_count--;
         LWIP_DEBUGF(MJPEGD_DEBUG | LWIP_DBG_STATE | LWIP_DBG_LEVEL_WARNING,
-            MJPEGD_DBG_ARG("Stream_CloseRequest clsd client, total: %d\n",mjpegd->_stream_count));
+            MJPEGD_DBG_ARG("close stream client, total: %d\n",mjpegd->_stream_count));
         err=ERR_OK;
     }
     catch(NULL_CS)
