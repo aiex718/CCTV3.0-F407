@@ -403,6 +403,7 @@ void ETH_LinkChanged_callback(struct netif *netif)
 	{
 		DBG_INFO("Network Cable disconnected\n");
 		ETH_Stop();
+		netif_set_addr(&gnetif, IP4_ADDR_ANY4 , IP4_ADDR_ANY4, IP4_ADDR_ANY4);
 		/*  When the netif link is down this function must be called.*/
 		netif_set_down(&gnetif);
 	}
