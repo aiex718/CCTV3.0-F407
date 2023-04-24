@@ -80,11 +80,13 @@ void LwIP_Init(void)
 	ip_addr_t netmask;
 	ip_addr_t gw;
 
-	/* Initializes the dynamic memory heap defined by MEM_SIZE.*/
-	mem_init();
+	lwip_init();
 
-	/* Initializes the memory pools defined by MEMP_NUM_x.*/
-	memp_init();
+	// these init is move to lwip_init()
+	// /* Initializes the dynamic memory heap defined by MEM_SIZE.*/
+	// mem_init();
+	// /* Initializes the memory pools defined by MEMP_NUM_x.*/
+	// memp_init();
 
 #ifdef USE_DHCP
 	ipaddr.addr = 0;
