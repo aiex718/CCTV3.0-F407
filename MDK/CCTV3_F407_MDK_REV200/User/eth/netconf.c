@@ -148,7 +148,6 @@ static void Netconf_CheckDHCPStatus(void)
 		if(new_state)
 		{
 			DBG_INFO("DHCP get new IP address\n");
-			print_netif_addr(&gnetif);
 		}
 	}
 }
