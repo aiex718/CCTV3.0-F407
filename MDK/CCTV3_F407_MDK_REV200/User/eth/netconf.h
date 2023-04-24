@@ -35,7 +35,7 @@
 #endif
 
 /* Includes ------------------------------------------------------------------*/
-#include "stm32f4xx.h"
+#include "bsp/platform/platform_opts.h"
 /* Exported types ------------------------------------------------------------*/
 /* Exported constants --------------------------------------------------------*/
 #define DHCP_START                 1
@@ -44,8 +44,9 @@
 #define DHCP_TIMEOUT               4
 #define DHCP_LINK_DOWN             5
 
-//#define USE_DHCP       /* enable DHCP, if disabled static address is used */
+#define USE_DHCP       /* enable DHCP, if disabled static address is used */
 
+//TODO:Set default mac and static ip
 //Mac address
 #define MAC_ADDR0                     2
 #define MAC_ADDR1                     3
@@ -73,15 +74,18 @@
 #define GW_ADDR3                      0
 
 //Check phy interval
-#ifndef LINK_TIMER_INTERVAL
-#define LINK_TIMER_INTERVAL        1000
+#ifndef CHECK_LINK_PERIOD
+  #define CHECK_LINK_PERIOD        1000
+#endif
+
+#ifndef MAX_DHCP_TRIES
+  #define MAX_DHCP_TRIES  4
 #endif
 
 /* MII and RMII mode selection ***********/
 #define RMII_MODE  
 //#define MII_MODE
 
-/* 在MII模式时，使能MCO引脚输出25MHz脉冲 */
 #ifdef 	MII_MODE
  #define PHY_CLOCK_MCO
 #endif
