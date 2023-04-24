@@ -35,8 +35,7 @@ bool Mjpegd_Camera_DoSnap(Mjpegd_Camera_t *cam,Mjpegd_Frame_t *frame)
 
         Mjpegd_Frame_Clear(frame);
         cam->HwCam_Ov2640->pExtension = frame;
-        //TODO: Set buf len without MJPEGD_FRAME_PAYLOAD_SPACE
-        Device_CamOV2640_SetBuf(cam->HwCam_Ov2640,frame->payload,MJPEGD_FRAME_PAYLOAD_SPACE);
+        Device_CamOV2640_SetBuf(cam->HwCam_Ov2640,frame->payload,frame->payload_len);
         status = Device_CamOV2640_CaptureCmd(cam->HwCam_Ov2640,true);
 
         if(status==DEVICE_CAMOV2640_OK)

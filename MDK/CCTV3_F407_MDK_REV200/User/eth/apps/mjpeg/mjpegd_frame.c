@@ -12,18 +12,19 @@ void Mjpegd_Frame_Init(Mjpegd_Frame_t* self)
 void Mjpegd_Frame_Clear(Mjpegd_Frame_t* self)
 {
     self->payload = self->_mem+MJPEGD_FRAME_HEADER_SPACE;
+    self->payload_len = sizeof(self->_mem)-MJPEGD_FRAME_HEADER_SPACE;
     self->head = self->payload;
     self->tail = self->payload;
     self->eof = self->payload;
-    self->payload_len=0;
+    self->frame_len=0;
     self->capture_time=0;
 }
 
 void Mjpegd_Frame_SetLenAndTime(Mjpegd_Frame_t* self,uint16_t len)
 {
     self->capture_time = sys_now();
-    self->payload_len = len;
-    self->tail = self->payload+self->payload_len;
+    self->frame_len = len;
+    self->tail = self->payload+self->frame_len;
     self->eof = self->tail;
 }
 
@@ -60,7 +61,7 @@ u16_t Mjpegd_Frame_InsertComment(Mjpegd_Frame_t* self,const u8_t *data, u16_t w_
         //make space for comment
         self->payload -= sizeof(Jpeg_Comment_Section)-2;
         self->head -= sizeof(Jpeg_Comment_Section)-2;
-        self->payload_len += sizeof(Jpeg_Comment_Section)-2;
+        self->frame_len += sizeof(Jpeg_Comment_Section)-2;
         
         //write comment block
         MJPEGD_MEMCPY(self->payload,Jpeg_Comment_Section,sizeof(Jpeg_Comment_Section));

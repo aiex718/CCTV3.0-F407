@@ -150,11 +150,11 @@ static void Mjpegd_FrameProc_ProcessRawFrame(Mjpegd_Frame_t* frame)
         }
 
         //write mjpeg header
-        w_len = sprintf((char*)buf,Http_Mjpeg_ContentLength,frame->payload_len);
+        w_len = sprintf((char*)buf,Http_Mjpeg_ContentLength,frame->frame_len);
         Mjpegd_Frame_WriteHeader(frame,buf,w_len);
         Mjpegd_Frame_WriteHeader(frame,(u8_t*)Http_Mjpeg_ContentType,MJPEGD_CHRARR_STRLEN(Http_Mjpeg_ContentType));
         Mjpegd_Frame_WriteHeader(frame,(u8_t*)Http_Mjpeg_Boundary,MJPEGD_CHRARR_STRLEN(Http_Mjpeg_Boundary));
-        w_len = sprintf((char*)buf,"%x\r\n", Mjpegd_Frame_HeaderSize(frame) + frame->payload_len);
+        w_len = sprintf((char*)buf,"%x\r\n", Mjpegd_Frame_HeaderSize(frame) + frame->frame_len);
         Mjpegd_Frame_WriteHeader(frame,buf,w_len);
 
         //write mjpegd tail, chunked block end

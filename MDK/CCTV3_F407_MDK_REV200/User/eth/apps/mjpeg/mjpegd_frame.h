@@ -14,6 +14,7 @@ struct Mjpegd_Frame_struct
     u8_t* tail;
     u8_t* eof;
     MJPEGD_SYSTIME_T capture_time;
+    u16_t frame_len;
 
     //dont modify these private member
     Mjpegd_Semaphore_t _sem;
@@ -23,7 +24,7 @@ struct Mjpegd_Frame_struct
 
 #define Mjpegd_Frame_HeaderSize(frame) ((frame)->payload - (frame)->head)
 #define Mjpegd_Frame_HeaderAvailable(frame) ((frame)->head - frame->_mem)
-#define Mjpegd_Frame_TailSize(frame) ((frame)->tail - ((frame)->payload+(frame)->payload_len))
+#define Mjpegd_Frame_TailSize(frame) ((frame)->tail - ((frame)->payload+(frame)->frame_len))
 #define Mjpegd_Frame_TailAvailable(frame) (frame->_mem + sizeof(frame->_mem) - (frame)->tail)
 #define Mjpegd_Frame_EofSize(frame) ((frame)->eof - (frame)->tail)
 #define Mjpegd_Frame_EofAvailable(frame) (frame->_mem + sizeof(frame->_mem) - (frame)->eof)
@@ -31,7 +32,7 @@ struct Mjpegd_Frame_struct
 #define Mjpegd_Frame_StreamSize(frame) ((frame)->tail - (frame)->head)
 #define Mjpegd_Frame_SnapSize(frame) ((frame)->eof - (frame)->head)
 
-#define Mjpegd_Frame_IsValid(frame) ((frame)!=NULL && (frame)->payload_len!=0)
+#define Mjpegd_Frame_IsValid(frame) ((frame)!=NULL && (frame)->frame_len!=0)
 
 
 void Mjpegd_Frame_Init(Mjpegd_Frame_t* self);
