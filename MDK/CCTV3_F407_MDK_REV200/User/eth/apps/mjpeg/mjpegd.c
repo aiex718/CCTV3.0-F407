@@ -727,13 +727,13 @@ static void Mjpegd_CheckIdle(Mjpegd_t *mjpegd)
 static void Mjpegd_ShowFps(Mjpegd_t *mjpegd)
 {
     MJPEGD_SYSTIME_T now = sys_now();
-    if(now - mjpegd->_fps_timer > (1000<<MJPEGD_FPS_PERIOD))
+    if(now - mjpegd->_fps_timer > (1000<<MJPEGD_SHOWFPS_PERIOD))
     {
         MJPEGD_ATOMIC_XCHG(&mjpegd->_fps_timer,now);
 
-        LWIP_DEBUGF(MJPEGD_FRAMEBUF_DEBUG | LWIP_DBG_STATE, 
-            MJPEGD_DBG_ARG("Mjpegd FPS %d\n",(mjpegd->_fps_counter>>MJPEGD_FPS_PERIOD)));
-        
+        MJPEGD_DBG_PRINT(MJPEGD_DBG_ARG("Mjpegd FPS %d\n",
+            (mjpegd->_fps_counter>>MJPEGD_SHOWFPS_PERIOD)));
+            
         MJPEGD_ATOMIC_XCHG(&mjpegd->_fps_counter,0);
     }
 }
@@ -742,10 +742,10 @@ static void Mjpegd_ShowDrop(Mjpegd_t *mjpegd)
 {
     u16_t drop_cnt = mjpegd->_drop_counter;
 
-    if(drop_cnt >= MJPEGD_FRAMEDROP_WARNING_THRESHOLD)
+    if(drop_cnt >= MJPEGD_SHOWDROP_THRESHOLD)
     {
-        LWIP_DEBUGF(MJPEGD_FRAMEBUF_DEBUG | LWIP_DBG_LEVEL_SEVERE, 
-            MJPEGD_DBG_ARG("Frame dropped %d, proc too slow?\n",mjpegd->_drop_counter));
+        MJPEGD_DBG_PRINT(MJPEGD_DBG_ARG("Frame dropped %d, proc too slow?\n"
+            ,mjpegd->_drop_counter));
         
         MJPEGD_ATOMIC_XCHG(&mjpegd->_drop_counter,0);
     }
@@ -764,8 +764,12 @@ void Mjpegd_Service(void* arg)
     Mjpegd_Stream_Output(mjpegd);
 
     Mjpegd_CheckIdle(mjpegd);
+#if MJPEGD_SHOWFPS_PERIOD
     Mjpegd_ShowFps(mjpegd);
+#endif
+#if MJPEGD_SHOWDROP_THRESHOLD
     Mjpegd_ShowDrop(mjpegd);
+#endif
 
     sys_timeout(MJPEGD_SERVICE_PERIOD, Mjpegd_Service, mjpegd);
 }
