@@ -141,8 +141,9 @@
 /* Exported macro ------------------------------------------------------------*/
 /* Exported functions ------------------------------------------------------- */
 void ETH_BSP_Config(void);
-void ETH_link_callback(struct netif *netif);
-void ETH_CheckLinkStatus(uint16_t PHYAddress);
+void ETH_CheckLinkStatus(void);
+void ETH_LinkChanged_callback(struct netif *netif);
+
 
 // uint32_t Eth_Link_PHYITConfig(uint16_t PHYAddress);
 // void Eth_Link_EXTIConfig(void);

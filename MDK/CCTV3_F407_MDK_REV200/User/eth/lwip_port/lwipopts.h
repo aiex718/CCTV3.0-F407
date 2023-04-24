@@ -30,6 +30,8 @@
 #ifndef __LWIPOPTS_H__
 #define __LWIPOPTS_H__
 
+#include "bsp/sys/systime.h"
+
 /**
  * SYS_LIGHTWEIGHT_PROT==1: if you want inter-task protection for certain
  * critical regions during buffer allocation, deallocation and memory
@@ -49,7 +51,7 @@
  */
 #define NO_SYS_NO_TIMERS        0
 
-#define sys_now Systime_Get
+#define sys_now SysTime_Get
 
 /* ---------- Memory options ---------- */
 /* MEM_ALIGNMENT: should be set to the alignment of the CPU for which
@@ -245,7 +247,6 @@ The STM32F4x7 allows computing and verifying the IP, UDP, TCP and ICMP checksums
 
 
 #define LWIP_DBG_MIN_LEVEL       LWIP_DBG_LEVEL_ALL//LWIP_DBG_LEVEL_WARNING //LWIP_DBG_LEVEL_SEVERE 
-#define LWIP_DBG_TYPES_ON        (LWIP_DBG_ON|LWIP_DBG_STATE)//|LWIP_DBG_TRACE)
 
 
 #endif /* __LWIPOPTS_H__ */

@@ -35,17 +35,14 @@
 #endif
 
 /* Includes ------------------------------------------------------------------*/
-#include "stm32f4xx.h"
+#include "bsp/platform/platform_opts.h"
+#include "bsp/sys/dbg_serial.h"
 /* Exported types ------------------------------------------------------------*/
 /* Exported constants --------------------------------------------------------*/
-#define DHCP_START                 1
-#define DHCP_WAIT_ADDRESS          2
-#define DHCP_ADDRESS_ASSIGNED      3
-#define DHCP_TIMEOUT               4
-#define DHCP_LINK_DOWN             5
+#define CHECK_LINK_PERIOD 250
+#define DHCP_EN 1
 
-//#define USE_DHCP       /* enable DHCP, if disabled static address is used */
-
+//TODO:Get UID for mac
 //Mac address
 #define MAC_ADDR0                     2
 #define MAC_ADDR1                     3
@@ -73,15 +70,16 @@
 #define GW_ADDR3                      0
 
 //Check phy interval
-#ifndef LINK_TIMER_INTERVAL
-#define LINK_TIMER_INTERVAL        1000
+#ifndef CHECK_LINK_PERIOD
+  #define CHECK_LINK_PERIOD        1000
 #endif
+
+
 
 /* MII and RMII mode selection ***********/
 #define RMII_MODE  
 //#define MII_MODE
 
-/* 在MII模式时，使能MCO引脚输出25MHz脉冲 */
 #ifdef 	MII_MODE
  #define PHY_CLOCK_MCO
 #endif
@@ -91,6 +89,18 @@
 void LwIP_Init(void);
 void LwIP_Pkt_Handle(void);
 void LwIP_Periodic_Handle(__IO uint32_t localtime);
+
+__STATIC_INLINE void print_netif_addr(struct netif *netif)
+{
+	DBG_INFO("IP  : %s\n",ip4addr_ntoa(&(netif->ip_addr)));
+	DBG_INFO("MASK: %s\n",ip4addr_ntoa(&(netif->netmask)));
+	DBG_INFO("GW  : %s\n",ip4addr_ntoa(&(netif->gw)));
+#if LWIP_DNS
+	//TODO:Impl DNS
+	printf("dns0:%s\n",ip4addr_ntoa((const ip_addr_t*)dns_getserver(0)));
+	printf("dns1:%s\n",ip4addr_ntoa((const ip_addr_t*)dns_getserver(1)));
+#endif
+}
 
 #ifdef __cplusplus
 }

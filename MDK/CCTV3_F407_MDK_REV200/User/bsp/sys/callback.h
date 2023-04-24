@@ -5,47 +5,56 @@
 #include "bsp/sys/buffer.h"
 
 typedef enum {
-    INVOKE_IN_TASK=0,
-    INVOKE_IN_IRQ=1,
-}Callback_IRqCfg_t;
+    INVOKE_IN_SERVICE = 0,
+    INVOKE_IMMEDIATELY,
+}Callback_InvokeCfg_t;
 
-//Callback_t is (selectable) invoked in interrupt or postponed to task/main thread
-//due to callback issuer, config INVOKE_IN_IRQ is not always fulfilled
+//Callback_t is configurable to invoke immediately(normally from a ISR)
+//or in service function(normally from a task or main thread)
+//depend on callback issuer, config is not always fulfilled
 __BSP_STRUCT_ALIGN typedef struct
 {
-    void (*func)(void* sender,void* param);
-    void *param;
-    Callback_IRqCfg_t IRqCfg;
+    void (*func)(void* sender,void* arg,void* owner);
+    void *owner;
+    Callback_InvokeCfg_t invoke_cfg;
 }Callback_t;
 
 __BUFFER_DECL(Callback_t*,CallbackP_t)
 
 //Macro as function
-#define Callback_Invoke(sender,cb) do{ \
-    if((cb)!=NULL&&(cb)->func!=NULL) (cb)->func((sender),(cb)->param);}while(0)   
-#define Callback_InvokeIdx(sender,cb_ary,cb_idx) do{\
-    Callback_t* cb = (cb_ary)[(cb_idx)];    \
-    Callback_Invoke((sender),cb);           \
+#define Callback_Invoke(sender,arg,cb) do{  \
+    if((cb)!=NULL&&(cb)->func!=NULL)        \
+    (cb)->func((sender),(arg),(cb)->owner); \
+}while(0)   
+
+#define Callback_Invoke_Idx(sender,arg,cb_ary,cb_idx) do{   \
+    Callback_t* cb = (cb_ary)[(cb_idx)];                    \
+    Callback_Invoke((sender),(arg),cb);                     \
 }while(0)
-#define Callback_TryInvoke_IRq(sender,cb) \
-    Callback_TryInvoke((sender),(cb),INVOKE_IN_IRQ)
-#define Callback_InvokeOrQueue_IRq(sender,cb,queue) \
-    Callback_InvokeOrQueue((sender),(cb),(queue),INVOKE_IN_IRQ)
-// #define Callback_InvokeOrQueue_Auto(sender,cb,queue) \
-//     Callback_InvokeOrQueue((sender),(cb),(queue),SysCtrl_IsThreadInIRq())
+
+#define Callback_InvokeNowOrPending_Idx(sender,arg,cb_ary,cb_idx,pendflag) do{  \
+    Callback_t* cb = (cb_ary)[(cb_idx)];                                        \
+    if(cb!=NULL)                                                                \
+    {                                                                           \
+        if(cb->invoke_cfg == INVOKE_IMMEDIATELY)                                \
+            Callback_Invoke((sender),(arg),(cb));                               \
+        else                                                                    \
+            BitFlag_SetIdx((pendflag),(cb_idx));                                \
+    }                                                                           \
+}while(0)
 
 /**
- * @brief try invoke callback irqcfg match cb->IRqCfg
+ * @brief try invoke callback when cfg match cb->invoke_cfg
  * @param sender: sender of callback
  * @param cb: callback to invoke
  * @return true if callback is invoked, false if not invoked
  */
-__STATIC_INLINE bool Callback_TryInvoke(void *sender, Callback_t *cb,
-    Callback_IRqCfg_t irqcfg)
+__STATIC_INLINE bool Callback_TryInvoke(void *sender,void *arg,
+    Callback_t *cb, Callback_InvokeCfg_t cfg)
 {
-    if(cb->IRqCfg == irqcfg)
+    if(cb->invoke_cfg == cfg)
     {
-        Callback_Invoke(sender,cb);
+        Callback_Invoke(sender,arg,cb);
         return true;
     }
     else
@@ -64,13 +73,13 @@ __STATIC_INLINE bool Callback_TryInvoke(void *sender, Callback_t *cb,
  * @param cb: callback to invoke or queue
  * @return true if callback is invoked, false if the callback is queued 
  */
-__STATIC_INLINE bool Callback_InvokeOrQueue(void *sender, Callback_t *cb,
-    Buffer_CallbackP_t *queue,Callback_IRqCfg_t irqcfg)
+__STATIC_INLINE bool Callback_InvokeOrQueue(void *sender, void* arg,
+    Callback_t *cb, Buffer_CallbackP_t *queue,Callback_InvokeCfg_t irqcfg)
 {
-    if( cb->IRqCfg == irqcfg || queue==NULL ||
+    if( cb->invoke_cfg == irqcfg || queue==NULL ||
         Buffer_Queue_Push_CallbackP_t(queue,cb)==false )
     {
-        Callback_Invoke(sender,cb);
+        Callback_Invoke(sender,arg,cb);
         return true;
     }
     else

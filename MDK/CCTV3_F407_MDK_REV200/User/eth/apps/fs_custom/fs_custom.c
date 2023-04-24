@@ -3,7 +3,7 @@
 #include "lwip/mem.h"
 
 #include "string.h"
-
+#include "bsp/sys/dbg_serial.h"
 
 //functions for lwip call
 int fs_open_custom(struct fs_file *file, const char *name)
@@ -20,7 +20,7 @@ int fs_open_custom(struct fs_file *file, const char *name)
             file->len=0;//len auto increase when writing using http_builder
             file->pextension=NULL;
             file->flags=FS_FILE_FLAGS_HEADER_INCLUDED;
-            printf("fs_open_custom: %s, buf:0x%x\n",name,buf);
+            DBG_INFO("fs_open_custom: %s, buf:0x%x\n",name,buf);
             return 1;
         }
         else
@@ -41,7 +41,7 @@ void fs_close_custom(struct fs_file *file)
 {
     if(file!=NULL && file->data != NULL && file->is_custom_file)
     {
-        printf("fs_close_custom,buf:0x%x\n",file->data);
+        DBG_INFO("fs_close_custom,buf:0x%x\n",file->data);
         mem_free((void*)file->data);
         file->data=NULL;
     }

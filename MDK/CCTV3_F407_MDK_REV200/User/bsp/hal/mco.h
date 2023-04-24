@@ -18,5 +18,6 @@ __BSP_STRUCT_ALIGN typedef struct
     uint32_t MCO_Source;
     uint32_t MCO_ClkDiv;
 }HAL_MCO_t;
+void HAL_MCO_Init(HAL_MCO_t* self);
 
 #endif

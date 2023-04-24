@@ -26,6 +26,7 @@
 	*/
 
 /* Includes ------------------------------------------------------------------*/
+#include "bsp/sys/dbg_serial.h"
 #include "lwip/opt.h"
 #include "lwip/dhcp.h"
 #include "lwip/netif.h"
@@ -42,9 +43,6 @@
 ETH_InitTypeDef ETH_InitStructure;
 __IO uint32_t  EthStatus = 0;
 extern struct netif gnetif;
-#ifdef USE_DHCP
-extern __IO uint8_t DHCP_state;
-#endif /* LWIP_DHCP */
 
 /* Private function prototypes -----------------------------------------------*/
 static void ETH_GPIO_Config(void);
@@ -259,34 +257,64 @@ void ETH_GPIO_Config(void)
 }
 
 /**
+ * @brief This function should be called periodically.
+ *        It checks link status for ethernet,
+ * 		  let callback triggered if link status changed.
+ */
+void ETH_CheckLinkStatus(void)
+{
+	static uint16_t status = 0;
+	uint16_t link = GET_PHY_LINK_STATUS();
+	if (link != status) {
+		status = link;
+		//DBG_INFO("Eth link changed %d\n", link);
+		if(link)
+			netif_set_link_up(&gnetif);
+		else
+			netif_set_link_down(&gnetif);
+	}	
+}
+
+/**
 	* @brief  Link callback function, this function is called on change of link status.
 	* @param  The network interface
 	* @retval None
 	*/
-void ETH_link_callback(struct netif *netif)
+void ETH_LinkChanged_callback(struct netif *netif)
 {
 	__IO uint32_t timeout = 0;
- uint32_t tmpreg,RegValue;
+ 	uint32_t tmpreg,RegValue;
 	ip_addr_t ipaddr;
 	ip_addr_t netmask;
 	ip_addr_t gw;
 
 	if(netif_is_link_up(netif))
 	{
+		DBG_INFO("Network cable connected\n");
+
 		/* Restart the autonegotiation */
 		if(ETH_InitStructure.ETH_AutoNegotiation != ETH_AutoNegotiation_Disable)
 		{
+			DBG_INFO("Starting AutoNegotiation...\n");
 			/* Reset Timeout counter */
 			timeout = 0;
 
 			/* Enable Auto-Negotiation */
 			ETH_WritePHYRegister(ETHERNET_PHY_ADDRESS, PHY_BCR, PHY_AutoNegotiation);
 
+			/* Force restart Auto-Negotiation, not necessary(some phy need restart manually) */
+			//ETH_WritePHYRegister(ETHERNET_PHY_ADDRESS, PHY_BCR, PHY_Restart_AutoNegotiation);
+
 			/* Wait until the auto-negotiation will be completed */
 			do
 			{
 				timeout++;
 			} while (!(ETH_ReadPHYRegister(ETHERNET_PHY_ADDRESS, PHY_BSR) & PHY_AutoNego_Complete) && (timeout < (uint32_t)PHY_READ_TO));
+
+			if(timeout == PHY_READ_TO)
+				DBG_INFO("AutoNegotiation Timeout!\n");
+			else
+				DBG_INFO("AutoNegotiation Done\n");
 
 			/* Reset Timeout counter */
 			timeout = 0;
@@ -314,8 +342,12 @@ void ETH_link_callback(struct netif *netif)
 			else
 			{
 				/* Set Ethernet speed to 100M following the auto-negotiation */ 
-				ETH_InitStructure.ETH_Speed = ETH_Speed_100M;      
+				ETH_InitStructure.ETH_Speed = ETH_Speed_100M;  
 			}
+
+			DBG_INFO("Ethernet Mode %s Duplex %sM\n", 
+				(ETH_InitStructure.ETH_Mode == ETH_Mode_FullDuplex) ? "Full" : "Half",
+				(ETH_InitStructure.ETH_Speed == ETH_Speed_10M) ? "10" : "100");
 
 			/*------------------------ ETHERNET MACCR Re-Configuration --------------------*/
 			/* Get the ETHERNET MACCR value */  
@@ -336,70 +368,43 @@ void ETH_link_callback(struct netif *netif)
 		/* Restart MAC interface */
 		ETH_Start();
 
-#ifdef USE_DHCP
-		ipaddr.addr = 0;
-		netmask.addr = 0;
-		gw.addr = 0;
-		DHCP_state = DHCP_START;
-#else
-		IP4_ADDR(&ipaddr, IP_ADDR0, IP_ADDR1, IP_ADDR2, IP_ADDR3);
-		IP4_ADDR(&netmask, NETMASK_ADDR0, NETMASK_ADDR1 , NETMASK_ADDR2, NETMASK_ADDR3);
-		IP4_ADDR(&gw, GW_ADDR0, GW_ADDR1, GW_ADDR2, GW_ADDR3);
-#endif /* USE_DHCP */
-
-		netif_set_addr(&gnetif, &ipaddr , &netmask, &gw);
-		
+		netif_set_addr(&gnetif, IP4_ADDR_ANY4 , IP4_ADDR_ANY4, IP4_ADDR_ANY4);
 		/* When the netif is fully configured this function must be called.*/
 		netif_set_up(&gnetif);    
 
-		printf("Network Cable connected\n");
+		if(DHCP_EN)
+		{
+			struct dhcp *dhcp_data = netif_dhcp_data(&gnetif);
+			DBG_INFO("Using dhcp\n");
+			/*	if dhcp_data is null, start dhcp here, otherwise
+			 	dhcp is already started, let lwip handle it.  */
 
-	#ifndef USE_DHCP
-		/* Display static IP address */
-		printf("DHCP IP address %d.%d.%d.%d\n", IP_ADDR0, IP_ADDR1, IP_ADDR2, IP_ADDR3);
-
-	#endif /* USE_DHCP */
+			//TODO:Get UID for default dhcp ip?
+			IP4_ADDR(&ipaddr, 169, 254, IP_ADDR2, IP_ADDR3);
+			IP4_ADDR(&netmask, 255, 255, 0, 0);
+			IP4_ADDR(&gw, 0, 0, 0, 0);	
+			
+			if(dhcp_data==NULL)
+				dhcp_start(&gnetif);
+		}
+		else
+		{
+			DBG_INFO("Using static IP address\n");
+			//TODO:Read user config ip
+			IP4_ADDR(&ipaddr, IP_ADDR0, IP_ADDR1, IP_ADDR2, IP_ADDR3);
+			IP4_ADDR(&netmask, NETMASK_ADDR0, NETMASK_ADDR1, NETMASK_ADDR2, NETMASK_ADDR3);
+			IP4_ADDR(&gw, GW_ADDR0, GW_ADDR1, GW_ADDR2, GW_ADDR3);
+		}
+			
+		netif_set_addr(&gnetif, &ipaddr , &netmask, &gw);
+		//print_netif_addr(&gnetif);
 	}
 	else
 	{
+		DBG_INFO("Network Cable disconnected\n");
 		ETH_Stop();
-#ifdef USE_DHCP
-		DHCP_state = DHCP_LINK_DOWN;
-		dhcp_stop(netif);
-#endif /* USE_DHCP */
-
 		/*  When the netif link is down this function must be called.*/
 		netif_set_down(&gnetif);
-
-		printf("Network Cable disconnected\r\n");
-
-	}
-}
-
-
-/**
- * @brief This function is called periodically each second
- *        It checks link status for ethernet controller
- * @param PHYAddress 
- */
-void ETH_CheckLinkStatus(uint16_t PHYAddress) 
-{
-	static uint8_t status = 0;
-	uint32_t t = GET_PHY_LINK_STATUS();
-	
-	/* If we have link and previous check was not yet */
-	if (t && !status) {
-		/* Set link up */
-		netif_set_link_up(&gnetif);
-		
-		status = 1;
-	}	
-	/* If we don't have link and it was on previous check */
-	if (!t && status) {
-		/* Set link down */
-		netif_set_link_down(&gnetif);
-			
-		status = 0;
 	}
 }
 

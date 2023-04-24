@@ -1,7 +1,6 @@
 #include "bsp/hal/spi.h"
 #include "bsp/sys/systimer.h"
 
-//TODO: Test spi all
 //private functions
 static HAL_SPI_Status_t __SPI_SendByteRecv(HAL_SPI_t *self,uint8_t tx,uint8_t* rx,uint16_t timeout)
 {

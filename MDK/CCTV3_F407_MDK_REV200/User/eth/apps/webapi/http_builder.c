@@ -61,7 +61,7 @@ static HttpBuilder_Status_t HttpBuilder_ModifyContentLength(struct fs_file *file
     overwrite_len = sprintf(buf,"%d",content_len);//len should be less then 4 digits
     strncpy(str_find,buf,overwrite_len);
     
-    //printf("after file->data:%s\r\n",file->data);
+    //DBG_INFO("after file->data:%s\r\n",file->data);
     return HTTP_BUILDER_OK;
 }
 
