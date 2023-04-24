@@ -6,4 +6,7 @@
 
 #define DEVICE_CAM_OV2640_DEBUG 0
 
+#define CHECK_LINK_PERIOD 250
+#define DHCP_EN 1
+
 #endif

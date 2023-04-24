@@ -39,10 +39,7 @@
 #include "bsp/sys/dbg_serial.h"
 /* Exported types ------------------------------------------------------------*/
 /* Exported constants --------------------------------------------------------*/
-#define CHECK_LINK_PERIOD 250
-#define DHCP_EN 1
 
-//TODO:Get UID for mac
 //Mac address
 #define MAC_ADDR0                     2
 #define MAC_ADDR1                     3
@@ -74,6 +71,9 @@
   #define CHECK_LINK_PERIOD        1000
 #endif
 
+#ifndef DHCP_EN
+  #define DHCP_EN 0
+#endif 
 
 
 /* MII and RMII mode selection ***********/
@@ -96,7 +96,6 @@ __STATIC_INLINE void print_netif_addr(struct netif *netif)
 	DBG_INFO("MASK: %s\n",ip4addr_ntoa(&(netif->netmask)));
 	DBG_INFO("GW  : %s\n",ip4addr_ntoa(&(netif->gw)));
 #if LWIP_DNS
-	//TODO:Impl DNS
 	printf("dns0:%s\n",ip4addr_ntoa((const ip_addr_t*)dns_getserver(0)));
 	printf("dns1:%s\n",ip4addr_ntoa((const ip_addr_t*)dns_getserver(1)));
 #endif
