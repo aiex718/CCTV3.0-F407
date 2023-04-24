@@ -31,43 +31,26 @@
 #include "lwip/mem.h"
 #include "lwip/memp.h"
 #include "lwip/tcp.h"
+#include "lwip/dns.h"
 #include "lwip/timeouts.h"
-// #include "lwip/tcp_impl.h"
 #include "lwip/udp.h"
 #include "lwip/dhcp.h"
+#include "lwip/init.h"
 #include "netif/etharp.h"
 #include "eth/lwip_port/Standalone/ethernetif.h"
 #include "eth/netconf.h"
 #include "eth/stm32f4x7_eth_phy.h"
 
 /* Private typedef -----------------------------------------------------------*/
-#define MAX_DHCP_TRIES 4
-#define CHECK_LINK_PERIOD 250
 
 /* Private define ------------------------------------------------------------*/
 /* Private macro -------------------------------------------------------------*/
 /* Private variables ---------------------------------------------------------*/
 struct netif gnetif;
-//uint32_t TCPTimer = 0;
-//uint32_t ARPTimer = 0;
-//uint32_t IPaddress = 0;
-
-#ifdef USE_DHCP
-//uint32_t DHCPfineTimer = 0;
-//uint32_t DHCPcoarseTimer = 0;
-__IO uint8_t DHCP_state;
-#endif
 extern __IO uint32_t EthStatus;
 
 /* Private functions ---------------------------------------------------------*/
-void LwIP_DHCP_Process_Handle(void);
-
-//CheckLink callback handler registed to LwIP timeouts
-void CheckLink_Timeout_Handler(void* arg)
-{
-	ETH_CheckLinkStatus();
-	sys_timeout(CHECK_LINK_PERIOD, CheckLink_Timeout_Handler, NULL);
-}
+static void Netconf_Service(void* arg);
 
 /**
  * @brief  Initializes the lwIP stack
@@ -76,27 +59,13 @@ void CheckLink_Timeout_Handler(void* arg)
  */
 void LwIP_Init(void)
 {
-	ip_addr_t ipaddr;
-	ip_addr_t netmask;
-	ip_addr_t gw;
-
+	// Initialize the LwIP stack
 	lwip_init();
 
-	// these init is move to lwip_init()
-	// /* Initializes the dynamic memory heap defined by MEM_SIZE.*/
-	// mem_init();
-	// /* Initializes the memory pools defined by MEMP_NUM_x.*/
-	// memp_init();
-
-#ifdef USE_DHCP
-	ipaddr.addr = 0;
-	netmask.addr = 0;
-	gw.addr = 0;
-#else
-	IP4_ADDR(&ipaddr, IP_ADDR0, IP_ADDR1, IP_ADDR2, IP_ADDR3);
-	IP4_ADDR(&netmask, NETMASK_ADDR0, NETMASK_ADDR1, NETMASK_ADDR2, NETMASK_ADDR3);
-	IP4_ADDR(&gw, GW_ADDR0, GW_ADDR1, GW_ADDR2, GW_ADDR3);
-#endif
+	/* In LwIP 2.1.3, all periodic process is handled by sys_timeouts,
+	Including tcp_tmr, etharp_tmr, dhcp_fine_tmr....etc,
+	user no longer need to call them manually, only sys_check_timeouts() 
+	is needed. Refer to lwip/timeouts.c/.h for more details. */
 
 	/* - netif_add(struct netif *netif, ip_addr_t *ipaddr,
 	ip_addr_t *netmask, ip_addr_t *gw,
@@ -110,43 +79,35 @@ void LwIP_Init(void)
 
 	The init function pointer must point to a initialization function for
 	your ethernet netif interface. The following code illustrates it's use.*/
-	netif_add(&gnetif, &ipaddr, &netmask, &gw, NULL, &ethernetif_init, &ethernet_input);
+	netif_add(&gnetif, IP4_ADDR_ANY4, IP4_ADDR_ANY4, IP4_ADDR_ANY4,
+		 NULL, &ethernetif_init, &ethernet_input);
 
 	/*  Registers the default network interface.*/
 	netif_set_default(&gnetif);
 
 	if (EthStatus == (ETH_INIT_FLAG | ETH_LINK_FLAG))
 	{
-		/* Set Ethernet link flag */
-		gnetif.flags |= NETIF_FLAG_LINK_UP;
-
 		/* When the netif is fully configured this function must be called.*/
 		netif_set_up(&gnetif);
-		DBG_INFO("Connected, setting IP address.\n");
-#ifdef USE_DHCP
-		DBG_INFO("using dhcp...\n");
-		DHCP_state = DHCP_START;
-#else
-		DBG_INFO("Static IP address.\n");
-		DBG_INFO("IP: %d.%d.%d.%d\n", IP_ADDR0, IP_ADDR1, IP_ADDR2, IP_ADDR3);
-		DBG_INFO("NETMASK: %d.%d.%d.%d\n", NETMASK_ADDR0, NETMASK_ADDR1, NETMASK_ADDR2, NETMASK_ADDR3);
-		DBG_INFO("Gateway: %d.%d.%d.%d\n", GW_ADDR0, GW_ADDR1, GW_ADDR2, GW_ADDR3);
-#endif /* USE_DHCP */
 	}
 	else
 	{
 		/*  When the netif link is down this function must be called.*/
 		netif_set_down(&gnetif);
-#ifdef USE_DHCP
-		DHCP_state = DHCP_LINK_DOWN;
-#endif /* USE_DHCP */
-		DBG_INFO("Network Cable not connected\n");
+		DBG_INFO("Network cable not connected\n");
 	}
 
+	/* In LwIP 2.1.3, all periodic process is handled by sys_timeouts,
+	 * Including tcp_tmr, etharp_tmr, dhcp_fine_tmr....etc,
+	 * user no longer need to call them manually, only sys_check_timeouts() is needed.
+	 * Refer to lwip/timeouts.c/.h for more details. */
+
 	/* Set the link callback function, this function is called on change of link status*/
-	netif_set_link_callback(&gnetif, ETH_link_callback);
-	//create a timeout to check the link status handled by lwip
-	sys_timeout(CHECK_LINK_PERIOD, CheckLink_Timeout_Handler, NULL);
+	netif_set_link_callback(&gnetif, ETH_LinkChanged_callback);
+	
+	/* call Netconf_Service to trigger link status check, if network cable is connected
+	ETH_LinkChanged_callback will be invoked to set netif and ip address. */
+	Netconf_Service(NULL);
 }
 
 /**
@@ -160,128 +121,46 @@ void LwIP_Pkt_Handle(void)
 	ethernetif_input(&gnetif);
 }
 
-// /**
-// * @brief  LwIP periodic tasks
-// * @param  localtime the current LocalTime value
-// * @retval None
-// */
-// void LwIP_Periodic_Handle(__IO uint32_t localtime)
-// {
-// #if LWIP_TCP
-//   /* TCP periodic process every 250 ms */
-//   if (localtime - TCPTimer >= TCP_TMR_INTERVAL)
-//   {
-//     TCPTimer =  localtime;
-//     tcp_tmr();
-//   }
-// #endif
-
-//   /* ARP periodic process every 5s */
-//   if ((localtime - ARPTimer) >= ARP_TMR_INTERVAL)
-//   {
-//     ARPTimer =  localtime;
-//     etharp_tmr();
-//   }
-
-// #ifdef USE_DHCP
-//   /* Fine DHCP periodic process every 500ms */
-//   if (localtime - DHCPfineTimer >= DHCP_FINE_TIMER_MSECS)
-//   {
-//     DHCPfineTimer =  localtime;
-//     dhcp_fine_tmr();
-//     if ((DHCP_state != DHCP_ADDRESS_ASSIGNED) &&
-//         (DHCP_state != DHCP_TIMEOUT) &&
-//           (DHCP_state != DHCP_LINK_DOWN))
-//     {
-//       /* process DHCP state machine */
-//       LwIP_DHCP_Process_Handle();
-//     }
-//   }
-
-//   /* DHCP Coarse periodic process every 60s */
-//   if (localtime - DHCPcoarseTimer >= DHCP_COARSE_TIMER_MSECS)
-//   {
-//     DHCPcoarseTimer =  localtime;
-//     dhcp_coarse_tmr();
-//   }
-
-// #endif
-// }
-
-#ifdef USE_DHCP
-/**
- * @brief  LwIP_DHCP_Process_Handle
- * @param  None
- * @retval None
- */
-void LwIP_DHCP_Process_Handle()
+static void Netconf_CheckIPaddress(void)
 {
-	ip_addr_t ipaddr;
-	ip_addr_t netmask;
-	ip_addr_t gw;
-
-	switch (DHCP_state)
+	static u32_t _ipaddr,_netmask,_gw;
+	
+	if( gnetif.ip_addr.addr!=_ipaddr || 
+		gnetif.netmask.addr!=_netmask || 
+		gnetif.gw.addr!=_gw)
 	{
-	case DHCP_START:
-	{
-		DHCP_state = DHCP_WAIT_ADDRESS;
-		dhcp_start(&gnetif);
-		/* IP address should be set to 0
-		   every time we want to assign a new DHCP address */
-		IPaddress = 0;
-		DBG_INFO("Looking for DHCP server...\n");
-	}
-	break;
-
-	case DHCP_WAIT_ADDRESS:
-	{
-		/* Read the new IP address */
-		IPaddress = gnetif.ip_addr.addr;
-
-		if (IPaddress != 0)
-		{
-			DHCP_state = DHCP_ADDRESS_ASSIGNED;
-
-			/* Stop DHCP */
-			dhcp_stop(&gnetif);
-
-			DBG_INFO("IP address assigned by a DHCP server\n");
-			DBG_INFO("IP: %d.%d.%d.%d\n", (uint8_t)(IPaddress), (uint8_t)(IPaddress >> 8),
-					 (uint8_t)(IPaddress >> 16), (uint8_t)(IPaddress >> 24));
-			DBG_INFO("NETMASK: %d.%d.%d.%d\n", NETMASK_ADDR0, NETMASK_ADDR1, NETMASK_ADDR2, NETMASK_ADDR3);
-			DBG_INFO("Gateway: %d.%d.%d.%d\n", GW_ADDR0, GW_ADDR1, GW_ADDR2, GW_ADDR3);
-		}
-		else
-		{
-			/* DHCP timeout */
-			if (gnetif.dhcp->tries > MAX_DHCP_TRIES)
-			{
-				DHCP_state = DHCP_TIMEOUT;
-
-				/* Stop DHCP */
-				dhcp_stop(&gnetif);
-
-				/* Static address used */
-				IP4_ADDR(&ipaddr, IP_ADDR0, IP_ADDR1, IP_ADDR2, IP_ADDR3);
-				IP4_ADDR(&netmask, NETMASK_ADDR0, NETMASK_ADDR1, NETMASK_ADDR2, NETMASK_ADDR3);
-				IP4_ADDR(&gw, GW_ADDR0, GW_ADDR1, GW_ADDR2, GW_ADDR3);
-				netif_set_addr(&gnetif, &ipaddr, &netmask, &gw);
-
-				DBG_INFO("DHCP timeout\n");
-				DBG_INFO("Using static IP address\n");
-				DBG_INFO("IP: %d.%d.%d.%d\n", IP_ADDR0, IP_ADDR1, IP_ADDR2, IP_ADDR3);
-				DBG_INFO("NETMASK: %d.%d.%d.%d\n", NETMASK_ADDR0, NETMASK_ADDR1, NETMASK_ADDR2, NETMASK_ADDR3);
-				DBG_INFO("Gateway: %d.%d.%d.%d\n", GW_ADDR0, GW_ADDR1, GW_ADDR2, GW_ADDR3);
-			}
-		}
-	}
-	break;
-	default:
-		break;
+		_ipaddr = gnetif.ip_addr.addr;
+		_netmask = gnetif.netmask.addr;
+		_gw = gnetif.gw.addr;
+		DBG_INFO("IP address changed\n");
+		print_netif_addr(&gnetif);
 	}
 }
-#endif
 
+static void Netconf_CheckDHCPStatus(void)
+{
+	static u8_t old_state =0 ;
+	u8_t new_state = 0;
+	new_state = dhcp_supplied_address(&gnetif);
+	if (new_state != old_state)
+	{
+		old_state = new_state;
+		if(new_state)
+		{
+			DBG_INFO("DHCP get new IP address\n");
+			print_netif_addr(&gnetif);
+		}
+	}
+}
+
+static void Netconf_Service(void* arg)
+{
+	if(DHCP_EN)
+		Netconf_CheckDHCPStatus();
+	Netconf_CheckIPaddress();
+	ETH_CheckLinkStatus();
+	sys_timeout(CHECK_LINK_PERIOD, Netconf_Service, NULL);
+}
 
 
 #if defined ( __CC_ARM )  /* MDK ARM Compiler */
