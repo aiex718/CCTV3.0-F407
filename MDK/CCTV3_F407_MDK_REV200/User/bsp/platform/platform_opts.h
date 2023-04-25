@@ -15,6 +15,5 @@
 #define DHCP_EN 1
 #define DNS_DEFAULT_SERVER_0 "8.8.8.8"
 #define DNS_DEFAULT_SERVER_1 "8.8.4.4"
-#define NTP_DEFAULT_SERVER "time.stdtime.gov.tw"
 
 #endif
