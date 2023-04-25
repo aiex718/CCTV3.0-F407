@@ -19,9 +19,11 @@ void Mjpegd_Camera_Init(Mjpegd_Camera_t *cam,Mjpegd_t *mjpegd)
         CAMOV2640_CALLBACK_NEWFRAME,&cam->Ov2640_RecvRawFrame_cb);
 }
 
+// Let camera start to capture a frame, return false if any error occurs
+// Caller MUST release frame when capture failed.
 bool Mjpegd_Camera_DoSnap(Mjpegd_Camera_t *cam,Mjpegd_Frame_t *frame)
 {
-    if(frame!=NULL)
+    if(Mjpegd_Camera_IsEnabled(cam) && frame!=NULL)
     {
         Device_CamOV2640_Status_t status;
 
@@ -51,7 +53,6 @@ bool Mjpegd_Camera_DoSnap(Mjpegd_Camera_t *cam,Mjpegd_Frame_t *frame)
                 MJPEGD_DBG_ARG("Capture failed %d\n",status));
         }
     }
-
     return false;
 }
 
@@ -118,28 +119,41 @@ static void Cam2640_NewFrame_Handler(void *sender, void *arg, void *owner)
 
     if(frame!=NULL)
         Mjpegd_Frame_SetLenAndTime(frame, cam2640->CamOV2640_Buffer_Len);
+    else
+    {
+        LWIP_DEBUGF(MJPEGD_DEBUG | LWIP_DBG_LEVEL_SERIOUS , 
+            MJPEGD_DBG_ARG("NewFrame frame NULL\n"));
+    }
     
     //clear buffer
     Device_CamOV2640_SetBuf(cam2640,NULL,0);
     
-    //return captured frame and get a new frame buffer
-    frame=Mjpegd_FrameProc_NextFrame(mjpegd,frame);
-    
-    if(frame!=NULL)
+    if(Device_CamOV2640_IsEnabled(cam2640))
     {
-        //start next capture
-        if(Mjpegd_Camera_DoSnap(mjpegd->Camera,frame)==false)
+        //return captured frame and get a new frame buffer
+        frame=Mjpegd_FrameProc_NextFrame(mjpegd,frame);
+        
+        if(frame!=NULL)
         {
-            //failed to start capture, release frame
-            Mjpegd_FrameProc_RecvBroken(mjpegd,frame);
-            LWIP_DEBUGF(MJPEGD_DEBUG | LWIP_DBG_LEVEL_SERIOUS , 
-                MJPEGD_DBG_ARG("NewFrame DoSnap failed\n"));
+            //start next capture
+            if(Mjpegd_Camera_DoSnap(mjpegd->Camera,frame)==false)
+            {
+                //failed to start capture, release frame
+                Mjpegd_FrameProc_RecvBroken(mjpegd,frame);
+                LWIP_DEBUGF(MJPEGD_DEBUG | LWIP_DBG_LEVEL_SERIOUS , 
+                    MJPEGD_DBG_ARG("NewFrame DoSnap failed\n"));
+            }
+        }
+        else
+        {
+            //no frame buffer available, try later
+            LWIP_DEBUGF(MJPEGD_DEBUG | LWIP_DBG_LEVEL_WARNING, 
+                MJPEGD_DBG_ARG("NewFrame no idle frame\n"));
         }
     }
     else
     {
-        //no frame buffer available, stop capture
-        LWIP_DEBUGF(MJPEGD_DEBUG | LWIP_DBG_LEVEL_SERIOUS , 
-            MJPEGD_DBG_ARG("NewFrame no idle frame\n"));
+        //camera is not enabled, just drop frame
+        Mjpegd_FrameProc_RecvBroken(mjpegd,frame);
     }
 }

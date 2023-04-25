@@ -44,8 +44,8 @@ void Device_CamOV2640_DcmiRxDmaTcCallback(void *sender,void *arg,void *owner)
     Device_CamOV2640_t* self = (Device_CamOV2640_t*)owner;
     uint8_t *rxbuf = self->CamOV2640_Buffer;
     uint16_t rxlen = self->CamOV2640_Buffer_Len - HAL_DMA_GetNumOfData(dma)*4;
-    self->CamOV2640_Buffer_Len = 0;
-    
+    uint16_t frame_len=0;
+
     //check jpeg start and end tag
     if(rxlen && BSP_MEMCMP(rxbuf,Jpeg_Start_Tag,BSP_ARR_LEN(Jpeg_Start_Tag))==0)
     {
@@ -54,23 +54,43 @@ void Device_CamOV2640_DcmiRxDmaTcCallback(void *sender,void *arg,void *owner)
         {
             tail+=BSP_ARR_LEN(Jpeg_End_Tag);
             if(tail>rxbuf)
-                self->CamOV2640_Buffer_Len = tail-rxbuf;
+                frame_len = tail-rxbuf;
         }
     }
 
-    if(self->CamOV2640_Buffer_Len){
-#if DEVICE_CAM_OV2640_DEBUG
-        DBG_INFO("%6d:Snaped len:%u ,trimmed len:%u\n",
-            SysTime_Get(),rxlen,self->CamOV2640_Buffer_Len);
-#endif
+    //Check if frame is valid, there're 2 case bad frame is expected.
+    //1. It's first frame we received
+    //2. Cam is disabled(during capturing)
+    //error message is omitted when bad frame is expected.
+
+    #if DEVICE_CAM_OV2640_DEBUG
+    DBG_INFO("%6d:Snaped len:%u ,trimmed len:%u\n",
+        SysTime_Get(),rxlen,frame_len);
+    #endif
+
+    if (frame_len==0 && Device_CamOV2640_IsEnabled(self))
+    {
+        //receive bad frame, retry capture using same buffer
+        Device_CamOV2640_SetBuf(self,rxbuf,self->CamOV2640_Buffer_Len);
+        Device_CamOV2640_CaptureCmd(self,true);
+
+        //only show warning when it's not first frame
+        if(self->_is_first_frame==false)
+        {
+            DBG_WARNING("Bad frame,Snaped len:%u ,trimmed len:%u, retrying.\n",
+                rxlen,frame_len);
+        }
     }
-    else{
-        DBG_WARNING("Bad frame,Snaped len:%u ,trimmed len:%u\n",
-            rxlen,self->CamOV2640_Buffer_Len);
+    else// equals to if(frame_len || Device_CamOV2640_IsEnabled(self)==false)
+    {
+        // We invoke callback when frame is valid, or cam is disabled
+        // (to return frame buffer)
+        self->CamOV2640_Buffer_Len = frame_len;
+        Callback_InvokeNowOrPending_Idx(self ,NULL, self->CamOV2640_Callbacks,
+            CAMOV2640_CALLBACK_NEWFRAME,self->_callback_pending_flag);
     }
 
-    Callback_InvokeNowOrPending_Idx(self ,NULL, self->CamOV2640_Callbacks,
-        CAMOV2640_CALLBACK_NEWFRAME,self->_callback_pending_flag);
+    self->_is_first_frame = !Device_CamOV2640_IsEnabled(self);
 
     BSP_UNUSED_ARG(arg);
     //uncomment this if self looping mode is needed
@@ -96,6 +116,8 @@ void Device_CamOV2640_Init(Device_CamOV2640_t* self)
     Device_CamOV2640_ReadID(self,&id);
     DBG_INFO("OV2640 ID: %x %x %x %x\n", id.Manufacturer_ID1, id.Manufacturer_ID2, id.PIDH, id.PIDL);
     Device_CamOV2640_SetJpegFormat(self,JPEG_320x240);
+
+    self->_is_first_frame = true;
 
     BSP_ARR_CLEAR(self->CamOV2640_Callbacks);
     self->pExtension = NULL;

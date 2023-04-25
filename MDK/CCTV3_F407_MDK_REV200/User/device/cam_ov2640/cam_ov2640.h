@@ -45,6 +45,8 @@ typedef struct
     //custom data
     void *pExtension;
 
+    //flag for prevent first frame error
+    __IO bool _is_first_frame;
     //private flags, dont use
     BitFlag_t _callback_pending_flag;
     //callbacks, dont modify

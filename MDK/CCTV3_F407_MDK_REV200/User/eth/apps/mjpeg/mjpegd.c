@@ -744,7 +744,7 @@ static void Mjpegd_ShowDrop(Mjpegd_t *mjpegd)
 
     if(drop_cnt >= MJPEGD_SHOWDROP_THRESHOLD)
     {
-        MJPEGD_DBG_PRINT(MJPEGD_DBG_ARG("Frame dropped %d, proc too slow?\n"
+        MJPEGD_DBG_PRINT(MJPEGD_DBG_ARG("Frame dropped %d, service too slow?\n"
             ,mjpegd->_drop_counter));
         
         MJPEGD_ATOMIC_XCHG(&mjpegd->_drop_counter,0);

@@ -87,8 +87,15 @@ Mjpegd_Frame_t* Mjpegd_FrameBuf_GetLatest(Mjpegd_FrameBuf_t* self,
                 //if this frame is newer than last frame
                 if(last_frame_diff>new_frame_diff)
                 {
+                    LWIP_DEBUGF(MJPEGD_FRAMEBUF_DEBUG | LWIP_DBG_TRACE , 
+                        MJPEGD_DBG_ARG("TryAcquire frame %p ,_sem:%d\n",frame,frame->_sem));
+
                     if(Mjpegd_Frame_TryAcquire(frame))
+                    {
+                        LWIP_DEBUGF(MJPEGD_FRAMEBUF_DEBUG | LWIP_DBG_TRACE , 
+                            MJPEGD_DBG_ARG("Acquired frame %p ,_sem:%d\n",frame,frame->_sem));
                         break;
+                    }
                 }
                 else
                 {
@@ -103,13 +110,6 @@ Mjpegd_Frame_t* Mjpegd_FrameBuf_GetLatest(Mjpegd_FrameBuf_t* self,
         }
         frame = NULL;
     }
-
-    if(frame!=NULL)
-    {
-        LWIP_DEBUGF(MJPEGD_FRAMEBUF_DEBUG | LWIP_DBG_TRACE , 
-            MJPEGD_DBG_ARG("acquired frame %p\n",frame));
-    }
-
     return frame;
 }
 
@@ -119,7 +119,7 @@ void Mjpegd_FrameBuf_Release(Mjpegd_FrameBuf_t* self,Mjpegd_Frame_t* frame)
     {
         Mjpegd_Frame_Release(frame);
         LWIP_DEBUGF(MJPEGD_FRAMEBUF_DEBUG | LWIP_DBG_TRACE , 
-            MJPEGD_DBG_ARG("release frame %p\n",frame));
+            MJPEGD_DBG_ARG("release frame %p ,_sem:%d\n",frame,frame->_sem));
 
         if(frame->_sem>MJPEGD_FRAME_SEMAPHORE_MAX)
         {
@@ -163,10 +163,13 @@ Mjpegd_Frame_t* Mjpegd_FrameBuf_GetIdle(Mjpegd_FrameBuf_t* self)
 /**
  * @brief Return idle frame previous locked by calling Mjpegd_FrameBuf_GetIdle().
  */
-void Mjpegd_FrameBuf_ReleaseIdle(Mjpegd_FrameBuf_t* self,Mjpegd_Frame_t* frame)
+void Mjpegd_FrameBuf_ReturnIdle(Mjpegd_FrameBuf_t* self,Mjpegd_Frame_t* frame)
 {
     if(frame!=NULL)
     {
+        LWIP_DEBUGF(MJPEGD_FRAMEBUF_DEBUG | LWIP_DBG_TRACE , 
+            MJPEGD_DBG_ARG("ReturnIdle frame %p ,_sem:%d\n",frame,frame->_sem));
+
         Mjpegd_Frame_Unlock(frame);
         Mjpegd_Callback_Invoke_Idx(self, frame, self->FrameBuf_Callbacks,
                 FRAMEBUF_CALLBACK_RX_NEWFRAME);

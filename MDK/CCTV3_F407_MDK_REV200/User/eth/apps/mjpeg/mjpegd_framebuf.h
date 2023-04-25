@@ -35,7 +35,7 @@ void Mjpegd_FrameBuf_Release(
     Mjpegd_FrameBuf_t* self,Mjpegd_Frame_t* frame);
 
 Mjpegd_Frame_t* Mjpegd_FrameBuf_GetIdle(Mjpegd_FrameBuf_t* self);
-void Mjpegd_FrameBuf_ReleaseIdle(
+void Mjpegd_FrameBuf_ReturnIdle(
     Mjpegd_FrameBuf_t* self,Mjpegd_Frame_t* frame);
 
 #endif
