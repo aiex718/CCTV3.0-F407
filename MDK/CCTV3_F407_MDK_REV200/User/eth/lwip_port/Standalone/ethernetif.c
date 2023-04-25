@@ -37,6 +37,9 @@
  *
  */
 
+#include "bsp/platform/platform_defs.h"
+#include "bsp/platform/periph_list.h"
+
 #include "lwip/opt.h"
 #include "lwip/mem.h"
 #include "netif/etharp.h"
@@ -46,8 +49,8 @@
 #include "string.h"
 
 /* Network interface name */
-#define IFNAME0 's'
-#define IFNAME1 't'
+#define IFNAME0 'i'
+#define IFNAME1 'f'
 
 
 /* Ethernet Rx & Tx DMA Descriptors */
@@ -78,16 +81,17 @@ static void low_level_init(struct netif *netif)
 #ifdef CHECKSUM_BY_HARDWARE
   int i; 
 #endif
+  uint32_t id = HAL_UniqueID_Read(Periph_UniqueID,0);
   /* set MAC hardware address length */
   netif->hwaddr_len = ETHARP_HWADDR_LEN;
-
+  
   /* set MAC hardware address */
   netif->hwaddr[0] =  MAC_ADDR0;
   netif->hwaddr[1] =  MAC_ADDR1;
   netif->hwaddr[2] =  MAC_ADDR2;
-  netif->hwaddr[3] =  MAC_ADDR3;
-  netif->hwaddr[4] =  MAC_ADDR4;
-  netif->hwaddr[5] =  MAC_ADDR5;
+  netif->hwaddr[3] =  (id>>16)&0xFF;
+  netif->hwaddr[4] =  (id>>8)&0xFF;
+  netif->hwaddr[5] =  id&0xFF;
   
   /* initialize MAC address in ethernet MAC */ 
   ETH_MACAddressConfig(ETH_MAC_Address0, netif->hwaddr); 

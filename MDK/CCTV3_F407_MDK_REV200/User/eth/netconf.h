@@ -51,12 +51,9 @@
 
 //TODO:Get UID for mac
 //Mac address
-#define MAC_ADDR0                     2
-#define MAC_ADDR1                     3
-#define MAC_ADDR2                     4
-#define MAC_ADDR3                     5
-#define MAC_ADDR4                     6
-#define MAC_ADDR5                     7
+#define MAC_ADDR0                    0x00
+#define MAC_ADDR1                    'a'
+#define MAC_ADDR2                    'c'
 
 
 #define IP_ADDR0                    192
