@@ -231,6 +231,7 @@ DBG_Serial_t* DBG_Serial= __VAR_CAST_VAR(DBG_Serial_t)
 	},//hal_usart
 };
 
+//Timer PWM
 HAL_Timer_PWM_t *Periph_Timer_PWM_FlashLight = __CONST_CAST_VAR(HAL_Timer_PWM_t)
 {
 	.Timer = __CONST_CAST_VAR(HAL_Timer_t)
@@ -254,7 +255,7 @@ HAL_Timer_PWM_t *Periph_Timer_PWM_FlashLight = __CONST_CAST_VAR(HAL_Timer_PWM_t)
 	.Timer_PWM_MaxChannelIdx = TIMER_PWM_CHANNEL_2,//TIM 12 has 2 channels
 };
 
-
+//Device flashlight
 Device_FlashLight_t *Periph_FlashLight_Top = __VAR_CAST_VAR(Device_FlashLight_t)
 {
 	.FlashLight_Timer_PWM = NULL,
@@ -327,6 +328,15 @@ Device_FlashLight_t *Periph_FlashLight_Bottom = __VAR_CAST_VAR(Device_FlashLight
 	.FlashLight_Brightness = 1,//default brightness 1%
 };
 
+//Unique ID
+HAL_UniqueID_t *Periph_UniqueID = __CONST_CAST_VAR(HAL_UniqueID_t){
+	.UniqueID_Addrs = __CONST_ARRAY_CAST_VAR(uint32_t){
+		0x1FFF7A10, 0x1FFF7A14, 0x1FFF7A18
+	},
+	.UniqueID_Len = 3,
+};
+
+//Camera
 HAL_MCO_t *Periph_MCO2_Cam = __CONST_CAST_VAR(HAL_MCO_t){
 	.MCO_Idx = MCO2, 
 	.MCO_Pin = __CONST_CAST_VAR(HAL_GPIO_pin_t){
@@ -632,6 +642,7 @@ Device_CamOV2640_t _Cam_OV2640  = {
 Device_CamOV2640_t *Periph_Cam_OV2640 = &_Cam_OV2640;
 //TODO: Change decl format to upper
 
+//Mjpegd
 Mjpegd_t* Periph_Mjpegd = __VAR_CAST_VAR(Mjpegd_t){
     .Port = 8080,
     .FrameBuf = __VAR_CAST_VAR(Mjpegd_FrameBuf_t){

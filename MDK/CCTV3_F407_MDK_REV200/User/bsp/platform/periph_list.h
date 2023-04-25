@@ -8,6 +8,8 @@
 #include "bsp/hal/timer.h"
 #include "bsp/hal/timer_pwm.h"
 #include "bsp/hal/mco.h"
+#include "bsp/hal/uniqueid.h"
+
 #include "device/flashlight.h"
 #include "device/cam_ov2640/cam_ov2640.h"
 
@@ -34,6 +36,9 @@ extern HAL_Timer_PWM_t *Periph_Timer_PWM_FlashLight;
 //Device flashlight
 extern Device_FlashLight_t *Periph_FlashLight_Top;
 extern Device_FlashLight_t *Periph_FlashLight_Bottom;
+
+//Unique ID
+extern HAL_UniqueID_t *Periph_UniqueID; 
 
 //Camera
 extern HAL_MCO_t *Periph_MCO2_Cam;//MCO2 for camera
