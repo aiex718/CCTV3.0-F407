@@ -12,5 +12,6 @@ typedef struct
 
 void HAL_UniqueID_Init(HAL_UniqueID_t *self);
 uint32_t HAL_UniqueID_Read(HAL_UniqueID_t *self,uint8_t offset);
+uint8_t HAL_UniqueID_GetLen(HAL_UniqueID_t *self);
 
 #endif

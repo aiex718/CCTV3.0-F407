@@ -63,6 +63,7 @@ HAL_GPIO_pin_t *Periph_Button_Wkup_pin = __CONST_CAST_VAR(HAL_GPIO_pin_t)
 	.GPIO_AF_Mapping = 0,
 };
 
+//Debug serial
 DBG_Serial_t* DBG_Serial= __VAR_CAST_VAR(DBG_Serial_t)
 {
 	.tx_con_queue = __VAR_CAST_VAR(Concurrent_Queue_uint8_t)
@@ -211,24 +212,32 @@ DBG_Serial_t* DBG_Serial= __VAR_CAST_VAR(DBG_Serial_t)
 		},
 		.USART_Tx_Buf = __VAR_CAST_VAR(Buffer_uint8_t)
 		{
-			.buf_ptr = __VAR_ARRAY_CAST_VAR(uint8_t,DEBUG_USART3_TX_BUFFER_SIZE)
+			.buf_ptr = __VAR_ARRAY_CAST_VAR(uint8_t,DEBUG_USART_TXDMA_BUFFER_SIZE)
 			{
 				0
 			},
-			.len=DEBUG_USART3_TX_BUFFER_SIZE
+			.len=DEBUG_USART_TXDMA_BUFFER_SIZE
 		},
 		.USART_Rx_Buf = __VAR_CAST_VAR(Buffer_uint8_t)
 		{
-			.buf_ptr = __VAR_ARRAY_CAST_VAR(uint8_t,DEBUG_USART3_RX_BUFFER_SIZE)
+			.buf_ptr = __VAR_ARRAY_CAST_VAR(uint8_t,DEBUG_USART_RXDMA_BUFFER_SIZE)
 			{
 				0
 			},
-			.len=DEBUG_USART3_RX_BUFFER_SIZE
+			.len=DEBUG_USART_RXDMA_BUFFER_SIZE
 		},
 		.USART_Rx_Threshold = 0,
 		.USART_Rx_Timeout = 100,
 		.pExtension = NULL,
 	},//hal_usart
+};
+
+//RNG
+HAL_Rng_t *Periph_Rng = __CONST_CAST_VAR(HAL_Rng_t){
+	.Rng_RCC_Cmd = __CONST_CAST_VAR(HAL_RCC_Cmd_t)
+	{
+		.RCC_AHB2Periph = RCC_AHB2Periph_RNG,
+	},
 };
 
 //Timer PWM

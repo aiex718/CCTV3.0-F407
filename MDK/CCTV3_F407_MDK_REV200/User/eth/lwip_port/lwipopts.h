@@ -31,7 +31,8 @@
 #define __LWIPOPTS_H__
 
 #include "bsp/sys/systime.h"
-
+#include "bsp/hal/rng.h"
+extern HAL_Rng_t *Periph_Rng;
 /**
  * SYS_LIGHTWEIGHT_PROT==1: if you want inter-task protection for certain
  * critical regions during buffer allocation, deallocation and memory
@@ -52,6 +53,10 @@
 #define NO_SYS_NO_TIMERS        0
 
 #define sys_now SysTime_Get
+
+
+/* RAND */
+#define LWIP_RAND()     HAL_Rng_Gen(Periph_Rng)
 
 /* ---------- Memory options ---------- */
 /* MEM_ALIGNMENT: should be set to the alignment of the CPU for which
@@ -128,7 +133,7 @@ a lot of data that needs to be copied, this should be set high. */
 #define LWIP_DHCP               1
 
 /* DNS options */
-//#define LWIP_DNS                1
+#define LWIP_DNS                1
 
 /* ---------- UDP options ---------- */
 #define LWIP_UDP                1

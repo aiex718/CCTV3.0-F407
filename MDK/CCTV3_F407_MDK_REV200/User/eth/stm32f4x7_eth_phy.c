@@ -26,9 +26,12 @@
 	*/
 
 /* Includes ------------------------------------------------------------------*/
+#include "bsp/platform/platform_defs.h"
+#include "bsp/platform/periph_list.h"
 #include "bsp/sys/dbg_serial.h"
 #include "lwip/opt.h"
 #include "lwip/dhcp.h"
+#include "lwip/dns.h"
 #include "lwip/netif.h"
 #include "eth/stm32f4x7_eth.h"
 #include "eth/stm32f4x7_eth_phy.h"
@@ -374,21 +377,36 @@ void ETH_LinkChanged_callback(struct netif *netif)
 
 		if(DHCP_EN)
 		{
-			struct dhcp *dhcp_data = netif_dhcp_data(&gnetif);
-			DBG_INFO("Using dhcp\n");
-			/*	if dhcp_data is null, start dhcp here, otherwise
-			 	dhcp is already started, let lwip handle it.  */
+			struct dhcp *dhcp_data;
+			uint32_t uid=0;
+			uint8_t uid_cnt;
 
-			//TODO:Get UID for default dhcp ip?
-			IP4_ADDR(&ipaddr, 169, 254, IP_ADDR2, IP_ADDR3);
+			uid_cnt = HAL_UniqueID_GetLen(Periph_UniqueID);
+			while (uid_cnt)
+				uid^=HAL_UniqueID_Read(Periph_UniqueID,uid_cnt--);
+			
+			DBG_INFO("Using dhcp\n");
+			//set a fall back ip address
+			IP4_ADDR(&ipaddr, 169, 254, (uid>>8)&0xff, uid&0xff);
 			IP4_ADDR(&netmask, 255, 255, 0, 0);
 			IP4_ADDR(&gw, 0, 0, 0, 0);	
-			
+
+			/*	if dhcp_data is null, start dhcp here, otherwise
+			 	dhcp is already started, let lwip handle it.  */
+			dhcp_data = netif_dhcp_data(&gnetif);
 			if(dhcp_data==NULL)
 				dhcp_start(&gnetif);
 		}
 		else
 		{
+			#if LWIP_DNS
+			ip_addr_t dns0, dns1;
+			ip4addr_aton(DNS_DEFAULT_SERVER_0,&dns0);
+      		ip4addr_aton(DNS_DEFAULT_SERVER_1,&dns1);
+			dns_setserver(0,&dns0);
+      		dns_setserver(1,&dns1);
+			#endif
+
 			DBG_INFO("Using static IP address\n");
 			//TODO:Read user config ip
 			IP4_ADDR(&ipaddr, IP_ADDR0, IP_ADDR1, IP_ADDR2, IP_ADDR3);
@@ -404,6 +422,10 @@ void ETH_LinkChanged_callback(struct netif *netif)
 		DBG_INFO("Network Cable disconnected\n");
 		ETH_Stop();
 		netif_set_addr(&gnetif, IP4_ADDR_ANY4 , IP4_ADDR_ANY4, IP4_ADDR_ANY4);
+		#if LWIP_DNS
+		dns_setserver(0,IP4_ADDR_ANY4);
+		dns_setserver(1,IP4_ADDR_ANY4);
+		#endif
 		/*  When the netif link is down this function must be called.*/
 		netif_set_down(&gnetif);
 	}

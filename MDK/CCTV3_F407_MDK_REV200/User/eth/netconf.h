@@ -86,18 +86,7 @@
 void LwIP_Init(void);
 void LwIP_Pkt_Handle(void);
 void LwIP_Periodic_Handle(__IO uint32_t localtime);
-
-__STATIC_INLINE void print_netif_addr(struct netif *netif)
-{
-	DBG_INFO("IP  : %s\n",ip4addr_ntoa(&(netif->ip_addr)));
-	DBG_INFO("MASK: %s\n",ip4addr_ntoa(&(netif->netmask)));
-	DBG_INFO("GW  : %s\n",ip4addr_ntoa(&(netif->gw)));
-#if LWIP_DNS
-	//TODO:Impl DNS
-	printf("dns0:%s\n",ip4addr_ntoa((const ip_addr_t*)dns_getserver(0)));
-	printf("dns1:%s\n",ip4addr_ntoa((const ip_addr_t*)dns_getserver(1)));
-#endif
-}
+void print_netif_addr(struct netif *netif);
 
 #ifdef __cplusplus
 }

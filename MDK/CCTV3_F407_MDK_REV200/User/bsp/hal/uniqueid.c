@@ -13,3 +13,8 @@ uint32_t HAL_UniqueID_Read(HAL_UniqueID_t *self,uint8_t offset)
     else
         return *((uint32_t *)self->UniqueID_Addrs[offset]);
 }
+
+uint8_t HAL_UniqueID_GetLen(HAL_UniqueID_t *self)
+{
+    return self->UniqueID_Len;
+}

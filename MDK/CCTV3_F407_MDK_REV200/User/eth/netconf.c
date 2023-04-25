@@ -121,6 +121,18 @@ void LwIP_Pkt_Handle(void)
 	ethernetif_input(&gnetif);
 }
 
+void print_netif_addr(struct netif *netif)
+{
+	DBG_INFO("IP  : %s\n",ip4addr_ntoa(&(netif->ip_addr)));
+	DBG_INFO("MASK: %s\n",ip4addr_ntoa(&(netif->netmask)));
+	DBG_INFO("GW  : %s\n",ip4addr_ntoa(&(netif->gw)));
+#if LWIP_DNS
+	//TODO:Impl DNS
+	DBG_INFO("DNS0:%s\n",ip4addr_ntoa((const ip_addr_t*)dns_getserver(0)));
+	DBG_INFO("DNS1:%s\n",ip4addr_ntoa((const ip_addr_t*)dns_getserver(1)));
+#endif
+}
+
 static void Netconf_CheckIPaddress(void)
 {
 	static u32_t _ipaddr,_netmask,_gw;

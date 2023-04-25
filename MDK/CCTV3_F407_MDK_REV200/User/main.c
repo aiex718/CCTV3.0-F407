@@ -49,6 +49,9 @@ int main(void)
 	Device_FlashLight_Cmd(Periph_FlashLight_Bottom,true);
 	HAL_Timer_PWM_Cmd(Periph_Timer_PWM_FlashLight,true);
 
+	//RNG
+	HAL_Rng_Init(Periph_Rng);
+
 	//Camera MCO init
 	HAL_MCO_Init(Periph_MCO2_Cam);
 	

@@ -8,6 +8,7 @@
 #include "bsp/hal/timer.h"
 #include "bsp/hal/timer_pwm.h"
 #include "bsp/hal/mco.h"
+#include "bsp/hal/rng.h"
 #include "bsp/hal/uniqueid.h"
 
 #include "device/flashlight.h"
@@ -24,11 +25,10 @@ extern HAL_GPIO_pin_t *Periph_LED_STAT_pin;
 extern HAL_GPIO_pin_t *Periph_Button_Wkup_pin;
 
 //Debug serial
-#define DEBUG_USART3_TX_BUFFER_SIZE 256
-#define DEBUG_USART3_RX_BUFFER_SIZE 16
-#define DEBUG_SERIAL_TX_BUFFER_SIZE 1024
-#define DEBUG_SERIAL_RX_BUFFER_SIZE 32
 extern DBG_Serial_t *DBG_Serial;
+
+//RNG
+extern HAL_Rng_t *Periph_Rng;
 
 //Timer PWM
 extern HAL_Timer_PWM_t *Periph_Timer_PWM_FlashLight;

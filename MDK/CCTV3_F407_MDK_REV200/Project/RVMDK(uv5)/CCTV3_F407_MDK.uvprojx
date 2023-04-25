@@ -1106,6 +1106,11 @@
               <FileType>1</FileType>
               <FilePath>..\..\User\bsp\hal\uniqueid.c</FilePath>
             </File>
+            <File>
+              <FileName>rng.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\User\bsp\hal\rng.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>

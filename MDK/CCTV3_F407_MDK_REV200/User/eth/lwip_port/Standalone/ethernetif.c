@@ -81,7 +81,11 @@ static void low_level_init(struct netif *netif)
 #ifdef CHECKSUM_BY_HARDWARE
   int i; 
 #endif
-  uint32_t id = HAL_UniqueID_Read(Periph_UniqueID,0);
+  uint32_t uid = 0;
+  uint8_t uid_cnt = HAL_UniqueID_GetLen(Periph_UniqueID);
+  while (uid_cnt)
+    uid^=HAL_UniqueID_Read(Periph_UniqueID,uid_cnt--);
+  
   /* set MAC hardware address length */
   netif->hwaddr_len = ETHARP_HWADDR_LEN;
   
@@ -89,9 +93,9 @@ static void low_level_init(struct netif *netif)
   netif->hwaddr[0] =  MAC_ADDR0;
   netif->hwaddr[1] =  MAC_ADDR1;
   netif->hwaddr[2] =  MAC_ADDR2;
-  netif->hwaddr[3] =  (id>>16)&0xFF;
-  netif->hwaddr[4] =  (id>>8)&0xFF;
-  netif->hwaddr[5] =  id&0xFF;
+  netif->hwaddr[3] =  (uid>>16)&0xFF;
+  netif->hwaddr[4] =  (uid>>8)&0xFF;
+  netif->hwaddr[5] =  uid&0xFF;
   
   /* initialize MAC address in ethernet MAC */ 
   ETH_MACAddressConfig(ETH_MAC_Address0, netif->hwaddr); 
