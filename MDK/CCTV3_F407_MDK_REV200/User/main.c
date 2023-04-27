@@ -15,33 +15,33 @@ int main(void)
 	//SystemInit() is inside system_stm32f4xx.c
 	HAL_Systick_Init();
 	//DBG_Serial
-	DBG_Serial_Init(DBG_Serial);
-	DBG_Serial_Cmd(DBG_Serial,true);
+	DBG_Serial_Init(Peri_DBG_Serial);
+	DBG_Serial_Cmd(Peri_DBG_Serial,true);
 	DBG_INFO("Built at " __DATE__ " " __TIME__ " ,Booting...\n");
 	DBG_INFO("Mem_Guard_Init stack size 0x%x\n",Mem_Guard_Init());
 
-	HAL_GPIO_InitPin(Periph_Button_Wkup_pin);
-	HAL_GPIO_InitPin(Periph_LED_STAT_pin);
-	HAL_GPIO_InitPin(Periph_LED_Load_pin);
-	HAL_GPIO_WritePin(Periph_LED_STAT_pin,0);
+	HAL_GPIO_InitPin(Peri_Button_Wkup_pin);
+	HAL_GPIO_InitPin(Peri_LED_STAT_pin);
+	HAL_GPIO_InitPin(Peri_LED_Load_pin);
+	HAL_GPIO_WritePin(Peri_LED_STAT_pin,0);
 
 	SysTimer_Init(&blinkTimer,1000);
 	while(1)
 	{
 		uint8_t rxcmd[DEBUG_SERIAL_RX_BUFFER_SIZE]={0};
-		if(DBG_Serial_ReadLine(DBG_Serial,rxcmd,BSP_ARR_LEN(rxcmd)))
+		if(DBG_Serial_ReadLine(Peri_DBG_Serial,rxcmd,BSP_ARR_LEN(rxcmd)))
 		{
 			if(strcmp((char*)rxcmd,"hello")==0)
 				DBG_INFO("hello there\n");
 		}
 		
-		DBG_Serial_Service(DBG_Serial);
+		DBG_Serial_Service(Peri_DBG_Serial);
 		//blink Load LED
 		if(SysTimer_IsElapsed(&blinkTimer))
 		{
-			HAL_GPIO_TogglePin(Periph_LED_Load_pin);
+			HAL_GPIO_TogglePin(Peri_LED_Load_pin);
 			SysTimer_Reset(&blinkTimer);
-				DBG_INFO("%d:Wkup pin %d\n",SysTime_Get(),HAL_GPIO_ReadPin(Periph_Button_Wkup_pin));
+				DBG_INFO("%d:Wkup pin %d\n",SysTime_Get(),HAL_GPIO_ReadPin(Peri_Button_Wkup_pin));
 		}
 
 		if(Mem_Guard_CheckOVF())

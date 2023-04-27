@@ -4,7 +4,7 @@
 #include "bsp/hal/usart.h"
 #include "bsp/sys/callback.h"
 
-DBG_Serial_t DBG_Serial_Instance= 
+DBG_Serial_t Peri_DBG_Serial_Inst= 
 {
 	.tx_con_queue = __VAR_CAST_VAR(Concurrent_Queue_uint8_t)
 	{
@@ -150,19 +150,19 @@ DBG_Serial_t DBG_Serial_Instance=
 		},
 		.USART_Tx_Buf = __VAR_CAST_VAR(Buffer_uint8_t)
 		{
-			.buf_ptr = __VAR_ARRAY_CAST_VAR(uint8_t,DEBUG_USART_TXDMA_BUFFER_SIZE)
+			.buf_ptr = __VAR_ARRAY_CAST_VAR(uint8_t,DEBUG_SERIAL_USART_TX_BUFFER_SIZE)
 			{
 				0
 			},
-			.len=DEBUG_USART_TXDMA_BUFFER_SIZE
+			.len=DEBUG_SERIAL_USART_TX_BUFFER_SIZE
 		},
 		.USART_Rx_Buf = __VAR_CAST_VAR(Buffer_uint8_t)
 		{
-			.buf_ptr = __VAR_ARRAY_CAST_VAR(uint8_t,DEBUG_USART_RXDMA_BUFFER_SIZE)
+			.buf_ptr = __VAR_ARRAY_CAST_VAR(uint8_t,DEBUG_SERIAL_USART_RX_BUFFER_SIZE)
 			{
 				0
 			},
-			.len=DEBUG_USART_RXDMA_BUFFER_SIZE
+			.len=DEBUG_SERIAL_USART_RX_BUFFER_SIZE
 		},
 		.USART_Rx_Threshold = 0,
 		.USART_Rx_Timeout = 100,

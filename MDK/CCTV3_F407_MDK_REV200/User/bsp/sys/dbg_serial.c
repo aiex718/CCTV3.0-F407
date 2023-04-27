@@ -257,15 +257,16 @@ Service task can pop data from tx queue after task A.
 */
 int fputc(int ch, FILE *f)
 {
-    HAL_USART_t *usart = DBG_Serial->hal_usart;
+    DBG_Serial_t *dbg_serial = Peri_DBG_Serial;
+    HAL_USART_t *usart = dbg_serial->hal_usart;
     if(usart != NULL && HAL_USART_IsEnabled(usart))
     {
-        if(DBG_Serial->safe_mode)
+        if(dbg_serial->safe_mode)
             HAL_USART_WriteByte_Polling(usart,(uint8_t)ch);
         else
         {
             while( 
-                Concurrent_Queue_TryPush(DBG_Serial->tx_con_queue,(uint8_t)ch)==false && 
+                Concurrent_Queue_TryPush(dbg_serial->tx_con_queue,(uint8_t)ch)==false && 
                 SysCtrl_IsThreadInIRq() == false );
                 //yield();
 #if DBG_SERIAL_USING_USART_ISR
@@ -282,11 +283,12 @@ int fputc(int ch, FILE *f)
 
 int fgetc(FILE *f)
 {
+    DBG_Serial_t *dbg_serial = Peri_DBG_Serial;
 	uint8_t ch=0;
-    if(DBG_Serial->safe_mode)
-        HAL_USART_ReadByte_Polling(DBG_Serial->hal_usart,&ch);
+    if(dbg_serial->safe_mode)
+        HAL_USART_ReadByte_Polling(dbg_serial->hal_usart,&ch);
     else
-        while (Concurrent_Queue_TryPop(DBG_Serial->rx_con_queue,&ch) == false);
+        while (Concurrent_Queue_TryPop(dbg_serial->rx_con_queue,&ch) == false);
 	return (int)ch;
 }
 

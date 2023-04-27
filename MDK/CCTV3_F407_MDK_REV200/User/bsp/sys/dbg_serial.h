@@ -8,6 +8,19 @@
 #include "bsp/sys/buffer.h"
 #include "bsp/sys/callback.h"
 
+#ifndef DEBUG_SERIAL_USART_TX_BUFFER_SIZE
+    #define DEBUG_SERIAL_USART_TX_BUFFER_SIZE 64
+#endif
+#ifndef DEBUG_SERIAL_USART_RX_BUFFER_SIZE
+    #define DEBUG_SERIAL_USART_RX_BUFFER_SIZE 32
+#endif
+#ifndef DEBUG_SERIAL_TX_BUFFER_SIZE
+    #define DEBUG_SERIAL_TX_BUFFER_SIZE 256
+#endif
+#ifndef DEBUG_SERIAL_RX_BUFFER_SIZE
+    #define DEBUG_SERIAL_RX_BUFFER_SIZE 32
+#endif
+
 #ifndef DBG_SERIAL_ENABLE_DMA
     #define DBG_SERIAL_ENABLE_DMA 0
 #endif
