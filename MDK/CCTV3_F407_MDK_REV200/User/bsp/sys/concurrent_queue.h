@@ -55,8 +55,14 @@ dont use uint8_t unless your queue is very small.
     __CONCURRENT_QUEUE_MACRO_CAT(Concurrent_Queue_,__type)
 #define __CONCURRENT_QUEUE_T    \
     __CONCURRENT_QUEUE_TYPE_GENERIC(CONCURRENT_QUEUE_STORAGE_T)
+
+#define __CONCURRENT_QUEUE_MACRO_CAT3(a,b,c) a##b##c
+#define __CONCURRENT_QUEUE_STRUCT_GENERIC(__type)     \
+    __CONCURRENT_QUEUE_MACRO_CAT3(Concurrent_Queue_,__type,_s)
+#define __CONCURRENT_QUEUE_S    \
+    __CONCURRENT_QUEUE_STRUCT_GENERIC(CONCURRENT_QUEUE_STORAGE_T)
                      
-__BSP_STRUCT_ALIGN typedef struct                       
+__BSP_STRUCT_ALIGN typedef struct __CONCURRENT_QUEUE_S             
 {                                                       
     __IO CONCURRENT_QUEUE_INDEX_T r_idx,w_idx,l_idx;
     //The mem length should be power of 2 

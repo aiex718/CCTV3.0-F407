@@ -28,7 +28,7 @@
     #define DBG_SERIAL_SHOW_ERROR  1
 #endif
 
-typedef struct 
+typedef struct DBG_Serial_s
 {
     Concurrent_Queue_uint8_t *tx_con_queue,*rx_con_queue;
     HAL_USART_t *hal_usart;

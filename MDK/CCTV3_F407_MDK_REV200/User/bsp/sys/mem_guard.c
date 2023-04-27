@@ -1,7 +1,7 @@
 #include "bsp/sys/mem_guard.h"
 // require micro.lib 
 
-//Normally we don't need to check heap, it's managed by malloc.
+//Normally we don't check heap, it's managed by malloc.
 #ifndef MEM_GUARD_CHECK_HEAP
     #define MEM_GUARD_CHECK_HEAP 0
 #endif
@@ -99,7 +99,7 @@ unsigned int Mem_Guard_Init(void)
     return stack_size;
 }
 
-//Check stack overflow, return 0 if not overflow
+//Check stack overflow, return 1 if overflow detected
 int Mem_Guard_CheckOVF(void)
 {
     unsigned char cnt=MEM_GUARD_INT_COUNT;
@@ -122,7 +122,9 @@ int Mem_Guard_CheckOVF(void)
     return 0;
 }
 
-unsigned int Mem_Guard_GetStackAvailable(void)
+//This function check first non zero byte from stack base
+//return the deepth of stack
+unsigned int Mem_Guard_GetStackDepth(void)
 {
     unsigned int *stack_base=(unsigned int *)stack_heap_end_addr + MEM_GUARD_INT_COUNT;
     unsigned char *ptr=(unsigned char *)stack_base;
@@ -131,8 +133,9 @@ unsigned int Mem_Guard_GetStackAvailable(void)
         ptr++;
 
 #if MEM_GUARD_PRINT_INFO
-    printf("stack depth 0x%p, remaning 0x%x \n",ptr ,ptr - (unsigned char *)stack_base);
+    printf("stack depth 0x%p,used 0x%x, remaning 0x%x \n", ptr 
+            ,(unsigned char *)stack_start_addr - ptr ,ptr - (unsigned char *)stack_base);
 #endif
 
-    return ptr - (unsigned char *)stack_base;
+    return (unsigned char *)stack_start_addr - ptr;
 }

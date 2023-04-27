@@ -12,7 +12,7 @@ typedef enum {
 //Callback_t is configurable to invoke immediately(normally from a ISR)
 //or in service function(normally from a task or main thread)
 //depend on callback issuer, config is not always fulfilled
-__BSP_STRUCT_ALIGN typedef struct
+__BSP_STRUCT_ALIGN typedef struct Callback_s
 {
     void (*func)(void* sender,void* arg,void* owner);
     void *owner;
