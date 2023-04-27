@@ -6,7 +6,6 @@
 #include "bsp/sys/systime.h"
 #include "bsp/sys/systimer.h"
 #include "bsp/sys/sysctrl.h"
-<<<<<<< HEAD
 #include "bsp/sys/semaphore.h"
 #include "bsp/hal/systick.h"
 #include "bsp/hal/timer.h"
@@ -22,10 +21,6 @@
 //apps
 #include "lwip/apps/httpd.h"
 #include "eth/apps/mjpeg/mjpegd.h"
-=======
-#include "bsp/sys/mem_guard.h"
-#include "bsp/sys/dbg_serial.h"
->>>>>>> MDK_REV200_BSP
 
 
 SysTimer_t blinkTimer;
@@ -38,9 +33,9 @@ int main(void)
 	//RCC
 	HAL_RCC_Init(Periph_RCC);
 
-	//USART3 for DBG_Serial
-	DBG_Serial_Init(DBG_Serial);
-	DBG_Serial_Cmd(DBG_Serial,true);
+	//DBG_Serial using USART3
+	DBG_Serial_Init(Peri_DBG_Serial);
+	DBG_Serial_Cmd(Peri_DBG_Serial,true);
 	DBG_INFO("Built at " __DATE__ " " __TIME__ " ,Booting...\n");
 	
 	//RTC Init
@@ -49,7 +44,7 @@ int main(void)
 	//GPIO
 	HAL_GPIO_InitPin(Periph_Button_Wkup_pin);
 	HAL_GPIO_InitPin(Periph_LED_STAT_pin);
-	HAL_GPIO_InitPin(Periph_LED_Load_pin);
+	HAL_GPIO_InitPin(Peri_LED_Load_pin);
 	HAL_GPIO_WritePin(Periph_LED_STAT_pin,0);
 
 	//PWM and flashlight
@@ -76,7 +71,7 @@ int main(void)
 	while(1)
 	{
 		uint8_t rxcmd[DEBUG_SERIAL_RX_BUFFER_SIZE]={0};
-		if(DBG_Serial_ReadLine(DBG_Serial,rxcmd,sizeof(rxcmd)))
+		if(DBG_Serial_ReadLine(Peri_DBG_Serial,rxcmd,sizeof(rxcmd)))
 		{
 			if(strcmp((char*)rxcmd,"hello")==0)
 				DBG_INFO("Hello there\n");
@@ -101,7 +96,7 @@ int main(void)
 		//blink Load LED
 		if(SysTimer_IsElapsed(&blinkTimer))
 		{
-			HAL_GPIO_TogglePin(Periph_LED_Load_pin);
+			HAL_GPIO_TogglePin(Peri_LED_Load_pin);
 			SysTimer_Reset(&blinkTimer);
 			//DBG_INFO("%d:Wkup pin %d\n",SysTime_Get(),HAL_GPIO_ReadPin(Periph_Button_Wkup_pin));
 		}
