@@ -1,6 +1,6 @@
 #include "stm32f4xx.h"
 
-#include "bsp/platform/periph_list.h"
+#include "bsp/platform/platform_inst.h"
 #include "bsp/hal/systick.h"
 #include "bsp/sys/systime.h"
 #include "bsp/sys/systimer.h"

@@ -1,4 +1,4 @@
-#include "bsp/platform/periph_list.h"
+#include "bsp/platform/platform_inst.h"
 
 //periph interrupt handlers
 void USART3_IRQHandler(void)

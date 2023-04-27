@@ -700,9 +700,9 @@
               <FilePath>..\..\User\bsp\platform\startup_stm32f40_41xxx.s</FilePath>
             </File>
             <File>
-              <FileName>periph_its.c</FileName>
+              <FileName>platform_its.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\..\User\bsp\platform\periph_its.c</FilePath>
+              <FilePath>..\..\User\bsp\platform\platform_its.c</FilePath>
             </File>
           </Files>
         </Group>
