@@ -14,7 +14,7 @@ typedef enum
     HAL_SPI_ERR_RX,
 }HAL_SPI_Status_t;
 
-typedef struct 
+typedef struct HAL_SPI_s
 {
     SPI_TypeDef *SPIx;
     SPI_InitTypeDef *SPI_InitCfg;

@@ -6,7 +6,7 @@
 
 #include "time.h"
 
-typedef struct
+typedef struct HAL_RTC_s
 {
     HAL_RCC_Cmd_t *RTC_RCC_Cmd;
     RTC_InitTypeDef *RTC_InitCfg;

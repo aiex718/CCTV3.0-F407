@@ -4,7 +4,7 @@
 #include "bsp/platform/platform_defs.h"
 #include "bsp/hal/rcc.h"
 
-typedef struct 
+typedef struct HAL_UniqueID_s
 {
     const uint32_t* UniqueID_Addrs;
     const uint8_t UniqueID_Len;

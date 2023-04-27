@@ -1,18 +1,22 @@
 #include "eth/apps/mjpeg/mjpegd.h"
-#include "eth/apps/mjpeg/mjpegd_debug.h"
-#include "eth/apps/mjpeg/trycatch.h"
-#include "eth/apps/mjpeg/mjpegd_frameproc.h"
-#include "eth/apps/mjpeg/mjpegd_memutils.h"
-#include "eth/apps/mjpeg/mjpegd_request.h"
-#include "eth/apps/mjpeg/mjpegd_stream.h"
 
-#include "lwip/opt.h"
+#include "lwip/tcp.h"
 #include "lwip/timeouts.h"
 #include "lwip/pbuf.h"
 #include "lwip/stats.h"
 
-/* BSP */
-#include "bsp/platform/periph_list.h"
+#include "eth/apps/mjpeg/mjpegd_debug.h"
+#include "eth/apps/mjpeg/mjpegd_memutils.h"
+#include "eth/apps/mjpeg/trycatch.h"
+
+//sub modules
+#include "eth/apps/mjpeg/mjpegd_frameproc.h"
+#include "eth/apps/mjpeg/mjpegd_request.h"
+#include "eth/apps/mjpeg/mjpegd_stream.h"
+#include "eth/apps/mjpeg/mjpegd_framepool.h"
+#include "eth/apps/mjpeg/mjpegd_frame.h"
+#include "eth/apps/mjpeg/mjpegd_client.h"
+#include "eth/apps/mjpeg/mjpegd_camera.h"
 
 /** Lwip raw api callbacks **/
 static err_t Mjpegd_LwipAccept_Handler(void *arg, struct tcp_pcb *pcb, err_t err);

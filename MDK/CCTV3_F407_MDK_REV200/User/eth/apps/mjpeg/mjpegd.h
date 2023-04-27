@@ -3,15 +3,9 @@
 
 #include "eth/apps/mjpeg/mjpegd_opts.h"
 #include "eth/apps/mjpeg/mjpegd_callback.h"
-#include "eth/apps/mjpeg/mjpegd_framepool.h"
-#include "eth/apps/mjpeg/mjpegd_frame.h"
-#include "eth/apps/mjpeg/mjpegd_client.h"
-#include "eth/apps/mjpeg/mjpegd_camera.h"
-
 #include "lwip/err.h"
-#include "lwip/tcp.h"
 
-typedef struct {
+typedef struct Mjpegd_s{
     u16_t Port;
     struct Mjpegd_FramePool_s *FramePool;
     struct Mjpegd_Camera_s *Camera;

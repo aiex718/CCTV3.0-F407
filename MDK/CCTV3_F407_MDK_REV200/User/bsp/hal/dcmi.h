@@ -27,7 +27,7 @@ typedef enum
     __NOT_CALLBACK_DCMI_MAX     ,
 }HAL_DCMI_CallbackIdx_t;
 
-typedef struct
+typedef struct HAL_DCMI_s
 {
     DCMI_TypeDef* DCMIx;
     HAL_RCC_Cmd_t* DCMI_RCC_Cmd;

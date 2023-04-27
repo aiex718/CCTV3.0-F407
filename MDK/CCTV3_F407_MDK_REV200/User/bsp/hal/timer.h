@@ -4,7 +4,7 @@
 #include "bsp/platform/platform_defs.h"
 #include "bsp/hal/rcc.h"
 
-typedef struct 
+typedef struct HAL_Timer_s
 {
     TIM_TypeDef* TIMx;
     HAL_RCC_Cmd_t *Timer_RCC_Cmd;

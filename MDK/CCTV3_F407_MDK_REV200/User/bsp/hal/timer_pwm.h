@@ -15,13 +15,13 @@ typedef enum
     __NOT_TIMER_PWM_CHANNEL_MAX,
 }HAL_Timer_PWM_ChannelIdx_t;
 
-typedef struct 
+typedef struct HAL_Timer_PWM_s
 {
     HAL_Timer_t *Timer;
     HAL_Timer_PWM_ChannelIdx_t Timer_PWM_MaxChannelIdx;
 }HAL_Timer_PWM_t;
 
-typedef struct 
+typedef struct HAL_Timer_PWM_Channel_s
 {
     HAL_Timer_PWM_ChannelIdx_t Timer_PWM_ChannelIdx;
     TIM_OCInitTypeDef *Timer_PWM_Channel_OCInitCfg;

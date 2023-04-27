@@ -4,7 +4,7 @@
 #include "bsp/platform/platform_defs.h"
 #include "bsp/hal/rcc.h"
 
-typedef struct
+typedef struct HAL_Rng_s
 {
     HAL_RCC_Cmd_t *Rng_RCC_Cmd;
 }HAL_Rng_t;

@@ -3,7 +3,7 @@
 
 #include "bsp/platform/platform_defs.h"
 
-typedef struct {
+typedef struct NetTime_s{
     const char* NTP_Server;
 } NetTime_t;
 

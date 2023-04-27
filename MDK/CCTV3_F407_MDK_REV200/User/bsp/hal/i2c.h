@@ -17,7 +17,7 @@ typedef enum
     HAL_I2C_ERR_AF,//Acknowledge failure
 }HAL_I2C_Status_t;
 
-typedef struct 
+typedef struct HAL_I2C_s
 {
     I2C_TypeDef* I2Cx;
     I2C_InitTypeDef *I2C_InitCfg;
