@@ -28,13 +28,13 @@ typedef enum
 }conn_state_enum;
 typedef s8_t conn_state_t;
 
-typedef struct ClientState_struct ClientState_t;
-struct ClientState_struct 
+typedef struct ClientState_s ClientState_t;
+struct ClientState_s 
 {
     struct tcp_pcb* pcb;
     void* parent_mjpeg;
 
-    const struct Mjpegd_RequestHandler_struct *request_handler;
+    const struct Mjpegd_RequestHandler_s *request_handler;
     conn_state_t conn_state;
 
     //file to send

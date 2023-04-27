@@ -3,7 +3,7 @@
 
 #include "lwip/err.h"
 
-typedef struct
+typedef struct Mjpegd_Callback_s
 {
     void (*func)(void* sender,void* arg,void* owner);
     void *owner;

@@ -1,7 +1,7 @@
 #include "eth/apps/mjpeg/mjpegd_client.h"
 #include "eth/apps/mjpeg/mjpegd_debug.h"
 #include "eth/apps/mjpeg/mjpegd_memutils.h"
-#include "eth/apps/mjpeg/mjpegd_framebuf.h"
+#include "eth/apps/mjpeg/mjpegd_framepool.h"
 #include "eth/apps/mjpeg/trycatch.h"
 
 #include "lwip/mem.h"
@@ -76,7 +76,7 @@ void Mjpegd_Client_Free(ClientState_t *cs)
         prev_ptr = prev == NULL ? &mjpegd->_clients_list : &prev->_next;
         *prev_ptr = cs->_next;
 
-        Mjpegd_FrameBuf_Release(mjpegd->FrameBuf, cs->frame);
+        Mjpegd_FramePool_Release(mjpegd->FramePool, cs->frame);
         cs->frame = NULL;
 
         mem_free(cs);

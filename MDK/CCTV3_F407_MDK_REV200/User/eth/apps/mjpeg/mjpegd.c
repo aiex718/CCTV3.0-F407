@@ -37,7 +37,7 @@ err_t Mjpegd_Init(Mjpegd_t *mjpegd)
     struct tcp_pcb *pcb;
     err_t err;
 
-    Mjpegd_FrameBuf_Init(mjpegd->FrameBuf);
+    Mjpegd_FramePool_Init(mjpegd->FramePool);
     Mjpegd_Camera_Init(mjpegd->Camera,mjpegd);
 
     mjpegd->_main_pcb=NULL;
@@ -69,11 +69,11 @@ err_t Mjpegd_Init(Mjpegd_t *mjpegd)
         LWIP_DEBUGF(MJPEGD_DEBUG | LWIP_DBG_LEVEL_SEVERE 
             ,MJPEGD_DBG_ARG("init ok at port %d\n",mjpegd->Port));
 
-        //regist framebuf newframe callback
+        //regist frame_pool newframe callback
         mjpegd->RecvNewFrame_cb.func = Mjpegd_RecvNewFrame_handler;
         mjpegd->RecvNewFrame_cb.owner = mjpegd;
-        Mjpegd_FrameBuf_SetCallback(mjpegd->FrameBuf,
-            FRAMEBUF_CALLBACK_RX_NEWFRAME,&mjpegd->RecvNewFrame_cb);
+        Mjpegd_FramePool_SetCallback(mjpegd->FramePool,
+            FRAMEPOOL_CALLBACK_RX_NEWFRAME,&mjpegd->RecvNewFrame_cb);
 
         //invoke service to start timeout loop and new snap
         Mjpegd_Service((void*)mjpegd);
@@ -600,7 +600,7 @@ static void Mjpegd_CloseConn(struct tcp_pcb *pcb, ClientState_t *cs)
  */
 static void Mjpegd_AssignNewframe(Mjpegd_t *mjpegd)
 {
-    Mjpegd_FrameBuf_t* frame_buf = mjpegd->FrameBuf;
+    Mjpegd_FramePool_t* frame_pool = mjpegd->FramePool;
     ClientState_t* cs;
     MJPEGD_SYSTIME_T now = sys_now();
 
@@ -617,7 +617,7 @@ static void Mjpegd_AssignNewframe(Mjpegd_t *mjpegd)
 
             try
             {
-                cs->frame=Mjpegd_FrameBuf_GetLatest(frame_buf,cs->previous_frame_time);
+                cs->frame=Mjpegd_FramePool_GetLatest(frame_pool,cs->previous_frame_time);
                 throwif(cs->frame==NULL,GET_FRAME_FAIL);
                 throwif(!Mjpegd_Frame_IsValid(cs->frame),BAD_FRAME);
                 
@@ -641,7 +641,7 @@ static void Mjpegd_AssignNewframe(Mjpegd_t *mjpegd)
             catch(BAD_FRAME)
             {
                 //bad frame,release and try again later
-                Mjpegd_FrameBuf_Release(frame_buf,cs->frame);
+                Mjpegd_FramePool_Release(frame_pool,cs->frame);
                 cs->frame = NULL;
                 
                 LWIP_DEBUGF(MJPEGD_DEBUG | LWIP_DBG_LEVEL_SERIOUS,
@@ -677,17 +677,17 @@ static void Mjpegd_CheckIdle(Mjpegd_t *mjpegd)
                 MJPEGD_DBG_ARG("Mjpegd idle, stop camera\n"));
             Mjpegd_Camera_Stop(mjpegd->Camera);
            
-            mjpegd->_framebuf_cleared=0;
+            mjpegd->_frame_pool_cleared=0;
         }
         
-        //clear framebuf if not cleared yet
-        if(mjpegd->_framebuf_cleared==0)
+        //clear frame pool if not cleared yet
+        if(mjpegd->_frame_pool_cleared==0)
         {
-            mjpegd->_framebuf_cleared=Mjpegd_FrameBuf_TryClear(mjpegd->FrameBuf);
-            if(mjpegd->_framebuf_cleared)
+            mjpegd->_frame_pool_cleared=Mjpegd_FramePool_TryClear(mjpegd->FramePool);
+            if(mjpegd->_frame_pool_cleared)
             {
                 LWIP_DEBUGF(MJPEGD_DEBUG | LWIP_DBG_STATE, 
-                MJPEGD_DBG_ARG("FrameBuf cleared\n"));
+                MJPEGD_DBG_ARG("FramePool cleared\n"));
             }
         }
     }
@@ -703,7 +703,7 @@ static void Mjpegd_CheckIdle(Mjpegd_t *mjpegd)
         else if(Mjpegd_Camera_IsSnapping(mjpegd->Camera)==false)
         {
             //camera is enabled, but not capturing, start capture
-            Mjpegd_Frame_t* frame = Mjpegd_FrameBuf_GetIdle(mjpegd->FrameBuf);
+            Mjpegd_Frame_t* frame = Mjpegd_FramePool_GetIdle(mjpegd->FramePool);
             if(frame != NULL)
             {
                 if(Mjpegd_Camera_DoSnap(mjpegd->Camera,frame)==false)
@@ -776,8 +776,8 @@ void Mjpegd_Service(void* arg)
 
 /**
  * @brief Callback when new frame arrived.
- * @note This function should regist to FRAMEBUF_CALLBACK_RX_NEWFRAME callback.
- * @param sender source frame_buf.
+ * @note This function should regist to FRAMEPOOL_CALLBACK_RX_NEWFRAME callback.
+ * @param sender source frame_pool.
  * @param arg new arrived frame, not use in this function.
  * @param owner mjpegd instance.
  */

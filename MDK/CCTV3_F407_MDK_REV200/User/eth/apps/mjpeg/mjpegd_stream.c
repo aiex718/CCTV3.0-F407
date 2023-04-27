@@ -2,7 +2,7 @@
 #include "eth/apps/mjpeg/mjpegd_opts.h"
 #include "eth/apps/mjpeg/mjpegd_debug.h"
 #include "eth/apps/mjpeg/trycatch.h"
-#include "eth/apps/mjpeg/mjpegd_framebuf.h"
+#include "eth/apps/mjpeg/mjpegd_framepool.h"
 #include "eth/apps/mjpeg/mjpegd_client.h"
 #include "eth/apps/mjpeg/mjpegd_request.h"
 
@@ -50,21 +50,19 @@ void Mjpegd_Stream_Output(Mjpegd_t *mjpegd)
  *        assigned when new frame arrived.
  * @return err_t ERR_OK
  */
-err_t Mjpegd_Stream_FrameSent(void* client_state)
+err_t Mjpegd_Stream_FrameSent(ClientState_t *cs)
 {
     err_t err;
-    ClientState_t *cs;
     Mjpegd_t *mjpegd;
-    Mjpegd_FrameBuf_t *frame_buf;
+    Mjpegd_FramePool_t *frame_pool;
 
     try
     {
-        cs = (ClientState_t*)client_state;
         throwif(cs==NULL,NULL_CS);
         mjpegd = (Mjpegd_t*)cs->parent_mjpeg;
         throwif(mjpegd==NULL,NULL_MJPEGD);
-        frame_buf = mjpegd->FrameBuf;
-        throwif(frame_buf==NULL,NULL_FRAMEBUF);
+        frame_pool = mjpegd->FramePool;
+        throwif(frame_pool==NULL,NULL_FRAMEPOOL);
         throwif(cs->request_handler==NULL,NULL_REQUEST_HANDLER);
         
         //clear client file
@@ -73,7 +71,7 @@ err_t Mjpegd_Stream_FrameSent(void* client_state)
 
         if(cs->frame!=NULL)
         {
-            Mjpegd_FrameBuf_Release(frame_buf,cs->frame);
+            Mjpegd_FramePool_Release(frame_pool,cs->frame);
             cs->frame = NULL;
 
             //if client is a snap reques and frame not null
@@ -98,10 +96,10 @@ err_t Mjpegd_Stream_FrameSent(void* client_state)
             MJPEGD_DBG_ARG("Stream_NextFrame NULL_MJPEGD\n"));
         err=ERR_ARG;
     }
-    catch(NULL_FRAMEBUF)
+    catch(NULL_FRAMEPOOL)
     {
         LWIP_DEBUGF(MJPEGD_DEBUG | LWIP_DBG_LEVEL_SERIOUS,
-            MJPEGD_DBG_ARG("Stream_NextFrame NULL_FRAMEBUF\n"));
+            MJPEGD_DBG_ARG("Stream_NextFrame NULL_FRAMEPOOL\n"));
         err=ERR_ARG;
     }
     catch(NULL_REQUEST_HANDLER)
@@ -116,14 +114,12 @@ err_t Mjpegd_Stream_FrameSent(void* client_state)
     }
 }
 
-err_t Mjpegd_Stream_RecvRequest(void* client_state)
+err_t Mjpegd_Stream_RecvRequest(ClientState_t *cs)
 {
     err_t err;
-    ClientState_t *cs;
     Mjpegd_t *mjpegd;
     try
     {
-        cs = (ClientState_t*)client_state;
         throwif(cs==NULL,NULL_CS);
         mjpegd = (Mjpegd_t*)cs->parent_mjpeg;
         throwif(mjpegd==NULL,NULL_MJPEGD);
@@ -174,14 +170,12 @@ err_t Mjpegd_Stream_RecvRequest(void* client_state)
     }
 }
 
-err_t Mjpegd_Stream_CloseRequest(void* client_state)
+err_t Mjpegd_Stream_CloseRequest(ClientState_t *cs)
 {
     err_t err;
-    ClientState_t *cs;
     Mjpegd_t *mjpegd;
     try
     {
-        cs = (ClientState_t*)client_state;
         throwif(cs==NULL,NULL_CS);
         mjpegd = (Mjpegd_t*)cs->parent_mjpeg;
         throwif(mjpegd==NULL,NULL_MJPEGD);

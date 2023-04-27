@@ -21,7 +21,7 @@ void Mjpegd_FrameProc_RecvBroken(Mjpegd_t *mjpegd,Mjpegd_Frame_t* frame)
     if(frame!=NULL)
     {
         Mjpegd_Frame_Clear(frame);
-        Mjpegd_FrameBuf_ReturnIdle(mjpegd->FrameBuf,frame);
+        Mjpegd_FramePool_ReturnIdle(mjpegd->FramePool,frame);
     }
 }
 
@@ -57,7 +57,7 @@ void Mjpegd_FrameProc_RecvRaw(Mjpegd_t *mjpegd,Mjpegd_Frame_t* frame)
     if(frame!=NULL)
     {
         Mjpegd_Frame_Clear(frame);
-        Mjpegd_FrameBuf_ReturnIdle(mjpegd->FrameBuf,frame);
+        Mjpegd_FramePool_ReturnIdle(mjpegd->FramePool,frame);
     }
 }
 
@@ -98,7 +98,7 @@ Mjpegd_Frame_t* Mjpegd_FrameProc_NextFrame(Mjpegd_t *mjpegd,Mjpegd_Frame_t* fram
 
     //try to get a new frame buffer for next capture if no buffer reused
     if(next_frame==NULL)
-        next_frame=Mjpegd_FrameBuf_GetIdle(mjpegd->FrameBuf);
+        next_frame=Mjpegd_FramePool_GetIdle(mjpegd->FramePool);
 
     return next_frame;
 }
@@ -114,10 +114,10 @@ void Mjpegd_FrameProc_ProcPending(Mjpegd_t *mjpegd)
     
     if(local_frame!=NULL)
     {
-        LWIP_DEBUGF(MJPEGD_FRAMEBUF_DEBUG | LWIP_DBG_TRACE, 
+        LWIP_DEBUGF(MJPEGD_FRAMEPOOL_DEBUG | LWIP_DBG_TRACE, 
             MJPEGD_DBG_ARG("ProcPending %p start, _sem=%d\n",local_frame,local_frame->_sem));
         Mjpegd_FrameProc_ProcessRawFrame(local_frame);
-        Mjpegd_FrameBuf_ReturnIdle(mjpegd->FrameBuf,local_frame);
+        Mjpegd_FramePool_ReturnIdle(mjpegd->FramePool,local_frame);
 
         
         MJPEGD_ATOMIC_INC(&mjpegd->_fps_counter);

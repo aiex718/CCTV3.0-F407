@@ -9,7 +9,7 @@
 #include "device/cam_ov2640/cam_ov2640.h"
 
 
-typedef struct Mjpegd_Camera_struct
+typedef struct Mjpegd_Camera_s
 {
     Device_CamOV2640_t *HwCam_Ov2640;
     Callback_t Ov2640_RecvRawFrame_cb;

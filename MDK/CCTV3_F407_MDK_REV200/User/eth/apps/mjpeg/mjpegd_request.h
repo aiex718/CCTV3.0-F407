@@ -2,7 +2,6 @@
 #define __MJPEGD_REQUEST_H__
 
 #include "lwip/err.h"
-#include "eth/apps/mjpeg/mjpegd_client.h"
 
 typedef enum 
 {
@@ -35,21 +34,21 @@ static const char *request_strreq[__NOT_REQUEST_MAX] = {
 #define mjpegd_strreq(x) ""
 #endif
 
-typedef struct Mjpegd_RequestHandler_struct
+typedef struct Mjpegd_RequestHandler_s
 {
     const request_t req;
     const char      *url;
     const char      *response;
     const u16_t     response_len;
 
-    err_t (* const get_nextfile_func)(void *client_state);
-    err_t (* const recv_request_func)(void *client_state);
-    err_t (* const clsd_request_func)(void *client_state);
+    err_t (* const get_nextfile_func)(struct ClientState_s *cs);
+    err_t (* const recv_request_func)(struct ClientState_s *cs);
+    err_t (* const clsd_request_func)(struct ClientState_s *cs);
 }Mjpegd_RequestHandler_t;
 
 extern const Mjpegd_RequestHandler_t mjpegd_request_handlers[__NOT_REQUEST_MAX];
 
-err_t Mjpegd_Request_Parse(ClientState_t *cs,char* req,u16_t req_len);
-err_t Mjpegd_Request_BuildResponse(ClientState_t *cs);
+err_t Mjpegd_Request_Parse(struct ClientState_s *cs,char* req,u16_t req_len);
+err_t Mjpegd_Request_BuildResponse(struct ClientState_s *cs);
 
 #endif // __MJPEGD_REQUEST_H__

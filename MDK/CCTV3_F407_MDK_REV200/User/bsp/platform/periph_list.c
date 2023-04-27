@@ -693,9 +693,9 @@ Device_CamOV2640_t *Periph_Cam_OV2640 = &_Cam_OV2640;
 //Mjpegd
 Mjpegd_t* APPs_Mjpegd = __VAR_CAST_VAR(Mjpegd_t){
     .Port = 8080,
-    .FrameBuf = __VAR_CAST_VAR(Mjpegd_FrameBuf_t){
-        ._frames_len = MJPEGD_FRAMEBUF_LEN,
-        ._frames = __VAR_ARRAY_CAST_VAR(Mjpegd_Frame_t,MJPEGD_FRAMEBUF_LEN){
+    .FramePool = __VAR_CAST_VAR(Mjpegd_FramePool_t){
+        ._frames_len = MJPEGD_FRAMEPOOL_LEN,
+        ._frames = __VAR_ARRAY_CAST_VAR(Mjpegd_Frame_t,MJPEGD_FRAMEPOOL_LEN){
             0
         },
     },

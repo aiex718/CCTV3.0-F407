@@ -5,8 +5,8 @@
 #include "eth/apps/mjpeg/mjpegd_opts.h"
 #include "eth/apps/mjpeg/mjpegd_semaphore.h"
 
-typedef struct Mjpegd_Frame_struct Mjpegd_Frame_t;
-struct Mjpegd_Frame_struct
+typedef struct Mjpegd_Frame_s Mjpegd_Frame_t;
+struct Mjpegd_Frame_s
 {
     u8_t* head;
     u8_t* payload;

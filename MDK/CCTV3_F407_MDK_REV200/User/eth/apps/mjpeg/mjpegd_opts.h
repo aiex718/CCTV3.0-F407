@@ -12,8 +12,8 @@
     #define MJPEGD_STREAM_CLIENT_LIMIT 5
 #endif
 
-/*  The MJPEGD_FRAMEBUF_LEN is the max number of frames that can be buffered.
-    Total ram usage is MJPEGD_FRAMEBUF_LEN * MJPEGD_FRAME_MEM_SPACE.
+/*  The MJPEGD_FRAMEPOOL_LEN is the max number of frames that can be buffered.
+    Total ram usage is MJPEGD_FRAMEPOOL_LEN * MJPEGD_FRAME_MEM_SPACE.
     Each frame is not exclusive to one client, it's shared by multiple clients.
 
     Depending on your clients network speed and packet loss rate,
@@ -24,8 +24,8 @@
     Each client can have 1 buffer frame at worst case,
     1 pending frame waiting to be processed by mjpegd_service,
     and 1 frame is being captured by camera.   */
-#ifndef MJPEGD_FRAMEBUF_LEN
-    #define MJPEGD_FRAMEBUF_LEN (MJPEGD_STREAM_CLIENT_LIMIT+2)
+#ifndef MJPEGD_FRAMEPOOL_LEN
+    #define MJPEGD_FRAMEPOOL_LEN (MJPEGD_STREAM_CLIENT_LIMIT+2)
 #endif
 
 /* Total client limit, including stream and snap clients */
