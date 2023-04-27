@@ -22,6 +22,7 @@
 
 #include "bsp/sys/boolean.h"
 #include "bsp/sys/mem_utils.h"
+#include "bsp/sys/cast_ptr.h"
 #include <string.h>
 
 #ifndef BSP_MEMCPY 
