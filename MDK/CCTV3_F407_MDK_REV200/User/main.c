@@ -1,12 +1,10 @@
-#include "stm32f4xx.h"
-
+#include "bsp/platform/platform_defs.h"
 #include "bsp/platform/platform_inst.h"
+
 #include "bsp/hal/systick.h"
 #include "bsp/sys/systime.h"
 #include "bsp/sys/systimer.h"
-#include "bsp/sys/sysctrl.h"
 #include "bsp/sys/mem_guard.h"
-#include "bsp/sys/dbg_serial.h"
 
 
 SysTimer_t blinkTimer;
