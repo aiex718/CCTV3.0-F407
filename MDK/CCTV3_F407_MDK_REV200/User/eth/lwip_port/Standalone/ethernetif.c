@@ -38,7 +38,7 @@
  */
 
 #include "bsp/platform/platform_defs.h"
-#include "bsp/platform/periph_list.h"
+#include "bsp/platform/periph/peri_uniqueid.h"
 
 #include "lwip/opt.h"
 #include "lwip/mem.h"

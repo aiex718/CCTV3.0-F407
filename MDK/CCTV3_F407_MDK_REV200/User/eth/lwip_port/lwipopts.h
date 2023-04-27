@@ -31,11 +31,9 @@
 #define __LWIPOPTS_H__
 
 #include "bsp/sys/systime.h"
-#include "bsp/hal/rng.h"
-#include "bsp/hal/rtc.h"
-//TODO: seperate periph 
-extern HAL_Rng_t *Periph_Rng;
-extern HAL_RTC_t *Periph_RTC;
+
+#include "bsp/platform/periph/peri_rng.h"
+#include "bsp/platform/periph/peri_rtc.h"
 /**
  * SYS_LIGHTWEIGHT_PROT==1: if you want inter-task protection for certain
  * critical regions during buffer allocation, deallocation and memory
@@ -59,7 +57,7 @@ extern HAL_RTC_t *Periph_RTC;
 
 
 /* RAND */
-#define LWIP_RAND()     HAL_Rng_Gen(Periph_Rng)
+#define LWIP_RAND()     HAL_Rng_Gen(Peri_Rng)
 
 /* ---------- Memory options ---------- */
 /* MEM_ALIGNMENT: should be set to the alignment of the CPU for which
@@ -270,7 +268,7 @@ The STM32F4x7 allows computing and verifying the IP, UDP, TCP and ICMP checksums
 #define MJPEGD_SERVICE_PERIOD 10 //ms
 #define MJPEGD_ALLOW_STREAM_CORS 1
 #define MJPEGD_SHOWFPS_PERIOD 3//n^2 seconds
-#define MJPEGD_GET_UNIX_TIMESTAMP (u32_t)HAL_RTC_GetTime(Periph_RTC)
+#define MJPEGD_GET_UNIX_TIMESTAMP (u32_t)HAL_RTC_GetTime(Peri_RTC)
 
 //SNTP options
 #include "eth/apps/nettime/nettime.h"

@@ -8,11 +8,11 @@ void USART3_IRQHandler(void)
 
 void DCMI_IRQHandler(void)
 {
-    HAL_DCMI_IRQHandler(Periph_Cam_OV2640->CamOV2640_DCMI);
+    HAL_DCMI_IRQHandler(Dev_Cam_OV2640->CamOV2640_DCMI);
 }
 
 void DMA2_Stream1_IRQHandler(void)
 {
-    HAL_DMA_IRQHandler(Periph_Cam_OV2640->CamOV2640_DCMI->DCMI_RxDma_Cfg);
+    HAL_DMA_IRQHandler(Dev_Cam_OV2640->CamOV2640_DCMI->DCMI_RxDma_Cfg);
 }
 

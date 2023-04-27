@@ -31,7 +31,7 @@ int main(void)
 	HAL_Systick_Init();
 	delay(500); //wait 500ms for subsystems to be ready
 	//RCC
-	HAL_RCC_Init(Periph_RCC);
+	HAL_RCC_Init(Peri_RCC);
 
 	//DBG_Serial using USART3
 	DBG_Serial_Init(Peri_DBG_Serial);
@@ -39,33 +39,31 @@ int main(void)
 	DBG_INFO("Built at " __DATE__ " " __TIME__ " ,Booting...\n");
 	
 	//RTC Init
-	HAL_RTC_Init(Periph_RTC);
+	HAL_RTC_Init(Peri_RTC);
 
 	//GPIO
-	HAL_GPIO_InitPin(Periph_Button_Wkup_pin);
-	HAL_GPIO_InitPin(Periph_LED_STAT_pin);
+	HAL_GPIO_InitPin(Peri_Button_Wkup_pin);
+	HAL_GPIO_InitPin(Peri_LED_STAT_pin);
 	HAL_GPIO_InitPin(Peri_LED_Load_pin);
-	HAL_GPIO_WritePin(Periph_LED_STAT_pin,0);
+	HAL_GPIO_WritePin(Peri_LED_STAT_pin,0);
 
 	//PWM and flashlight
 	HAL_Timer_PWM_Init(Periph_Timer_PWM_FlashLight);
-	Device_FlashLight_Attach_PWM(Periph_FlashLight_Top,Periph_Timer_PWM_FlashLight);
-	Device_FlashLight_Init(Periph_FlashLight_Top);
-	Device_FlashLight_Cmd(Periph_FlashLight_Top,true);
-	Device_FlashLight_Attach_PWM(Periph_FlashLight_Bottom,Periph_Timer_PWM_FlashLight);
-	Device_FlashLight_Init(Periph_FlashLight_Bottom);
-	Device_FlashLight_Cmd(Periph_FlashLight_Bottom,true);
+	Device_FlashLight_Attach_PWM(Dev_FlashLight_Top,Periph_Timer_PWM_FlashLight);
+	Device_FlashLight_Init(Dev_FlashLight_Top);
+	Device_FlashLight_Attach_PWM(Dev_FlashLight_Bottom,Periph_Timer_PWM_FlashLight);
+	Device_FlashLight_Init(Dev_FlashLight_Bottom);
 	HAL_Timer_PWM_Cmd(Periph_Timer_PWM_FlashLight,true);
 
 	//RNG
-	HAL_Rng_Init(Periph_Rng);
+	HAL_Rng_Init(Peri_Rng);
 
 	//Lwip & ETH & httpd
 	ETH_BSP_Config();	
 	LwIP_Init();
 	httpd_init();
-	NetTime_Init(APPs_NetTime);
-	Mjpegd_Init(APPs_Mjpegd);
+	NetTime_Init(App_NetTime);
+	Mjpegd_Init(App_Mjpegd);
 	
 	SysTimer_Init(&blinkTimer,1000);
 	while(1)
@@ -77,19 +75,19 @@ int main(void)
 				DBG_INFO("Hello there\n");
 			else if(strcmp((char*)rxcmd,"on")==0)
 			{
-				Device_FlashLight_Cmd(Periph_FlashLight_Top,true);
-				Device_FlashLight_Cmd(Periph_FlashLight_Bottom,true);
+				Device_FlashLight_Cmd(Dev_FlashLight_Top,true);
+				Device_FlashLight_Cmd(Dev_FlashLight_Bottom,true);
 				DBG_INFO("Flashlight on\n");
 			}
 			else if(strcmp((char*)rxcmd,"off")==0)
 			{
-				Device_FlashLight_Cmd(Periph_FlashLight_Top,false);
-				Device_FlashLight_Cmd(Periph_FlashLight_Bottom,false);
+				Device_FlashLight_Cmd(Dev_FlashLight_Top,false);
+				Device_FlashLight_Cmd(Dev_FlashLight_Bottom,false);
 				DBG_INFO("Flashlight off\n");
 			}
 			else if(strcmp((char*)rxcmd,"time")==0)
 			{
-				HAL_RTC_PrintTime(Periph_RTC);
+				HAL_RTC_PrintTime(Peri_RTC);
 			}
 		}
 

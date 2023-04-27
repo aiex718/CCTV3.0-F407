@@ -1,7 +1,7 @@
 #include "eth/apps/nettime/nettime.h"
-#include "bsp/hal/rtc.h"
 #include "lwip/apps/sntp.h"
-#include "bsp/platform/periph_list.h"
+
+#include "bsp/platform/periph/peri_rtc.h"
 
 //This module enable lwip sntp client, and set RTC time from sntp server
 void NetTime_Init(NetTime_t *self)
@@ -26,5 +26,5 @@ void NetTime_Sntp_Poll_Callback(uint32_t unix_epoch_sec)
     t = unix_epoch_sec;
     localtime_r(&t, &_tm);
 
-    HAL_RTC_SetTime_tm(Periph_RTC, &_tm);
+    HAL_RTC_SetTime_tm(Peri_RTC, &_tm);
 }

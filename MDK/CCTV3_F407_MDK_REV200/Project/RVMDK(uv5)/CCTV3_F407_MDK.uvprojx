@@ -1129,6 +1129,36 @@
           </Files>
         </Group>
         <Group>
+          <GroupName>User\bsp\platform\app</GroupName>
+          <Files>
+            <File>
+              <FileName>app_mjpegd.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\User\bsp\platform\app\app_mjpegd.c</FilePath>
+            </File>
+            <File>
+              <FileName>app_nettime.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\User\bsp\platform\app\app_nettime.c</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>User\bsp\platform\device</GroupName>
+          <Files>
+            <File>
+              <FileName>dev_cam_ov2640.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\User\bsp\platform\device\dev_cam_ov2640.c</FilePath>
+            </File>
+            <File>
+              <FileName>dev_flashlight.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\User\bsp\platform\device\dev_flashlight.c</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
           <GroupName>User\bsp\platform\periph</GroupName>
           <Files>
             <File>
@@ -1140,6 +1170,31 @@
               <FileName>peri_gpio.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\User\bsp\platform\periph\peri_gpio.c</FilePath>
+            </File>
+            <File>
+              <FileName>peri_rcc.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\User\bsp\platform\periph\peri_rcc.c</FilePath>
+            </File>
+            <File>
+              <FileName>peri_rng.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\User\bsp\platform\periph\peri_rng.c</FilePath>
+            </File>
+            <File>
+              <FileName>peri_rtc.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\User\bsp\platform\periph\peri_rtc.c</FilePath>
+            </File>
+            <File>
+              <FileName>peri_timer_pwm.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\User\bsp\platform\periph\peri_timer_pwm.c</FilePath>
+            </File>
+            <File>
+              <FileName>peri_uniqueid.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\User\bsp\platform\periph\peri_uniqueid.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -1227,11 +1282,6 @@
               <FilePath>..\..\User\eth\apps\mjpeg\mjpegd_frame.c</FilePath>
             </File>
             <File>
-              <FileName>mjpegd_framebuf.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\User\eth\apps\mjpeg\mjpegd_framebuf.c</FilePath>
-            </File>
-            <File>
               <FileName>mjpegd_stream.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\User\eth\apps\mjpeg\mjpegd_stream.c</FilePath>
@@ -1250,6 +1300,11 @@
               <FileName>mjpegd_camera.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\User\eth\apps\mjpeg\mjpegd_camera.c</FilePath>
+            </File>
+            <File>
+              <FileName>mjpegd_framepool.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\User\eth\apps\mjpeg\mjpegd_framepool.c</FilePath>
             </File>
           </Files>
         </Group>

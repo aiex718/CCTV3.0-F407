@@ -44,7 +44,7 @@ struct ClientState_s
 
     //callback when eof reached to get next file
     //if NULL, client will be closed
-    err_t (*get_nextfile_func)(void* client_state);
+    err_t (*get_nextfile_func)(struct ClientState_s *cs);
     
     Mjpegd_Frame_t* frame;
     MJPEGD_SYSTIME_T previous_frame_time;

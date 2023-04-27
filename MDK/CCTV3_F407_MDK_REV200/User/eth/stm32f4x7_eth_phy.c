@@ -27,7 +27,7 @@
 
 /* Includes ------------------------------------------------------------------*/
 #include "bsp/platform/platform_defs.h"
-#include "bsp/platform/periph_list.h"
+#include "bsp/platform/periph/peri_uniqueid.h"
 #include "bsp/sys/dbg_serial.h"
 #include "lwip/opt.h"
 #include "lwip/dhcp.h"

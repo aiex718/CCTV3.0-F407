@@ -6,12 +6,12 @@
 
 typedef struct HAL_UniqueID_s
 {
-    const uint32_t* UniqueID_Addrs;
-    const uint8_t UniqueID_Len;
+    uint32_t* UniqueID_Addrs;
+    uint8_t UniqueID_Len;
 }HAL_UniqueID_t;
 
-void HAL_UniqueID_Init(HAL_UniqueID_t *self);
-uint32_t HAL_UniqueID_Read(HAL_UniqueID_t *self,uint8_t offset);
-uint8_t HAL_UniqueID_GetLen(HAL_UniqueID_t *self);
+void HAL_UniqueID_Init(const HAL_UniqueID_t *self);
+uint32_t HAL_UniqueID_Read(const HAL_UniqueID_t *self,uint8_t offset);
+uint8_t HAL_UniqueID_GetLen(const HAL_UniqueID_t *self);
 
 #endif
