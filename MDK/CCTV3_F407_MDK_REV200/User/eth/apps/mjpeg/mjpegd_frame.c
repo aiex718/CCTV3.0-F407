@@ -39,36 +39,28 @@ void Mjpegd_Frame_SetLenAndTime(Mjpegd_Frame_t* self,uint16_t len)
  */
 u16_t Mjpegd_Frame_InsertComment(Mjpegd_Frame_t* self,const u8_t *data, u16_t w_len)
 {
-    static const u8_t Jpeg_Comment_Section[6+MJPEGD_FRAME_COMMENT_SPACE] =
-    {
-        //jpeg SOI
-        0xFF,0xD8,
-        //jpeg COM section tag
-        0xFF,0xFE,
-        //comment len indicator
-        ((MJPEGD_FRAME_COMMENT_SPACE+2)>>8)&0xff,
-        (MJPEGD_FRAME_COMMENT_SPACE+2)&0xff,
-    };
-
     try
     {
-        u8_t* comment_wptr;
+        u8_t Jpeg_Comment_Section[6] = {
+            0xFF,0xD8,0xFF,0xFE,(w_len>>8)&0xff,w_len&0xff
+        };
+        u16_t comment_len = sizeof(Jpeg_Comment_Section)+w_len;
+
         throwif(self->payload!=self->head,HEADER_EXIST);
-        throwif(sizeof(Jpeg_Comment_Section)>= 
-            Mjpegd_Frame_HeaderAvailable(self),OUTOFSPACE);
-        
-        w_len = MJPEGD_MIN(w_len,MJPEGD_FRAME_COMMENT_SPACE);
+        throwif(w_len==0,NO_DATA);
+        throwif(comment_len >= 
+            Mjpegd_Frame_HeaderAvailable(self)-2,OUTOFSPACE);
+
         //make space for comment
-        self->payload -= sizeof(Jpeg_Comment_Section)-2;
-        self->head -= sizeof(Jpeg_Comment_Section)-2;
-        self->frame_len += sizeof(Jpeg_Comment_Section)-2;
+        self->payload -= comment_len-2;
+        self->head = self->payload;
+        self->frame_len += comment_len-2;
         
         //write comment block
         MJPEGD_MEMCPY(self->payload,Jpeg_Comment_Section,sizeof(Jpeg_Comment_Section));
-        comment_wptr = self->head+6;
 
         //write comment content
-        MJPEGD_MEMCPY(comment_wptr,data,w_len);
+        MJPEGD_MEMCPY(self->payload+6,data,w_len);
     }
     catch(HEADER_EXIST)
     {
@@ -76,12 +68,18 @@ u16_t Mjpegd_Frame_InsertComment(Mjpegd_Frame_t* self,const u8_t *data, u16_t w_
         LWIP_DEBUGF(MJPEGD_DEBUG | LWIP_DBG_LEVEL_SERIOUS,
             MJPEGD_DBG_ARG("InsertComment HEADER_EXIST\n"));
     }
+    catch(NO_DATA)
+    {
+        w_len=0;
+        LWIP_DEBUGF(MJPEGD_DEBUG | LWIP_DBG_LEVEL_WARNING,
+            MJPEGD_DBG_ARG("InsertComment NO_DATA\n"));
+    }
     catch(OUTOFSPACE)
     {
         w_len=0;
         LWIP_DEBUGF(MJPEGD_DEBUG | LWIP_DBG_LEVEL_SERIOUS,
             MJPEGD_DBG_ARG("InsertComment OUTOFSPACE %d>=%d\n",
-                sizeof(Jpeg_Comment_Section),Mjpegd_Frame_HeaderAvailable(self)));
+                w_len,Mjpegd_Frame_HeaderAvailable(self)));
     }
     finally
     {
