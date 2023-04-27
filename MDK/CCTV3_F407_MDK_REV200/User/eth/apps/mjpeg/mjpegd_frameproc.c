@@ -4,6 +4,7 @@
 #include "eth/apps/mjpeg/mjpegd_memutils.h"
 #include "eth/apps/mjpeg/trycatch.h"
 
+#include "time.h"
 
 
 //private functions
@@ -146,13 +147,12 @@ static void Mjpegd_FrameProc_ProcessRawFrame(Mjpegd_Frame_t* frame)
         //insert jpeg comment section
         //this will overwrite old frame SOI(FF D8) from frame->head
         {
-            //TODO:insert RTC time 8 byte
-            u8_t FakeRTC[8]={0,1,2,3,4,5,6,7};
-            u8_t comment[sizeof(FakeRTC)+sizeof(frame->capture_time)]; //8 byte RTC time, 4 byte frame time
+            u32_t Unix_Timestamp = MJPEGD_GET_UNIX_TIMESTAMP;
+            u8_t comment[sizeof(Unix_Timestamp)+sizeof(frame->capture_time)];
             u8_t* comment_wptr = comment;
             
-            MJPEGD_MEMCPY(comment_wptr,FakeRTC,sizeof(FakeRTC));
-            comment_wptr+=sizeof(FakeRTC);
+            MJPEGD_MEMCPY(comment_wptr,&Unix_Timestamp,sizeof(Unix_Timestamp));
+            comment_wptr+=sizeof(Unix_Timestamp);
 
             //insert frame time 4byte
             MJPEGD_MEMCPY(comment_wptr,&frame->capture_time,sizeof(frame->capture_time));
