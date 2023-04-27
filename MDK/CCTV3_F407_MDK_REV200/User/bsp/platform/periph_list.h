@@ -1,6 +1,7 @@
 #ifndef PERIPH_LIST_H
 #define PERIPH_LIST_H
 
+<<<<<<< HEAD
 #include "bsp/platform/platform_defs.h"
 #include "bsp/sys/dbg_serial.h"
 #include "bsp/hal/gpio.h"
@@ -47,5 +48,10 @@ extern Device_CamOV2640_t* Periph_Cam_OV2640;
 //Mjpegd
 extern Mjpegd_t* Periph_Mjpegd;
 
+=======
+#include "bsp/platform/periph/peri_gpio.h"
+#include "bsp/platform/periph/peri_dbgserial.h"
+
+>>>>>>> MDK_REV200_BSP
 
 #endif

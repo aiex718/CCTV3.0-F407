@@ -6,6 +6,7 @@
 #include "bsp/sys/systime.h"
 #include "bsp/sys/systimer.h"
 #include "bsp/sys/sysctrl.h"
+<<<<<<< HEAD
 #include "bsp/sys/semaphore.h"
 #include "bsp/hal/systick.h"
 #include "bsp/hal/timer.h"
@@ -20,6 +21,10 @@
 //apps
 #include "lwip/apps/httpd.h"
 #include "eth/apps/mjpeg/mjpegd.h"
+=======
+#include "bsp/sys/mem_guard.h"
+#include "bsp/sys/dbg_serial.h"
+>>>>>>> MDK_REV200_BSP
 
 
 SysTimer_t blinkTimer;
