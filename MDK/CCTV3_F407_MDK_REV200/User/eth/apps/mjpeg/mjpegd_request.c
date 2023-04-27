@@ -78,7 +78,7 @@ Keep-Alive: timeout=10   \r\n\
 //content-len= total - 101
 const char Http_ViewFps_Response[]= "\
 HTTP/1.1 200 OK\r\n\
-Content-Length: 6480\r\n\
+Content-Length: 5687\r\n\
 Content-Type: text/html; charset=UTF-8\r\n\
 Connection: close\r\n\
 \r\n\
@@ -179,39 +179,29 @@ function GetStream(url)\r\n\
                             if (imageBuffer[com_idx] === JPEG_COM[0] && imageBuffer[com_idx+1] === JPEG_COM[1])\r\n\
                             {\r\n\
                                 let comment_len = imageBuffer[com_idx+2] * 256 + imageBuffer[com_idx+3];\r\n\
-                                if(comment_len<=14)\r\n\
+                                if(comment_len<8)\r\n\
                                 {\r\n\
                                     console.log('comment_len error');\r\n\
                                     break;\r\n\
                                 }\r\n\
 \r\n\
-                                //extract 8 byte rtc\r\n\
-                                const rtc_len = 8;\r\n\
-                                let rtc_raw = new Uint8Array(new ArrayBuffer(rtc_len));\r\n\
-                                for (let i = 0; i < rtc_len; i++)\r\n\
-                                    rtc_raw[i] = imageBuffer[com_idx+4+i];\r\n\
-                                let WeekDay = rtc_raw[0]; \r\n\
-                                let Month = rtc_raw[1];\r\n\
-                                let Day = rtc_raw[2];\r\n\
-                                let Year = rtc_raw[3];\r\n\
-                                let Hour = rtc_raw[4];\r\n\
-                                let Minute = rtc_raw[5];\r\n\
-                                let Second = rtc_raw[6];\r\n\
-                                let H12 = rtc_raw[7];\r\n\
+                                let r_idx = com_idx+4;\r\n\
 \r\n\
-                                let datetime = new Date(Year, Month, Day, Hour, Minute, Second);\r\n\
+                                //extract 4 byte timestamp\r\n\
+                                const timestamp_len =4;\r\n\
+                                let timestamp = 0;\r\n\
+                                for (let i = 0; i < timestamp_len; i++)\r\n\
+                                    timestamp += imageBuffer[r_idx++] << (8 * i);\r\n\
+\r\n\
+                                let datetime = new Date(timestamp*1000);\r\n\
                                 frametimeutc.innerHTML = datetime.toUTCString();\r\n\
-                                let datetime_local = new Date(Year, Month, Day, Hour, Minute, Second);\r\n\
-                                frametimelocal.innerHTML = datetime_local.toLocaleString();\r\n\
+                                frametimelocal.innerHTML = datetime.toLocaleString();\r\n\
 \r\n\
                                 //extract 4 byte frame tick\r\n\
                                 const frametick_len = 4;\r\n\
-                                let tick_raw = new Uint8Array(new ArrayBuffer(frametick_len));\r\n\
+                                let tick=0;\r\n\
                                 for (let i = 0; i < frametick_len; i++)\r\n\
-                                    tick_raw[i] = imageBuffer[com_idx+rtc_len+4+i];\r\n\
-                                let tick = 0;\r\n\
-                                for (let i = 0; i < frametick_len; i++)\r\n\
-                                    tick += tick_raw[i] << (8 * i);\r\n\
+                                    tick += imageBuffer[r_idx++] << (8 * i);\r\n\
                                 frametick.innerHTML = tick;\r\n\
 \r\n\
                                 break;\r\n\

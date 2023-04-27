@@ -2,6 +2,7 @@
 #define __MJPEGD_REQUEST_H__
 
 #include "lwip/err.h"
+#include "eth/apps/mjpeg/mjpegd_client.h"
 
 typedef enum 
 {
@@ -47,8 +48,6 @@ typedef struct Mjpegd_RequestHandler_struct
 }Mjpegd_RequestHandler_t;
 
 extern const Mjpegd_RequestHandler_t mjpegd_request_handlers[__NOT_REQUEST_MAX];
-
-#include "eth/apps/mjpeg/mjpegd_client.h"
 
 err_t Mjpegd_Request_Parse(ClientState_t *cs,char* req,u16_t req_len);
 err_t Mjpegd_Request_BuildResponse(ClientState_t *cs);
