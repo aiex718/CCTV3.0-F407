@@ -7,7 +7,7 @@
 #include "bsp/sys/sysctrl.h"
 #include "bsp/sys/mem_guard.h"
 #include "bsp/sys/dbg_serial.h"
-#include "stdio.h"
+
 
 SysTimer_t blinkTimer;
 int main(void)

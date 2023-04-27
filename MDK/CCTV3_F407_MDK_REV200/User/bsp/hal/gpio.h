@@ -4,7 +4,7 @@
 #include "bsp/platform/platform_defs.h"
 #include "bsp/hal/rcc.h"
 
-__BSP_STRUCT_ALIGN typedef struct
+__BSP_STRUCT_ALIGN typedef struct HAL_GPIO_pin_struct
 {
     //RCC
     HAL_RCC_Cmd_t* GPIO_RCC_cmd;

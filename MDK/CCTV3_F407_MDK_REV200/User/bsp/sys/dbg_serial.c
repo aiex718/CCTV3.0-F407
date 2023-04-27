@@ -89,12 +89,6 @@ void DBG_Serial_AttachUSART(DBG_Serial_t *self, HAL_USART_t *hal_usart)
             USART_CALLBACK_IRQ_TX_EMPTY,&self->_tx_empty_cb);
         HAL_USART_SetCallback(self->hal_usart,
             USART_CALLBACK_RX_TIMEOUT,&self->_rx_timeout_cb);
-
-#if DBG_SERIAL_ENABLE_DMA
-	    HAL_USART_DmaRead(self->hal_usart,0);
-#else
-        HAL_USART_RxStreamCmd(self->hal_usart,true);
-#endif
     }
 }
 
@@ -102,7 +96,18 @@ void DBG_Serial_Cmd(DBG_Serial_t *self,bool en)
 {
     HAL_USART_Cmd(self->hal_usart,en);
 
-    if(en==false)
+    if(en)
+    {
+        if(self->rx_con_queue!=NULL)
+        {
+#if DBG_SERIAL_ENABLE_DMA
+	    HAL_USART_DmaRead(self->hal_usart,0);
+#else
+        HAL_USART_RxStreamCmd(self->hal_usart,true);
+#endif
+        }
+    }
+    else
     {
         if(self->tx_con_queue!=NULL)
             Concurrent_Queue_Clear(self->tx_con_queue);
