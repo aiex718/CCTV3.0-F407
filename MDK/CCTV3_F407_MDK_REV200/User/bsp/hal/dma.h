@@ -20,7 +20,7 @@ typedef enum
     __NOT_CALLBACK_DMA_MAX
 }HAL_DMA_CallbackIdx_t;
 
-__BSP_STRUCT_ALIGN typedef struct
+__BSP_STRUCT_ALIGN typedef struct HAL_DMA_s
 {
     DMA_Stream_TypeDef *DMA_Streamx;
 

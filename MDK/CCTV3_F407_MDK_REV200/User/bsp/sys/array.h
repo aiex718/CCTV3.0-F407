@@ -5,11 +5,11 @@
 
 #define __ARRAY_LEN uint16_t
 
-#define __ARRAY_DECL(__type)        \
-__BSP_STRUCT_ALIGN typedef struct   \
-{                                   \
-    __type          *ptr;           \
-    __ARRAY_LEN      len;           \
+#define __ARRAY_DECL(__type)                            \
+__BSP_STRUCT_ALIGN typedef struct Array_##__type##_s    \
+{                                                       \
+    __type          *ptr;                               \
+    __ARRAY_LEN      len;                               \
 }Array_##__type
 
 #define Array_Init(self,buf_ptr,buf_len) do{    \

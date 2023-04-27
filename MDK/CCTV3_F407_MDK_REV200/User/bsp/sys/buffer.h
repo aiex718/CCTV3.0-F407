@@ -14,14 +14,14 @@
 }while(0)
 #define __Buffer_Queue_IncPtr(self,ptr) __Buffer_Queue_MovePtr(self,ptr,1)
 /* Generic decleartion  */ 
-#define __BUFFER_DECL(__type,__name)        \
-__BSP_STRUCT_ALIGN typedef struct           \
-{                                           \
-    BUFFER_STORAGE_LEN_T      len;          \
-    __type          *buf_ptr;               \
-    __type          *r_ptr;                 \
-    __type          *w_ptr;                 \
-}Buffer_##__name;                           \
+#define __BUFFER_DECL(__type,__name)                    \
+__BSP_STRUCT_ALIGN typedef struct Buffer_##__name##_s   \
+{                                                       \
+    BUFFER_STORAGE_LEN_T      len;                      \
+    __type          *buf_ptr;                           \
+    __type          *r_ptr;                             \
+    __type          *w_ptr;                             \
+}Buffer_##__name;                                       \
 /* Queue generic funstions  */                                      \
 static BUFFER_STORAGE_LEN_T Buffer_Queue_PushArray_##__name         \
 (Buffer_##__name *self, __type *data, BUFFER_STORAGE_LEN_T len)     \

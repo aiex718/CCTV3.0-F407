@@ -38,7 +38,7 @@ typedef enum
     __NOT_CALLBACK_USART_MAX        ,
 }HAL_USART_CallbackIdx_t;
 
-__BSP_STRUCT_ALIGN typedef struct
+__BSP_STRUCT_ALIGN typedef struct HAL_USART_s
 {
     //usart
     USART_TypeDef* USARTx;
