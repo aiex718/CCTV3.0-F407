@@ -38,8 +38,6 @@ typedef struct DBG_Serial_s
     Callback_t _tx_empty_cb, _rx_timeout_cb;
 }DBG_Serial_t;
 
-extern DBG_Serial_t* DBG_Serial;
-
 void DBG_Serial_Init(DBG_Serial_t *self);
 void DBG_Serial_AttachUSART(DBG_Serial_t *self,HAL_USART_t *hal_usart);
 void DBG_Serial_Cmd(DBG_Serial_t *self,bool en);
@@ -66,5 +64,8 @@ uint16_t DBG_Serial_ReadLine(DBG_Serial_t *self,uint8_t* buf, uint16_t buf_len);
 #else
 #define DBG_ERROR(x,...)
 #endif
+
+//include for instance
+#include "bsp/platform/periph/peri_dbgserial.h" 
 
 #endif

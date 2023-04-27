@@ -5,10 +5,13 @@
 #include "bsp/hal/gpio.h"
 
 //LEDs active high
-extern const HAL_GPIO_pin_t *Periph_LED_Load_pin;
-extern const HAL_GPIO_pin_t *Periph_LED_STAT_pin;
+const HAL_GPIO_pin_t *Peri_LED_Load_pin_Inst;
+extern const HAL_GPIO_pin_t *Peri_LED_Load_pin;
+const HAL_GPIO_pin_t *Peri_LED_STAT_pin_Inst;
+extern const HAL_GPIO_pin_t *Peri_LED_STAT_pin;
 
 //Buttons active high
-extern const HAL_GPIO_pin_t *Periph_Button_Wkup_pin;
+extern const HAL_GPIO_pin_t Peri_Button_Wkup_pin_Inst;
+extern const HAL_GPIO_pin_t *Peri_Button_Wkup_pin;
 
 #endif
