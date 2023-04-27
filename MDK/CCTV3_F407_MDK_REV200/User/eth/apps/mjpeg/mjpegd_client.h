@@ -3,7 +3,6 @@
 
 #include "eth/apps/mjpeg/mjpegd.h"
 #include "eth/apps/mjpeg/mjpegd_opts.h"
-#include "eth/apps/mjpeg/mjpegd_request.h"
 #include "eth/apps/mjpeg/mjpegd_frame.h"
 
 
@@ -35,7 +34,7 @@ struct ClientState_struct
     struct tcp_pcb* pcb;
     void* parent_mjpeg;
 
-    const Mjpegd_RequestHandler_t* request_handler;
+    const struct Mjpegd_RequestHandler_struct *request_handler;
     conn_state_t conn_state;
 
     //file to send

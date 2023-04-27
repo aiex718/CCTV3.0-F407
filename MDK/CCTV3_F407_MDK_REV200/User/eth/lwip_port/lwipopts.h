@@ -32,7 +32,10 @@
 
 #include "bsp/sys/systime.h"
 #include "bsp/hal/rng.h"
+#include "bsp/hal/rtc.h"
+//TODO: seperate periph 
 extern HAL_Rng_t *Periph_Rng;
+extern HAL_RTC_t *Periph_RTC;
 /**
  * SYS_LIGHTWEIGHT_PROT==1: if you want inter-task protection for certain
  * critical regions during buffer allocation, deallocation and memory
@@ -267,6 +270,14 @@ The STM32F4x7 allows computing and verifying the IP, UDP, TCP and ICMP checksums
 #define MJPEGD_SERVICE_PERIOD 10 //ms
 #define MJPEGD_ALLOW_STREAM_CORS 1
 #define MJPEGD_SHOWFPS_PERIOD 3//n^2 seconds
+#define MJPEGD_GET_UNIX_TIMESTAMP (u32_t)HAL_RTC_GetTime(Periph_RTC)
+
+//SNTP options
+#include "eth/apps/nettime/nettime.h"
+#define SNTP_SET_SYSTEM_TIME NetTime_Sntp_Poll_Callback
+#define SNTP_SERVER_DNS 1
+
+//#define SNTP_DEBUG_TRACE LWIP_DBG_ON
 
 #endif /* __LWIPOPTS_H__ */
 

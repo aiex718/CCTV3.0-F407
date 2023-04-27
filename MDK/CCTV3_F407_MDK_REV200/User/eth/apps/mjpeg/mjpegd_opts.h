@@ -73,6 +73,10 @@
     #define MJPEGD_SYSTIME_T u32_t
 #endif
 
+#ifndef MJPEGD_GET_UNIX_TIMESTAMP
+    #define MJPEGD_GET_UNIX_TIMESTAMP 0
+#endif
+
 //poll interval is n*2*TCP_TMR_INTERVAL(typically 250ms)
 #ifndef MJPEGD_POLL_INTERVAL
     #define MJPEGD_POLL_INTERVAL 2 //2*2*250=1000ms

@@ -4,6 +4,7 @@
 #include "eth/apps/mjpeg/trycatch.h"
 #include "eth/apps/mjpeg/mjpegd_framebuf.h"
 #include "eth/apps/mjpeg/mjpegd_client.h"
+#include "eth/apps/mjpeg/mjpegd_request.h"
 
 #include "lwip/tcp.h"
 
