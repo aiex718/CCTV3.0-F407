@@ -1,7 +1,7 @@
 #include "bsp/platform/periph/peri_gpio.h"
 
 //GPIO LEDs
-const HAL_GPIO_pin_t _Periph_LED_Load_pin = 
+const HAL_GPIO_pin_t Peri_LED_Load_pin_Inst = 
 {
 	.GPIOx = GPIOC,
 	.GPIO_RCC_cmd = __CONST_CAST_VAR(HAL_RCC_Cmd_t){
@@ -16,10 +16,10 @@ const HAL_GPIO_pin_t _Periph_LED_Load_pin =
 	},
 	.GPIO_AF_PinSource = 0,
 	.GPIO_AF_Mapping = 0,
-};//_Periph_LED_Load_pin
-const HAL_GPIO_pin_t *Periph_LED_Load_pin = &_Periph_LED_Load_pin;
+};//Peri_LED_Load_pin_Inst
+const HAL_GPIO_pin_t *Peri_LED_Load_pin = &Peri_LED_Load_pin_Inst;
 
-const HAL_GPIO_pin_t _Periph_LED_STAT_pin = 
+const HAL_GPIO_pin_t Peri_LED_STAT_pin_Inst = 
 {	
 	.GPIOx = GPIOC,
 	.GPIO_RCC_cmd = __CONST_CAST_VAR(HAL_RCC_Cmd_t){
@@ -34,11 +34,11 @@ const HAL_GPIO_pin_t _Periph_LED_STAT_pin =
 	},
 	.GPIO_AF_PinSource = 0,
 	.GPIO_AF_Mapping = 0,
-};//_Periph_LED_STAT_pin
-const HAL_GPIO_pin_t *Periph_LED_STAT_pin = &_Periph_LED_STAT_pin;
+};//Peri_LED_STAT_pin_Inst
+const HAL_GPIO_pin_t *Peri_LED_STAT_pin = &Peri_LED_STAT_pin_Inst;
 
 //GPIO Buttons
-const HAL_GPIO_pin_t _Periph_Button_Wkup_pin = 
+const HAL_GPIO_pin_t Peri_Button_Wkup_pin_Inst = 
 {
 	.GPIOx = GPIOA,
 	.GPIO_RCC_cmd = __CONST_CAST_VAR(HAL_RCC_Cmd_t){
@@ -53,6 +53,6 @@ const HAL_GPIO_pin_t _Periph_Button_Wkup_pin =
 	},
 	.GPIO_AF_PinSource = 0,
 	.GPIO_AF_Mapping = 0,
-};
-const HAL_GPIO_pin_t *Periph_Button_Wkup_pin = &_Periph_Button_Wkup_pin;
+};//Peri_Button_Wkup_pin_Inst
+const HAL_GPIO_pin_t *Peri_Button_Wkup_pin = &Peri_Button_Wkup_pin_Inst;
 

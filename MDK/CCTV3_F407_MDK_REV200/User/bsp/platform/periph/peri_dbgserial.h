@@ -5,5 +5,7 @@
 #include "bsp/sys/dbg_serial.h"
 
 //Debug serial
-extern DBG_Serial_t* DBG_Serial;
+extern DBG_Serial_t Peri_DBG_Serial_Inst;
+extern DBG_Serial_t *Peri_DBG_Serial;
+
 #endif
