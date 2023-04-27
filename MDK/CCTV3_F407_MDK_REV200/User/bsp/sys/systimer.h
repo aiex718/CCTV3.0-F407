@@ -8,7 +8,7 @@
     #define SYSTIMER_PERIOD_T uint16_t
 #endif
 
-__BSP_STRUCT_ALIGN typedef struct {
+__BSP_STRUCT_ALIGN typedef struct SysTimer_s{
     SYSTIMER_PERIOD_T period;
     SysTime_t last;
 } SysTimer_t;
