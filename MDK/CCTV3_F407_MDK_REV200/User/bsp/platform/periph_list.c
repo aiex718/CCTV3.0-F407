@@ -10,6 +10,67 @@
 #define __CONST_CAST_VAR(type) (type*)&(const type)
 #define __CONST_ARRAY_CAST_VAR(type) (type*)&(const type[])
 
+//RCC
+HAL_RCC_t *Periph_RCC = __CONST_CAST_VAR(HAL_RCC_t)
+{
+	.RCC_mco_list = __CONST_ARRAY_CAST_VAR(HAL_RCC_MCO_t*)
+	{
+		//MCO2 for camera
+		__CONST_CAST_VAR(HAL_RCC_MCO_t){
+			.MCO_Idx = MCO2, 
+			.MCO_Pin = __CONST_CAST_VAR(HAL_GPIO_pin_t){
+				.GPIOx = GPIOC, //MCO2 - PC9
+				.GPIO_RCC_cmd = __CONST_CAST_VAR(HAL_RCC_Cmd_t){
+					.RCC_AHB1Periph = RCC_AHB1Periph_GPIOC,
+				},
+				.GPIO_InitCfg = __CONST_CAST_VAR(GPIO_InitTypeDef){
+					.GPIO_Pin = GPIO_Pin_9,
+					.GPIO_Mode = GPIO_Mode_AF,
+					.GPIO_Speed = GPIO_Speed_100MHz,
+					.GPIO_OType = GPIO_OType_PP,
+					.GPIO_PuPd = GPIO_PuPd_NOPULL
+				},
+				.GPIO_AF_PinSource = GPIO_PinSource9,
+				.GPIO_AF_Mapping = GPIO_AF_MCO,
+			},
+			.MCO_Source = RCC_MCO2Source_HSE,
+			.MCO_ClkDiv = RCC_MCO2Div_1,
+		},
+		NULL//Null terminate
+	},
+	.RCC_clk_list = __CONST_ARRAY_CAST_VAR(HAL_RCC_CLK_t*)
+	{
+		//LSE for RTC
+		__CONST_CAST_VAR(HAL_RCC_CLK_t){	
+			.CLK_Idx = CLK_LSE,
+			.CLK_Enable = true
+		},
+		NULL//Null terminate
+	}
+};
+
+//RTC
+HAL_RTC_t *Periph_RTC = __CONST_CAST_VAR(HAL_RTC_t){
+	.RTC_RCC_Cmd = __CONST_CAST_VAR(HAL_RCC_Cmd_t)
+	{
+		.RCC_APB1Periph = RCC_APB1Periph_PWR,
+	},
+	.RTC_InitCfg = __CONST_CAST_VAR(RTC_InitTypeDef)
+	{
+		//LSE = 32.768KHz
+		//ck_spare = LSE/[(255+1)*(127+1)] = 1HZ
+		.RTC_HourFormat = RTC_HourFormat_24,
+		.RTC_AsynchPrediv = 0x7F,
+		.RTC_SynchPrediv = 0xFF,
+	},
+	.RTC_ClockSource = RCC_RTCCLKSource_LSE,
+	//RTC can only save 100 years, offset 2000 to 1900 by 100 years
+	.RTC_Year_Offset = 100,//1900 to 2000
+	.RTC_Hour_Offset = 0,
+	.RTC_Minute_Offset = 0,
+	.RTC_WeekDay = RTC_Weekday_Sunday,
+};
+
 //GPIO LEDs
 HAL_GPIO_pin_t *Periph_LED_Load_pin = __CONST_CAST_VAR(HAL_GPIO_pin_t)
 {
@@ -346,27 +407,6 @@ HAL_UniqueID_t *Periph_UniqueID = __CONST_CAST_VAR(HAL_UniqueID_t){
 };
 
 //Camera
-HAL_MCO_t *Periph_MCO2_Cam = __CONST_CAST_VAR(HAL_MCO_t){
-	.MCO_Idx = MCO2, 
-	.MCO_Pin = __CONST_CAST_VAR(HAL_GPIO_pin_t){
-		.GPIOx = GPIOC, //MCO2 - PC9
-		.GPIO_RCC_cmd = __CONST_CAST_VAR(HAL_RCC_Cmd_t){
-			.RCC_AHB1Periph = RCC_AHB1Periph_GPIOC,
-		},
-		.GPIO_InitCfg = __CONST_CAST_VAR(GPIO_InitTypeDef){
-			.GPIO_Pin = GPIO_Pin_9,
-			.GPIO_Mode = GPIO_Mode_AF,
-			.GPIO_Speed = GPIO_Speed_100MHz,
-			.GPIO_OType = GPIO_OType_PP,
-			.GPIO_PuPd = GPIO_PuPd_NOPULL
-		},
-		.GPIO_AF_PinSource = GPIO_PinSource9,
-		.GPIO_AF_Mapping = GPIO_AF_MCO,
-	},
-	.MCO_Source = RCC_MCO2Source_HSE,
-	.MCO_ClkDiv = RCC_MCO2Div_1,
-};
-
 Device_CamOV2640_t _Cam_OV2640  = {
 	.CamOV2640_DCMI = __VAR_CAST_VAR(HAL_DCMI_t){
 		.DCMIx = DCMI,
@@ -649,10 +689,9 @@ Device_CamOV2640_t _Cam_OV2640  = {
 	// .CamOV2640_Buffer_Len = 1024*12,
 };
 Device_CamOV2640_t *Periph_Cam_OV2640 = &_Cam_OV2640;
-//TODO: Change decl format to upper
 
 //Mjpegd
-Mjpegd_t* Periph_Mjpegd = __VAR_CAST_VAR(Mjpegd_t){
+Mjpegd_t* APPs_Mjpegd = __VAR_CAST_VAR(Mjpegd_t){
     .Port = 8080,
     .FrameBuf = __VAR_CAST_VAR(Mjpegd_FrameBuf_t){
         ._frames_len = MJPEGD_FRAMEBUF_LEN,
@@ -664,4 +703,9 @@ Mjpegd_t* Periph_Mjpegd = __VAR_CAST_VAR(Mjpegd_t){
 		.Ov2640_RecvRawFrame_cb = NULL,
         .HwCam_Ov2640 = &_Cam_OV2640,
     },
-};//Periph_Mjpegd
+};//APPs_Mjpegd
+
+//NetTime
+NetTime_t* APPs_NetTime = __CONST_CAST_VAR(NetTime_t){
+	.NTP_Server = NTP_DEFAULT_SERVER,
+};//APPs_NetTime

@@ -11,6 +11,7 @@
 #include "bsp/hal/systick.h"
 #include "bsp/hal/timer.h"
 #include "bsp/hal/timer_pwm.h"
+#include "bsp/hal/rtc.h"
 
 //eth & lwip
 #include "lwip/timeouts.h"
@@ -34,11 +35,18 @@ int main(void)
 	//SystemInit() is inside system_stm32f4xx.c
 	HAL_Systick_Init();
 	delay(500); //wait 500ms for subsystems to be ready
+	//RCC
+	HAL_RCC_Init(Periph_RCC);
+
 	//USART3 for DBG_Serial
 	DBG_Serial_Init(DBG_Serial);
 	DBG_Serial_Cmd(DBG_Serial,true);
 	DBG_INFO("Built at " __DATE__ " " __TIME__ " ,Booting...\n");
 	
+	//RTC Init
+	HAL_RTC_Init(Periph_RTC);
+
+	//GPIO
 	HAL_GPIO_InitPin(Periph_Button_Wkup_pin);
 	HAL_GPIO_InitPin(Periph_LED_STAT_pin);
 	HAL_GPIO_InitPin(Periph_LED_Load_pin);
@@ -57,14 +65,12 @@ int main(void)
 	//RNG
 	HAL_Rng_Init(Periph_Rng);
 
-	//Camera MCO init
-	HAL_MCO_Init(Periph_MCO2_Cam);
-	
 	//Lwip & ETH & httpd
 	ETH_BSP_Config();	
 	LwIP_Init();
 	httpd_init();
-	Mjpegd_Init(Periph_Mjpegd);
+	NetTime_Init(APPs_NetTime);
+	Mjpegd_Init(APPs_Mjpegd);
 	
 	SysTimer_Init(&blinkTimer,1000);
 	while(1)
@@ -85,6 +91,10 @@ int main(void)
 				Device_FlashLight_Cmd(Periph_FlashLight_Top,false);
 				Device_FlashLight_Cmd(Periph_FlashLight_Bottom,false);
 				DBG_INFO("Flashlight off\n");
+			}
+			else if(strcmp((char*)rxcmd,"time")==0)
+			{
+				HAL_RTC_PrintTime(Periph_RTC);
 			}
 		}
 

@@ -1,22 +1,28 @@
 #ifndef PERIPH_LIST_H
 #define PERIPH_LIST_H
 
-<<<<<<< HEAD
 #include "bsp/platform/platform_defs.h"
 #include "bsp/sys/dbg_serial.h"
 #include "bsp/hal/gpio.h"
 #include "bsp/hal/usart.h"
 #include "bsp/hal/timer.h"
 #include "bsp/hal/timer_pwm.h"
-#include "bsp/hal/mco.h"
 #include "bsp/hal/rng.h"
 #include "bsp/hal/uniqueid.h"
+#include "bsp/hal/rtc.h"
 
 #include "device/flashlight.h"
 #include "device/cam_ov2640/cam_ov2640.h"
 
 #include "eth/apps/mjpeg/mjpegd.h"
+#include "eth/apps/nettime/nettime.h"
 
+
+//RCC
+extern HAL_RCC_t *Periph_RCC;
+
+//RTC
+extern HAL_RTC_t *Periph_RTC;
 
 //LEDs active high
 extern HAL_GPIO_pin_t *Periph_LED_Load_pin;
@@ -42,16 +48,11 @@ extern Device_FlashLight_t *Periph_FlashLight_Bottom;
 extern HAL_UniqueID_t *Periph_UniqueID; 
 
 //Camera
-extern HAL_MCO_t *Periph_MCO2_Cam;//MCO2 for camera
 extern Device_CamOV2640_t* Periph_Cam_OV2640;
 
 //Mjpegd
-extern Mjpegd_t* Periph_Mjpegd;
+extern Mjpegd_t* APPs_Mjpegd;
 
-=======
-#include "bsp/platform/periph/peri_gpio.h"
-#include "bsp/platform/periph/peri_dbgserial.h"
-
->>>>>>> MDK_REV200_BSP
+extern NetTime_t* APPs_NetTime;
 
 #endif
