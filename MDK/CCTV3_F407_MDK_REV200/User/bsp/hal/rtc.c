@@ -1,7 +1,7 @@
 #include "bsp/hal/rtc.h"
 #include "bsp/sys/dbg_serial.h"
 
-void HAL_RTC_Init(HAL_RTC_t *self)
+void HAL_RTC_Init(const HAL_RTC_t *self)
 {
     HAL_RCC_Cmd(self->RTC_RCC_Cmd,ENABLE);
     PWR_BackupAccessCmd(ENABLE);
@@ -34,15 +34,16 @@ void HAL_RTC_Init(HAL_RTC_t *self)
     PWR_BackupAccessCmd(DISABLE);
 }
 
-time_t HAL_RTC_GetTime(HAL_RTC_t *self)
+time_t HAL_RTC_GetTime(const HAL_RTC_t *self)
 {
     struct tm ptm;
     HAL_RTC_GetTime_tm(self,&ptm);
     return mktime(&ptm);
 }
 
-void HAL_RTC_GetTime_tm(HAL_RTC_t *self,struct tm *ptm)
+void HAL_RTC_GetTime_tm(const HAL_RTC_t *self,struct tm *ptm)
 {
+    //Init to 0 is required
     RTC_DateTypeDef date={0};
     RTC_TimeTypeDef time={0};
 
@@ -57,8 +58,9 @@ void HAL_RTC_GetTime_tm(HAL_RTC_t *self,struct tm *ptm)
     ptm->tm_sec  = time.RTC_Seconds;
 }
 
-void HAL_RTC_SetTime_tm(HAL_RTC_t *self,const struct tm *ptm)
+void HAL_RTC_SetTime_tm(const HAL_RTC_t *self,const struct tm *ptm)
 {
+    //Init to 0 is required
     RTC_DateTypeDef date={0};
     RTC_TimeTypeDef time={0};
     
@@ -78,7 +80,7 @@ void HAL_RTC_SetTime_tm(HAL_RTC_t *self,const struct tm *ptm)
     HAL_RTC_PrintTime(self);
 }
 
-void HAL_RTC_PrintTime(HAL_RTC_t *self)
+void HAL_RTC_PrintTime(const HAL_RTC_t *self)
 {
     struct tm ptm;
     char buffer[30];

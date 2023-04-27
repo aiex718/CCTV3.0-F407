@@ -16,7 +16,7 @@ void HAL_RCC_Cmd(const HAL_RCC_Cmd_t *cmd, const bool en)
         RCC_APB2PeriphClockCmd(cmd->RCC_APB2Periph, en ? ENABLE : DISABLE);
 }
 
-void HAL_RCC_Init(HAL_RCC_t *self)
+void HAL_RCC_Init(const HAL_RCC_t *self)
 {
     HAL_RCC_MCO_t **mco_list = self->RCC_mco_list;
     HAL_RCC_MCO_t *mco;

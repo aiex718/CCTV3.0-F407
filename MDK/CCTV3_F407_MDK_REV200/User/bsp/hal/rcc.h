@@ -53,7 +53,7 @@ __BSP_STRUCT_ALIGN typedef struct HAL_RCC_s
 }HAL_RCC_t;
 
 void HAL_RCC_Cmd(const HAL_RCC_Cmd_t* cmd,const bool en);
-void HAL_RCC_Init(HAL_RCC_t *self);
+void HAL_RCC_Init(const HAL_RCC_t *self);
 
 /* Example Usage
 
