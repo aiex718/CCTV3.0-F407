@@ -1,6 +1,4 @@
 #include "bsp/sys/dbg_serial.h"
-#include "bsp/platform/periph_list.h"
-#include "bsp/hal/usart.h"
 #include "bsp/sys/sysctrl.h"
 #include "stdio.h"
 /*
