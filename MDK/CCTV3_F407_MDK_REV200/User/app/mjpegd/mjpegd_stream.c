@@ -1,10 +1,10 @@
-#include "eth/apps/mjpeg/mjpegd_stream.h"
-#include "eth/apps/mjpeg/mjpegd_opts.h"
-#include "eth/apps/mjpeg/mjpegd_debug.h"
-#include "eth/apps/mjpeg/trycatch.h"
-#include "eth/apps/mjpeg/mjpegd_framepool.h"
-#include "eth/apps/mjpeg/mjpegd_client.h"
-#include "eth/apps/mjpeg/mjpegd_request.h"
+#include "app/mjpegd/mjpegd_stream.h"
+#include "app/mjpegd/mjpegd_opts.h"
+#include "app/mjpegd/mjpegd_debug.h"
+#include "app/mjpegd/trycatch.h"
+#include "app/mjpegd/mjpegd_framepool.h"
+#include "app/mjpegd/mjpegd_client.h"
+#include "app/mjpegd/mjpegd_request.h"
 
 #include "lwip/tcp.h"
 

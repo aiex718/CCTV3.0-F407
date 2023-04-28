@@ -20,7 +20,7 @@
 
 //apps
 #include "lwip/apps/httpd.h"
-#include "eth/apps/mjpeg/mjpegd.h"
+#include "app/mjpegd/mjpegd.h"
 
 
 SysTimer_t blinkTimer;

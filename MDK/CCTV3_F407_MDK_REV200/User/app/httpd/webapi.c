@@ -1,5 +1,5 @@
-#include "eth/apps/webapi/webapi.h"
-#include "eth/apps/webapi/http_builder.h"
+#include "app/httpd/webapi.h"
+#include "app/httpd/http_builder.h"
 #include "bsp/sys/systime.h"
 #include "bsp/sys/dbg_serial.h"
 #include "lwip/ip4_addr.h"

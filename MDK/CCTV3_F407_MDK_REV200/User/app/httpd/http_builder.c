@@ -1,5 +1,6 @@
-#include "eth/apps/webapi/http_builder.h"
-#include "eth/apps/webapi/webapi.h"
+#include "app/httpd/http_builder.h"
+#include "app/httpd/webapi.h"
+
 #include "lwip/mem.h"
 
 #include "string.h"

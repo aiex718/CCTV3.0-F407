@@ -1049,6 +1049,81 @@
           </Files>
         </Group>
         <Group>
+          <GroupName>User\app\httpd</GroupName>
+          <Files>
+            <File>
+              <FileName>fs_custom.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\User\app\httpd\fs_custom.c</FilePath>
+            </File>
+            <File>
+              <FileName>http_builder.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\User\app\httpd\http_builder.c</FilePath>
+            </File>
+            <File>
+              <FileName>webapi.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\User\app\httpd\webapi.c</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>User\app\mjpeg</GroupName>
+          <Files>
+            <File>
+              <FileName>mjpegd.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\User\app\mjpegd\mjpegd.c</FilePath>
+            </File>
+            <File>
+              <FileName>mjpegd_camera.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\User\app\mjpegd\mjpegd_camera.c</FilePath>
+            </File>
+            <File>
+              <FileName>mjpegd_client.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\User\app\mjpegd\mjpegd_client.c</FilePath>
+            </File>
+            <File>
+              <FileName>mjpegd_frame.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\User\app\mjpegd\mjpegd_frame.c</FilePath>
+            </File>
+            <File>
+              <FileName>mjpegd_framepool.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\User\app\mjpegd\mjpegd_framepool.c</FilePath>
+            </File>
+            <File>
+              <FileName>mjpegd_frameproc.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\User\app\mjpegd\mjpegd_frameproc.c</FilePath>
+            </File>
+            <File>
+              <FileName>mjpegd_request.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\User\app\mjpegd\mjpegd_request.c</FilePath>
+            </File>
+            <File>
+              <FileName>mjpegd_stream.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\User\app\mjpegd\mjpegd_stream.c</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>User\app\nettime</GroupName>
+          <Files>
+            <File>
+              <FileName>nettime.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\User\app\nettime\nettime.c</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
           <GroupName>User\bsp\hal</GroupName>
           <Files>
             <File>
@@ -1264,76 +1339,6 @@
           </Files>
         </Group>
         <Group>
-          <GroupName>User\eth\apps\mjpeg</GroupName>
-          <Files>
-            <File>
-              <FileName>mjpegd.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\User\eth\apps\mjpeg\mjpegd.c</FilePath>
-            </File>
-            <File>
-              <FileName>mjpegd_client.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\User\eth\apps\mjpeg\mjpegd_client.c</FilePath>
-            </File>
-            <File>
-              <FileName>mjpegd_frame.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\User\eth\apps\mjpeg\mjpegd_frame.c</FilePath>
-            </File>
-            <File>
-              <FileName>mjpegd_stream.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\User\eth\apps\mjpeg\mjpegd_stream.c</FilePath>
-            </File>
-            <File>
-              <FileName>mjpegd_request.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\User\eth\apps\mjpeg\mjpegd_request.c</FilePath>
-            </File>
-            <File>
-              <FileName>mjpegd_frameproc.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\User\eth\apps\mjpeg\mjpegd_frameproc.c</FilePath>
-            </File>
-            <File>
-              <FileName>mjpegd_camera.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\User\eth\apps\mjpeg\mjpegd_camera.c</FilePath>
-            </File>
-            <File>
-              <FileName>mjpegd_framepool.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\User\eth\apps\mjpeg\mjpegd_framepool.c</FilePath>
-            </File>
-          </Files>
-        </Group>
-        <Group>
-          <GroupName>User\eth\apps\fs_custom</GroupName>
-          <Files>
-            <File>
-              <FileName>fs_custom.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\User\eth\apps\fs_custom\fs_custom.c</FilePath>
-            </File>
-          </Files>
-        </Group>
-        <Group>
-          <GroupName>User\eth\apps\webapi</GroupName>
-          <Files>
-            <File>
-              <FileName>http_builder.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\User\eth\apps\webapi\http_builder.c</FilePath>
-            </File>
-            <File>
-              <FileName>webapi.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\User\eth\apps\webapi\webapi.c</FilePath>
-            </File>
-          </Files>
-        </Group>
-        <Group>
           <GroupName>User\device</GroupName>
           <Files>
             <File>
@@ -1365,16 +1370,6 @@
               <FileName>main.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\User\main.c</FilePath>
-            </File>
-          </Files>
-        </Group>
-        <Group>
-          <GroupName>User\eth\apps\nettime</GroupName>
-          <Files>
-            <File>
-              <FileName>nettime.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\User\eth\apps\nettime\nettime.c</FilePath>
             </File>
           </Files>
         </Group>

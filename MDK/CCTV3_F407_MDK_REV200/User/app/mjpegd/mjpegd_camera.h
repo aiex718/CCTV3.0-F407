@@ -1,8 +1,8 @@
 #ifndef MJPEGD_CAMERA_H
 #define MJPEGD_CAMERA_H
 
-#include "eth/apps/mjpeg/mjpegd.h"
-#include "eth/apps/mjpeg/mjpegd_frame.h"
+#include "app/mjpegd/mjpegd.h"
+#include "app/mjpegd/mjpegd_frame.h"
 #include "lwip/arch.h"
 
 #include "bsp/sys/callback.h"

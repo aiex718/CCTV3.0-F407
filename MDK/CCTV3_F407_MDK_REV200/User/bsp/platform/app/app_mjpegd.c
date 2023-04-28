@@ -1,6 +1,6 @@
 #include "bsp/platform/app/app_mjpegd.h"
-#include "eth/apps/mjpeg/mjpegd_framepool.h"
-#include "eth/apps/mjpeg/mjpegd_camera.h"
+#include "app/mjpegd/mjpegd_framepool.h"
+#include "app/mjpegd/mjpegd_camera.h"
 
 #include "bsp/platform/device/dev_cam_ov2640.h"
 

@@ -1,9 +1,9 @@
 #ifndef __MJPEGD_CLIENT_H__
 #define __MJPEGD_CLIENT_H__
 
-#include "eth/apps/mjpeg/mjpegd.h"
-#include "eth/apps/mjpeg/mjpegd_opts.h"
-#include "eth/apps/mjpeg/mjpegd_frame.h"
+#include "app/mjpegd/mjpegd.h"
+#include "app/mjpegd/mjpegd_opts.h"
+#include "app/mjpegd/mjpegd_frame.h"
 
 
 /** Helper macro as function **/

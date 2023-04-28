@@ -1,9 +1,9 @@
 #ifndef MJPEGD_FRAMEPOOL_H
 #define MJPEGD_FRAMEPOOL_H
 
-#include "eth/apps/mjpeg/mjpegd_frame.h"
-#include "eth/apps/mjpeg/mjpegd_callback.h"
-#include "eth/apps/mjpeg/mjpegd_opts.h"
+#include "app/mjpegd/mjpegd_frame.h"
+#include "app/mjpegd/mjpegd_callback.h"
+#include "app/mjpegd/mjpegd_opts.h"
 
 typedef enum 
 {

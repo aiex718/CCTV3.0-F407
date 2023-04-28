@@ -1,6 +1,6 @@
-#include "eth/apps/mjpeg/mjpegd_camera.h"
-#include "eth/apps/mjpeg/mjpegd_frameproc.h"
-#include "eth/apps/mjpeg/mjpegd_debug.h"
+#include "app/mjpegd/mjpegd_camera.h"
+#include "app/mjpegd/mjpegd_frameproc.h"
+#include "app/mjpegd/mjpegd_debug.h"
 
 
 #include "bsp/platform/device/dev_flashlight.h"

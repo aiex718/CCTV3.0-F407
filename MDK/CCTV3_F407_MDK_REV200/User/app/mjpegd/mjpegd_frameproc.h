@@ -2,10 +2,10 @@
 #define MJPEGD_FRAMEPROC_H
 
 #include "lwip/err.h"
-#include "eth/apps/mjpeg/mjpegd.h"
-#include "eth/apps/mjpeg/mjpegd_framepool.h"
-#include "eth/apps/mjpeg/mjpegd_frame.h"
-#include "eth/apps/mjpeg/mjpegd_memutils.h"
+#include "app/mjpegd/mjpegd.h"
+#include "app/mjpegd/mjpegd_framepool.h"
+#include "app/mjpegd/mjpegd_frame.h"
+#include "app/mjpegd/mjpegd_memutils.h"
 
 void Mjpegd_FrameProc_RecvBroken(Mjpegd_t *mjpegd,Mjpegd_Frame_t* frame);
 void Mjpegd_FrameProc_RecvRaw(Mjpegd_t *mjpegd,Mjpegd_Frame_t* frame);

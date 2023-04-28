@@ -1,8 +1,8 @@
 #ifndef __MJPEGD_H__
 #define __MJPEGD_H__
 
-#include "eth/apps/mjpeg/mjpegd_opts.h"
-#include "eth/apps/mjpeg/mjpegd_callback.h"
+#include "app/mjpegd/mjpegd_opts.h"
+#include "app/mjpegd/mjpegd_callback.h"
 #include "lwip/err.h"
 
 typedef struct Mjpegd_s{

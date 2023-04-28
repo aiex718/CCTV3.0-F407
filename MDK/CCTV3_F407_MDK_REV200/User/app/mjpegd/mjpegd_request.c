@@ -1,9 +1,9 @@
-#include "eth/apps/mjpeg/mjpegd_request.h"
-#include "eth/apps/mjpeg/mjpegd_debug.h"
-#include "eth/apps/mjpeg/mjpegd_stream.h"
-#include "eth/apps/mjpeg/mjpegd_memutils.h"
-#include "eth/apps/mjpeg/mjpegd_opts.h"
-#include "eth/apps/mjpeg/trycatch.h"
+#include "app/mjpegd/mjpegd_request.h"
+#include "app/mjpegd/mjpegd_debug.h"
+#include "app/mjpegd/mjpegd_stream.h"
+#include "app/mjpegd/mjpegd_memutils.h"
+#include "app/mjpegd/mjpegd_opts.h"
+#include "app/mjpegd/trycatch.h"
 
 #if 1 /* Http response strings */
 const char Http_Notfound_Response[]= "\

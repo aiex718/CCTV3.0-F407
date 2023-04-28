@@ -1,6 +1,8 @@
 #include "lwip/apps/fs.h"
-#include "eth/apps/webapi/webapi.h"
 #include "lwip/mem.h"
+
+#include "app/httpd/webapi.h"
+
 
 #include "string.h"
 #include "bsp/sys/dbg_serial.h"

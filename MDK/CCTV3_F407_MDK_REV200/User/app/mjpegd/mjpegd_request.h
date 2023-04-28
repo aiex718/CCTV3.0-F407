@@ -2,7 +2,7 @@
 #define __MJPEGD_REQUEST_H__
 
 #include "lwip/err.h"
-#include "eth/apps/mjpeg/mjpegd_client.h"
+#include "app/mjpegd/mjpegd_client.h"
 
 typedef enum 
 {

@@ -1,8 +1,8 @@
-#include "eth/apps/mjpeg/mjpegd_frameproc.h"
-#include "eth/apps/mjpeg/mjpegd_debug.h"
-#include "eth/apps/mjpeg/mjpegd_opts.h"
-#include "eth/apps/mjpeg/mjpegd_memutils.h"
-#include "eth/apps/mjpeg/trycatch.h"
+#include "app/mjpegd/mjpegd_frameproc.h"
+#include "app/mjpegd/mjpegd_debug.h"
+#include "app/mjpegd/mjpegd_opts.h"
+#include "app/mjpegd/mjpegd_memutils.h"
+#include "app/mjpegd/trycatch.h"
 
 #include "time.h"
 

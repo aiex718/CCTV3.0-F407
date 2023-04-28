@@ -2,8 +2,8 @@
 #define MJPEGD_FRAME_H
 
 
-#include "eth/apps/mjpeg/mjpegd_opts.h"
-#include "eth/apps/mjpeg/mjpegd_semaphore.h"
+#include "app/mjpegd/mjpegd_opts.h"
+#include "app/mjpegd/mjpegd_semaphore.h"
 
 typedef struct Mjpegd_Frame_s Mjpegd_Frame_t;
 struct Mjpegd_Frame_s

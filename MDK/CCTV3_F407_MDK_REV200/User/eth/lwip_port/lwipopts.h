@@ -31,6 +31,7 @@
 #define __LWIPOPTS_H__
 
 #include "bsp/sys/systime.h"
+#include "app/nettime/nettime.h" //For sntp callback
 
 #include "bsp/platform/periph/peri_rng.h"
 #include "bsp/platform/periph/peri_rtc.h"
@@ -271,7 +272,6 @@ The STM32F4x7 allows computing and verifying the IP, UDP, TCP and ICMP checksums
 #define MJPEGD_GET_UNIX_TIMESTAMP (u32_t)HAL_RTC_GetTime(Peri_RTC)
 
 //SNTP options
-#include "eth/apps/nettime/nettime.h"
 #define SNTP_SET_SYSTEM_TIME NetTime_Sntp_Poll_Callback
 #define SNTP_SERVER_DNS 1
 

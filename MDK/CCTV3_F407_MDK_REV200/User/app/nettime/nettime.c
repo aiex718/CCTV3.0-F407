@@ -1,4 +1,4 @@
-#include "eth/apps/nettime/nettime.h"
+#include "app/nettime/nettime.h"
 #include "lwip/apps/sntp.h"
 
 #include "bsp/platform/periph/peri_rtc.h"

@@ -2,7 +2,7 @@
 #define APP_NETTIME_H
 
 #include "bsp/platform/platform_defs.h"
-#include "eth/apps/nettime/nettime.h"
+#include "app/nettime/nettime.h"
 
 extern NetTime_t App_NetTime_Inst;
 extern NetTime_t* App_NetTime;
