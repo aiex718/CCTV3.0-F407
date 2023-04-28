@@ -1,6 +1,28 @@
 {
     "configurations": [
         {
+            "name": "Mac",
+            "includePath": [
+                //"${workspaceFolder}/**",
+                "${workspaceFolder}/Libraries/CMSIS/Include",
+                "${workspaceFolder}/Libraries/CMSIS/Device/ST/STM32F4xx/Include",
+                "${workspaceFolder}/Libraries/STM32F4xx_StdPeriph_Driver/inc",
+                "${workspaceFolder}/Libraries/lwip/src/include",
+                "${workspaceFolder}/User/bsp/eth/lwip_port",
+                "${workspaceFolder}/User"
+            ],
+            "defines": [
+                "VSCODE_INTELLISENSE",
+                "USE_STDPERIPH_DRIVER",
+                "STM32F40_41xxx",
+                "__MODULE__"
+            ],
+            
+            "cStandard": "c99",
+            "cppStandard": "c++98",
+            "intelliSenseMode": "gcc-arm64"
+        },
+        {
             "name": "Win32",
             "includePath": [
                 //"${workspaceFolder}/**",
@@ -18,10 +40,10 @@
                 "STM32F40_41xxx",
                 "__MODULE__"
             ],
-            
             "cStandard": "c99",
             "cppStandard": "c++98",
-            "intelliSenseMode": "gcc-arm64"
+            "intelliSenseMode": "gcc-x64",
+            "compilerPath": "C:\\msys64\\mingw64\\bin\\gcc.exe"
         }
     ],
     "version": 4
