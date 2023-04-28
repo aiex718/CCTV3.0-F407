@@ -33,9 +33,9 @@
 #include "lwip/dhcp.h"
 #include "lwip/dns.h"
 #include "lwip/netif.h"
-#include "eth/stm32f4x7_eth.h"
-#include "eth/stm32f4x7_eth_phy.h"
-#include "eth/netconf.h"
+#include "bsp/eth/stm32f4x7_eth.h"
+#include "bsp/eth/stm32f4x7_eth_phy.h"
+#include "bsp/eth/netconf.h"
 
 /* Private typedef -----------------------------------------------------------*/
 /* Private define ------------------------------------------------------------*/

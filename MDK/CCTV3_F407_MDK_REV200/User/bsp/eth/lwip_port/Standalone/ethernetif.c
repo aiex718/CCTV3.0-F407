@@ -43,9 +43,9 @@
 #include "lwip/opt.h"
 #include "lwip/mem.h"
 #include "netif/etharp.h"
-#include "eth/lwip_port/Standalone/ethernetif.h"
-#include "eth/stm32f4x7_eth.h"
-#include "eth/netconf.h"
+#include "bsp/eth/lwip_port/Standalone/ethernetif.h"
+#include "bsp/eth/stm32f4x7_eth.h"
+#include "bsp/eth/netconf.h"
 #include "string.h"
 
 /* Network interface name */

@@ -86,5 +86,5 @@ void HAL_RTC_PrintTime(const HAL_RTC_t *self)
     char buffer[30];
     HAL_RTC_GetTime_tm(self,&ptm);
     strftime(buffer, sizeof(buffer), "%Y-%m-%d %H:%M:%S", &ptm);
-    DBG_INFO("NowTime: %s\n", buffer);
+    DBG_INFO("NowTime %s\n", buffer);
 }

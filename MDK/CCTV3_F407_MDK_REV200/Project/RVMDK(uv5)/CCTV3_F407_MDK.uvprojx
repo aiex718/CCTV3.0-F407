@@ -339,7 +339,7 @@
               <MiscControls></MiscControls>
               <Define>USE_STDPERIPH_DRIVER,STM32F40_41xxx,</Define>
               <Undefine></Undefine>
-              <IncludePath>..\..\Libraries\CMSIS\Include;..\..\Libraries\CMSIS\Device\ST\STM32F4xx\Include;..\..\Libraries\STM32F4xx_StdPeriph_Driver\inc;..\..\Libraries\lwip\src\include;..\..\User\eth\lwip_port;..\..\User</IncludePath>
+              <IncludePath>..\..\Libraries\CMSIS\Include;..\..\Libraries\CMSIS\Device\ST\STM32F4xx\Include;..\..\Libraries\STM32F4xx_StdPeriph_Driver\inc;..\..\Libraries\lwip\src\include;..\..\User\bsp\eth\lwip_port;..\..\User</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
@@ -1309,32 +1309,32 @@
           </Files>
         </Group>
         <Group>
-          <GroupName>User\eth</GroupName>
+          <GroupName>User\bsp\eth</GroupName>
           <Files>
+            <File>
+              <FileName>netconf.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\User\bsp\eth\netconf.c</FilePath>
+            </File>
             <File>
               <FileName>stm32f4x7_eth.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\..\User\eth\stm32f4x7_eth.c</FilePath>
+              <FilePath>..\..\User\bsp\eth\stm32f4x7_eth.c</FilePath>
             </File>
             <File>
               <FileName>stm32f4x7_eth_phy.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\..\User\eth\stm32f4x7_eth_phy.c</FilePath>
-            </File>
-            <File>
-              <FileName>netconf.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\User\eth\netconf.c</FilePath>
+              <FilePath>..\..\User\bsp\eth\stm32f4x7_eth_phy.c</FilePath>
             </File>
           </Files>
         </Group>
         <Group>
-          <GroupName>User\eth\lwip_port</GroupName>
+          <GroupName>User\bsp\eth\lwip_port</GroupName>
           <Files>
             <File>
               <FileName>ethernetif.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\..\User\eth\lwip_port\Standalone\ethernetif.c</FilePath>
+              <FilePath>..\..\User\bsp\eth\lwip_port\Standalone\ethernetif.c</FilePath>
             </File>
           </Files>
         </Group>

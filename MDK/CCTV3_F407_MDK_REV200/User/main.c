@@ -2,11 +2,9 @@
 #include "bsp/platform/platform_inst.h"
 
 #include "bsp/sys/dbg_serial.h"
-#include "bsp/hal/systick.h"
 #include "bsp/sys/systime.h"
 #include "bsp/sys/systimer.h"
 #include "bsp/sys/sysctrl.h"
-#include "bsp/sys/semaphore.h"
 #include "bsp/hal/systick.h"
 #include "bsp/hal/timer.h"
 #include "bsp/hal/timer_pwm.h"
@@ -14,9 +12,9 @@
 
 //eth & lwip
 #include "lwip/timeouts.h"
-#include "eth/stm32f4x7_eth.h"
-#include "eth/stm32f4x7_eth_phy.h"
-#include "eth/netconf.h"
+#include "bsp/eth/stm32f4x7_eth.h"
+#include "bsp/eth/stm32f4x7_eth_phy.h"
+#include "bsp/eth/netconf.h"
 
 //apps
 #include "lwip/apps/httpd.h"
@@ -30,6 +28,7 @@ int main(void)
 	//SystemInit() is inside system_stm32f4xx.c
 	HAL_Systick_Init();
 	delay(500); //wait 500ms for subsystems to be ready
+	
 	//RCC
 	HAL_RCC_Init(Peri_RCC);
 

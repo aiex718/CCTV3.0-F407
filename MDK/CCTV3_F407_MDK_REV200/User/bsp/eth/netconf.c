@@ -37,9 +37,9 @@
 #include "lwip/dhcp.h"
 #include "lwip/init.h"
 #include "netif/etharp.h"
-#include "eth/lwip_port/Standalone/ethernetif.h"
-#include "eth/netconf.h"
-#include "eth/stm32f4x7_eth_phy.h"
+#include "bsp/eth/lwip_port/Standalone/ethernetif.h"
+#include "bsp/eth/netconf.h"
+#include "bsp/eth/stm32f4x7_eth_phy.h"
 
 /* Private typedef -----------------------------------------------------------*/
 
