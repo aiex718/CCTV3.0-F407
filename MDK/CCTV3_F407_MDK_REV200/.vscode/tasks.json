@@ -38,6 +38,30 @@
 				"isDefault": true
 			},
 			"detail": "Compiler: /usr/bin/clang"
+		},
+		{
+			"type": "cppbuild",
+			"label": "C/C++: mingw build active file",
+			"command": "C:\\msys64\\mingw64\\bin\\gcc.exe",
+			"args": [
+				"-fdiagnostics-color=always",
+				"-g",
+				"${file}",
+				"-o",
+				"${workspaceFolder}/Output/${fileBasenameNoExtension}",
+				"-I",
+				"${workspaceFolder}/",
+				"-I",
+				"${workspaceFolder}/User"
+			],
+			"options": {
+				"cwd": "${fileDirname}"
+			},
+			"problemMatcher": [
+				"$gcc"
+			],
+			"group": "build",
+			"detail": "compiler: C:\\msys64\\mingw64\\bin\\gcc.exe"
 		}
 	]
 }
