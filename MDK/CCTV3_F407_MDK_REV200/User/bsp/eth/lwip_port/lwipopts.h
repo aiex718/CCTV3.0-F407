@@ -270,6 +270,8 @@ The STM32F4x7 allows computing and verifying the IP, UDP, TCP and ICMP checksums
 #define MJPEGD_ALLOW_STREAM_CORS 1
 #define MJPEGD_SHOWFPS_PERIOD 3//n^2 seconds
 #define MJPEGD_GET_UNIX_TIMESTAMP (u32_t)HAL_RTC_GetTime(Peri_RTC)
+#define MJPEGD_STREAM_CLIENT_LIMIT 6//5
+#define MJPEGD_FRAMEPOOL_LEN (MJPEGD_STREAM_CLIENT_LIMIT)//+2)
 
 //SNTP options
 #define SNTP_SET_SYSTEM_TIME NetTime_Sntp_Poll_Callback

@@ -12,18 +12,19 @@
     #define MJPEGD_STREAM_CLIENT_LIMIT 5
 #endif
 
-/*  The MJPEGD_FRAMEPOOL_LEN is the max number of frames that can be buffered.
-    Total ram usage is MJPEGD_FRAMEPOOL_LEN * MJPEGD_FRAME_MEM_SPACE.
-    Each frame is not exclusive to one client, it's shared by multiple clients.
 
-    Depending on your clients network speed and packet loss rate,
-    if all clients are fast, you can set a smaller buffer length,
-    better not less than 3.
-    
-    The most secure buffer length is MJPEGD_STREAM_CLIENT_LIMIT+2.
-    Each client can have 1 buffer frame at worst case,
-    1 pending frame waiting to be processed by mjpegd_service,
-    and 1 frame is being captured by camera.   */
+/*  The total RAM usage is MJPEGD_FRAMEPOOL_LEN * MJPEGD_FRAME_MEM_SPACE.
+    Each frame is not exclusive to one client, it can be shared by multiple clients.
+
+    Depending on your clients' network speed and packet loss rate, 
+    pool length may be able to set smaller. 
+    It's recommended the pool length should be at least 3.
+
+    For maximum stability, it's recommend setting the buffer length to 
+    MJPEGD_STREAM_CLIENT_LIMIT+2. This ensures that each client can have at least 
+    one buffer frame available in the worst-case scenario, as well as one pending 
+    frame waiting to be processed by mjpegd_service, and one frame being 
+    captured by the camera. */
 #ifndef MJPEGD_FRAMEPOOL_LEN
     #define MJPEGD_FRAMEPOOL_LEN (MJPEGD_STREAM_CLIENT_LIMIT+2)
 #endif
