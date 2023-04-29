@@ -4,6 +4,7 @@
 #include "bsp/sys/dbg_serial.h"
 #include "bsp/sys/systime.h"
 #include "bsp/sys/systimer.h"
+#include "bsp/sys/mem_guard.h"
 #include "bsp/sys/sysctrl.h"
 #include "bsp/hal/systick.h"
 #include "bsp/hal/timer.h"
@@ -39,6 +40,10 @@ int main(void)
 	
 	//RTC Init
 	HAL_RTC_Init(Peri_RTC);
+	{
+		uint32_t stack_size  = Mem_Guard_Init();
+		DBG_INFO("Mem_Guard_Init stack size 0x%x\n",stack_size);
+	}
 
 	//GPIO
 	HAL_GPIO_InitPin(Peri_Button_Wkup_pin);
