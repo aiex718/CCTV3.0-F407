@@ -19,8 +19,6 @@ typedef struct Mjpegd_FramePool_s
     Mjpegd_Callback_t *FramePool_Callbacks[__NOT_CALLBACK_FRAMEPOOL_MAX];
     //private, dont use
     Mjpegd_Frame_t *_frames;
-    u8_t _frames_len;
-
 }Mjpegd_FramePool_t;
 
 void Mjpegd_FramePool_Init(Mjpegd_FramePool_t* self);

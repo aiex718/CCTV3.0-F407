@@ -20,7 +20,7 @@ void Mjpegd_FramePool_Init(Mjpegd_FramePool_t* self)
     for (i = 0; i < __NOT_CALLBACK_FRAMEPOOL_MAX; i++)
         self->FramePool_Callbacks[i] = NULL;
 
-    for (i = 0; i < self->_frames_len; i++)
+    for (i = 0; i < MJPEGD_FRAMEPOOL_LEN; i++)
         Mjpegd_Frame_Init(&self->_frames[i]);
 }
 
@@ -29,7 +29,7 @@ bool Mjpegd_FramePool_TryClear(Mjpegd_FramePool_t* self)
 {
     u8_t i;
     Mjpegd_Frame_t *frame;
-    for (i = 0; i < self->_frames_len; i++)
+    for (i = 0; i < MJPEGD_FRAMEPOOL_LEN; i++)
     {
         frame = &self->_frames[i];
 
@@ -60,7 +60,7 @@ Mjpegd_Frame_t* Mjpegd_FramePool_GetLatest(Mjpegd_FramePool_t* self,
     MJPEGD_SYSTIME_T last_frame_time)
 {
     //vla on armcc alloc using malloc (heap)
-    u8_t i,sorted_idx[self->_frames_len];
+    u8_t i,sorted_idx[MJPEGD_FRAMEPOOL_LEN];
     MJPEGD_SYSTIME_T now = sys_now();
     Mjpegd_Frame_t* frame;
     //how much time has passed since last frame
@@ -69,7 +69,7 @@ Mjpegd_Frame_t* Mjpegd_FramePool_GetLatest(Mjpegd_FramePool_t* self,
     //Try to acquire newest frame.
     //Newest node should be the first node.
     Mjpegd_FramePool_Sort(self,sorted_idx,now);
-    for (i = 0; i < self->_frames_len; i++)
+    for (i = 0; i < BSP_ARR_LEN(sorted_idx); i++)
     {
         frame = &self->_frames[sorted_idx[i]];
         if( Mjpegd_Frame_IsValid(frame) && frame->capture_time!=0 )
@@ -132,14 +132,14 @@ void Mjpegd_FramePool_Release(Mjpegd_FramePool_t* self,Mjpegd_Frame_t* frame)
 
 Mjpegd_Frame_t* Mjpegd_FramePool_GetIdle(Mjpegd_FramePool_t* self)
 {
-    u8_t i,sorted_idx[self->_frames_len];
+    u8_t i,sorted_idx[MJPEGD_FRAMEPOOL_LEN];
     MJPEGD_SYSTIME_T now = sys_now();
     Mjpegd_Frame_t* frame;
 
     //Try to get and lock oldest idle node.
     //Oldest node should be the last node.
     Mjpegd_FramePool_Sort(self,sorted_idx,now);
-    for (i = self->_frames_len; i != 0; i--)
+    for (i = BSP_ARR_LEN(sorted_idx); i != 0; i--)
     {
         frame = &self->_frames[sorted_idx[i-1]];
 
@@ -187,29 +187,28 @@ void Mjpegd_FramePool_ReturnIdle(Mjpegd_FramePool_t* self,Mjpegd_Frame_t* frame)
 static void Mjpegd_FramePool_Sort(Mjpegd_FramePool_t* self,u8_t* order_out,
     MJPEGD_SYSTIME_T time)
 {
-    //vla on armcc alloc using malloc (heap)
-    MJPEGD_SYSTIME_T tmp,time_diffs[self->_frames_len];
+    MJPEGD_SYSTIME_T tmp,time_diffs[MJPEGD_FRAMEPOOL_LEN];
     u8_t tmp2,i,j;
-    for (i = 0; i < self->_frames_len; i++)
+    for (i = 0; i < BSP_ARR_LEN(time_diffs); i++)
     {
         time_diffs[i] = time - self->_frames[i].capture_time;
         order_out[i] = i;
     }
 #if MJPEGD_FRAMEPOOL_DEBUG_PRINT_SORT
     MJPEGD_DBG_PRINT("FramePool: [order,capture_time] before sort:");
-    for (i = 0; i < self->_frames_len; i++)
+    for (i = 0; i < BSP_ARR_LEN(time_diffs); i++)
         MJPEGD_DBG_PRINT("[%d,%d] ",order_out[i],self->_frames[i].capture_time);
     MJPEGD_DBG_PRINT(("\n"));
 
     MJPEGD_DBG_PRINT("FramePool: [order,time_diffs] before sort: ");
-    for (i = 0; i < self->_frames_len; i++)
+    for (i = 0; i < BSP_ARR_LEN(time_diffs); i++)
         MJPEGD_DBG_PRINT("[%d,%d] ",order_out[i],time_diffs[i]);
     MJPEGD_DBG_PRINT("\n");
 #endif
     //sort time_diffs and order_out
-    for (i = 0; i < self->_frames_len; i++)
+    for (i = 0; i < BSP_ARR_LEN(time_diffs); i++)
     {
-        for (j = i+1; j < self->_frames_len; j++)
+        for (j = i+1; j < BSP_ARR_LEN(time_diffs); j++)
         {
             if(time_diffs[i] > time_diffs[j])
             {
@@ -225,7 +224,7 @@ static void Mjpegd_FramePool_Sort(Mjpegd_FramePool_t* self,u8_t* order_out,
 
 #if MJPEGD_FRAMEPOOL_DEBUG_PRINT_SORT
     MJPEGD_DBG_PRINT("FramePool: [order,time_diffs] after sort: ");
-    for (i = 0; i < self->_frames_len; i++)
+    for (i = 0; i < BSP_ARR_LEN(time_diffs); i++)
         MJPEGD_DBG_PRINT("[%d,%d] ",order_out[i],time_diffs[i]);
     MJPEGD_DBG_PRINT("\n");
 #endif
