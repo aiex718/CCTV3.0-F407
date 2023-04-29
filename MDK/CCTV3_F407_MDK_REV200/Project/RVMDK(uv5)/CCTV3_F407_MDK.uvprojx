@@ -1076,11 +1076,6 @@
               <FilePath>..\..\User\bsp\platform\periph\peri_gpio.c</FilePath>
             </File>
             <File>
-              <FileName>peri_rcc.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\User\bsp\platform\periph\peri_rcc.c</FilePath>
-            </File>
-            <File>
               <FileName>peri_rng.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\User\bsp\platform\periph\peri_rng.c</FilePath>
