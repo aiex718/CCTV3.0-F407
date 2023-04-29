@@ -1,6 +1,4 @@
 #include "bsp/sys/dbg_serial.h"
-#include "bsp/platform/periph_list.h"
-#include "bsp/hal/usart.h"
 #include "bsp/sys/sysctrl.h"
 #include "stdio.h"
 /*
@@ -89,12 +87,6 @@ void DBG_Serial_AttachUSART(DBG_Serial_t *self, HAL_USART_t *hal_usart)
             USART_CALLBACK_IRQ_TX_EMPTY,&self->_tx_empty_cb);
         HAL_USART_SetCallback(self->hal_usart,
             USART_CALLBACK_RX_TIMEOUT,&self->_rx_timeout_cb);
-
-#if DBG_SERIAL_ENABLE_DMA
-	    HAL_USART_DmaRead(self->hal_usart,0);
-#else
-        HAL_USART_RxStreamCmd(self->hal_usart,true);
-#endif
     }
 }
 
@@ -102,7 +94,18 @@ void DBG_Serial_Cmd(DBG_Serial_t *self,bool en)
 {
     HAL_USART_Cmd(self->hal_usart,en);
 
-    if(en==false)
+    if(en)
+    {
+        if(self->rx_con_queue!=NULL)
+        {
+#if DBG_SERIAL_ENABLE_DMA
+	    HAL_USART_DmaRead(self->hal_usart,0);
+#else
+        HAL_USART_RxStreamCmd(self->hal_usart,true);
+#endif
+        }
+    }
+    else
     {
         if(self->tx_con_queue!=NULL)
             Concurrent_Queue_Clear(self->tx_con_queue);
@@ -252,15 +255,16 @@ Service task can pop data from tx queue after task A.
 */
 int fputc(int ch, FILE *f)
 {
-    HAL_USART_t *usart = DBG_Serial->hal_usart;
+    DBG_Serial_t *dbg_serial = Peri_DBG_Serial;
+    HAL_USART_t *usart = dbg_serial->hal_usart;
     if(usart != NULL && HAL_USART_IsEnabled(usart))
     {
-        if(DBG_Serial->safe_mode)
+        if(dbg_serial->safe_mode)
             HAL_USART_WriteByte_Polling(usart,(uint8_t)ch);
         else
         {
             while( 
-                Concurrent_Queue_TryPush(DBG_Serial->tx_con_queue,(uint8_t)ch)==false && 
+                Concurrent_Queue_TryPush(dbg_serial->tx_con_queue,(uint8_t)ch)==false && 
                 SysCtrl_IsThreadInIRq() == false );
                 //yield();
 #if DBG_SERIAL_USING_USART_ISR
@@ -277,11 +281,12 @@ int fputc(int ch, FILE *f)
 
 int fgetc(FILE *f)
 {
+    DBG_Serial_t *dbg_serial = Peri_DBG_Serial;
 	uint8_t ch=0;
-    if(DBG_Serial->safe_mode)
-        HAL_USART_ReadByte_Polling(DBG_Serial->hal_usart,&ch);
+    if(dbg_serial->safe_mode)
+        HAL_USART_ReadByte_Polling(dbg_serial->hal_usart,&ch);
     else
-        while (Concurrent_Queue_TryPop(DBG_Serial->rx_con_queue,&ch) == false);
+        while (Concurrent_Queue_TryPop(dbg_serial->rx_con_queue,&ch) == false);
 	return (int)ch;
 }
 

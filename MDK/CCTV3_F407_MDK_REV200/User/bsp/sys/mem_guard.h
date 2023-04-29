@@ -4,6 +4,6 @@
 
 unsigned int Mem_Guard_Init(void);
 int Mem_Guard_CheckOVF(void);
-unsigned int Mem_Guard_GetStackAvailable(void);
+unsigned int Mem_Guard_GetStackDepth(void);
 
 #endif

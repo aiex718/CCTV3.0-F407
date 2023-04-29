@@ -16,8 +16,8 @@
         <TargetCommonOption>
           <Device>STM32F407VGTx</Device>
           <Vendor>STMicroelectronics</Vendor>
-          <PackID>Keil.STM32F4xx_DFP.2.15.0</PackID>
-          <PackURL>http://www.keil.com/pack/</PackURL>
+          <PackID>Keil.STM32F4xx_DFP.2.17.0</PackID>
+          <PackURL>https://www.keil.com/pack/</PackURL>
           <Cpu>IRAM(0x20000000,0x00020000) IRAM2(0x10000000,0x00010000) IROM(0x08000000,0x00100000) CPUTYPE("Cortex-M4") FPU2 CLOCK(12000000) ELITTLE</Cpu>
           <FlashUtilSpec></FlashUtilSpec>
           <StartupFile></StartupFile>
@@ -313,7 +313,7 @@
           </ArmAdsMisc>
           <Cads>
             <interw>1</interw>
-            <Optim>1</Optim>
+            <Optim>4</Optim>
             <oTime>0</oTime>
             <SplitLS>0</SplitLS>
             <OneElfS>1</OneElfS>
@@ -329,7 +329,7 @@
             <uGnu>0</uGnu>
             <useXO>0</useXO>
             <v6Lang>3</v6Lang>
-            <v6LangP>3</v6LangP>
+            <v6LangP>5</v6LangP>
             <vShortEn>1</vShortEn>
             <vShortWch>1</vShortWch>
             <v6Lto>0</v6Lto>
@@ -339,7 +339,7 @@
               <MiscControls></MiscControls>
               <Define>USE_STDPERIPH_DRIVER,STM32F40_41xxx,</Define>
               <Undefine></Undefine>
-              <IncludePath>..\..\Libraries\CMSIS\Include;..\..\Libraries\CMSIS\Device\ST\STM32F4xx\Include;..\..\Libraries\STM32F4xx_StdPeriph_Driver\inc;..\..\Libraries\lwip\src\include;..\..\User\eth\lwip_port;..\..\User</IncludePath>
+              <IncludePath>..\..\Libraries\CMSIS\Include;..\..\Libraries\CMSIS\Device\ST\STM32F4xx\Include;..\..\Libraries\STM32F4xx_StdPeriph_Driver\inc;..\..\Libraries\lwip\src\include;..\..\User\bsp\eth\lwip_port;..\..\User</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
@@ -898,57 +898,6 @@
               <FileName>slipif.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Libraries\lwip\src\netif\slipif.c</FilePath>
-              <FileOption>
-                <CommonProperty>
-                  <UseCPPCompiler>2</UseCPPCompiler>
-                  <RVCTCodeConst>0</RVCTCodeConst>
-                  <RVCTZI>0</RVCTZI>
-                  <RVCTOtherData>0</RVCTOtherData>
-                  <ModuleSelection>0</ModuleSelection>
-                  <IncludeInBuild>1</IncludeInBuild>
-                  <AlwaysBuild>2</AlwaysBuild>
-                  <GenerateAssemblyFile>2</GenerateAssemblyFile>
-                  <AssembleAssemblyFile>2</AssembleAssemblyFile>
-                  <PublicsOnly>2</PublicsOnly>
-                  <StopOnExitCode>11</StopOnExitCode>
-                  <CustomArgument></CustomArgument>
-                  <IncludeLibraryModules></IncludeLibraryModules>
-                  <ComprImg>1</ComprImg>
-                </CommonProperty>
-                <FileArmAds>
-                  <Cads>
-                    <interw>2</interw>
-                    <Optim>0</Optim>
-                    <oTime>2</oTime>
-                    <SplitLS>2</SplitLS>
-                    <OneElfS>2</OneElfS>
-                    <Strict>2</Strict>
-                    <EnumInt>2</EnumInt>
-                    <PlainCh>2</PlainCh>
-                    <Ropi>2</Ropi>
-                    <Rwpi>2</Rwpi>
-                    <wLevel>0</wLevel>
-                    <uThumb>2</uThumb>
-                    <uSurpInc>2</uSurpInc>
-                    <uC99>2</uC99>
-                    <uGnu>2</uGnu>
-                    <useXO>2</useXO>
-                    <v6Lang>0</v6Lang>
-                    <v6LangP>0</v6LangP>
-                    <vShortEn>2</vShortEn>
-                    <vShortWch>2</vShortWch>
-                    <v6Lto>2</v6Lto>
-                    <v6WtE>2</v6WtE>
-                    <v6Rtti>2</v6Rtti>
-                    <VariousControls>
-                      <MiscControls></MiscControls>
-                      <Define></Define>
-                      <Undefine></Undefine>
-                      <IncludePath></IncludePath>
-                    </VariousControls>
-                  </Cads>
-                </FileArmAds>
-              </FileOption>
             </File>
             <File>
               <FileName>zepif.c</FileName>
@@ -1039,12 +988,22 @@
           </Files>
         </Group>
         <Group>
-          <GroupName>Libraris\lwip\src\apps\sntp</GroupName>
+          <GroupName>User\app\httpd</GroupName>
           <Files>
             <File>
-              <FileName>sntp.c</FileName>
+              <FileName>fs_custom.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\..\Libraries\lwip\src\apps\sntp\sntp.c</FilePath>
+              <FilePath>..\..\User\app\httpd\fs_custom.c</FilePath>
+            </File>
+            <File>
+              <FileName>http_builder.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\User\app\httpd\http_builder.c</FilePath>
+            </File>
+            <File>
+              <FileName>webapi.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\User\app\httpd\webapi.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -1077,24 +1036,14 @@
               <FilePath>..\..\User\bsp\hal\usart.c</FilePath>
             </File>
             <File>
-              <FileName>mco.c</FileName>
+              <FileName>uniqueid.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\..\User\bsp\hal\mco.c</FilePath>
+              <FilePath>..\..\User\bsp\hal\uniqueid.c</FilePath>
             </File>
             <File>
-              <FileName>timer.c</FileName>
+              <FileName>rng.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\..\User\bsp\hal\timer.c</FilePath>
-            </File>
-            <File>
-              <FileName>timer_pwm.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\User\bsp\hal\timer_pwm.c</FilePath>
-            </File>
-            <File>
-              <FileName>i2c.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\User\bsp\hal\i2c.c</FilePath>
+              <FilePath>..\..\User\bsp\hal\rng.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -1102,19 +1051,44 @@
           <GroupName>User\bsp\platform</GroupName>
           <Files>
             <File>
-              <FileName>periph_list.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\User\bsp\platform\periph_list.c</FilePath>
-            </File>
-            <File>
               <FileName>startup_stm32f40_41xxx.s</FileName>
               <FileType>2</FileType>
               <FilePath>..\..\User\bsp\platform\startup_stm32f40_41xxx.s</FilePath>
             </File>
             <File>
-              <FileName>periph_its.c</FileName>
+              <FileName>platform_its.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\..\User\bsp\platform\periph_its.c</FilePath>
+              <FilePath>..\..\User\bsp\platform\platform_its.c</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>User\bsp\platform\periph</GroupName>
+          <Files>
+            <File>
+              <FileName>peri_dbgserial.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\User\bsp\platform\periph\peri_dbgserial.c</FilePath>
+            </File>
+            <File>
+              <FileName>peri_gpio.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\User\bsp\platform\periph\peri_gpio.c</FilePath>
+            </File>
+            <File>
+              <FileName>peri_rcc.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\User\bsp\platform\periph\peri_rcc.c</FilePath>
+            </File>
+            <File>
+              <FileName>peri_rng.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\User\bsp\platform\periph\peri_rng.c</FilePath>
+            </File>
+            <File>
+              <FileName>peri_uniqueid.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\User\bsp\platform\periph\peri_uniqueid.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -1154,57 +1128,32 @@
           </Files>
         </Group>
         <Group>
-          <GroupName>User\eth</GroupName>
+          <GroupName>User\bsp\eth</GroupName>
           <Files>
+            <File>
+              <FileName>netconf.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\User\bsp\eth\netconf.c</FilePath>
+            </File>
             <File>
               <FileName>stm32f4x7_eth.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\..\User\eth\stm32f4x7_eth.c</FilePath>
+              <FilePath>..\..\User\bsp\eth\stm32f4x7_eth.c</FilePath>
             </File>
             <File>
               <FileName>stm32f4x7_eth_phy.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\..\User\eth\stm32f4x7_eth_phy.c</FilePath>
-            </File>
-            <File>
-              <FileName>netconf.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\User\eth\netconf.c</FilePath>
+              <FilePath>..\..\User\bsp\eth\stm32f4x7_eth_phy.c</FilePath>
             </File>
           </Files>
         </Group>
         <Group>
-          <GroupName>User\eth\lwip_port</GroupName>
+          <GroupName>User\bsp\eth\lwip_port</GroupName>
           <Files>
             <File>
               <FileName>ethernetif.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\..\User\eth\lwip_port\Standalone\ethernetif.c</FilePath>
-            </File>
-          </Files>
-        </Group>
-        <Group>
-          <GroupName>User\eth\apps\fs_custom</GroupName>
-          <Files>
-            <File>
-              <FileName>fs_custom.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\User\eth\apps\fs_custom\fs_custom.c</FilePath>
-            </File>
-          </Files>
-        </Group>
-        <Group>
-          <GroupName>User\eth\apps\webapi</GroupName>
-          <Files>
-            <File>
-              <FileName>http_builder.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\User\eth\apps\webapi\http_builder.c</FilePath>
-            </File>
-            <File>
-              <FileName>webapi.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\User\eth\apps\webapi\webapi.c</FilePath>
+              <FilePath>..\..\User\bsp\eth\lwip_port\Standalone\ethernetif.c</FilePath>
             </File>
           </Files>
         </Group>

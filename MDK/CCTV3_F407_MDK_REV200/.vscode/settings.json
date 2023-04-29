@@ -1,0 +1,11 @@
+{
+    "search.exclude": {
+        "**/*.html": true,
+        "**/CMSIS/**/Examples": true,
+        "**/CMSIS/Device/ST/STM32F4xx/Source/Templates/**/*.asm": true,
+        "**/CMSIS/Device/ST/STM32F4xx/Source/Templates/**/*.s": true,
+        "**/CMSIS/Device/ST/STM32F4xx/Source/Templates/**/*.S": true,
+        "**/Documentation/**": true,
+        "**/Output": true
+    }
+}

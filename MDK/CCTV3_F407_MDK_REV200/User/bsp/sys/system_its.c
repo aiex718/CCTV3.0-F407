@@ -3,7 +3,7 @@
 
 __STATIC_INLINE void Default_SysFault_Loop(const char *msg,uint32_t delay)
 {
-    DBG_Serial_SafeMode(DBG_Serial,true);
+    DBG_Serial_SafeMode(Peri_DBG_Serial,true);
     __IO uint32_t cnt;
     
     while (1)
