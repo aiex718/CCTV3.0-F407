@@ -16,7 +16,11 @@ int main(void)
 	DBG_Serial_Init(Peri_DBG_Serial);
 	DBG_Serial_Cmd(Peri_DBG_Serial,true);
 	DBG_INFO("Built at " __DATE__ " " __TIME__ " ,Booting...\n");
-	DBG_INFO("Mem_Guard_Init stack size 0x%x\n",Mem_Guard_Init());
+	
+	{
+		uint32_t stack_size  = Mem_Guard_Init();
+		DBG_INFO("Mem_Guard_Init stack size 0x%x\n",stack_size);
+	}
 
 	HAL_GPIO_InitPin(Peri_Button_Wkup_pin);
 	HAL_GPIO_InitPin(Peri_LED_STAT_pin);
