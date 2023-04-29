@@ -7,6 +7,8 @@
                 "${workspaceFolder}/Libraries/CMSIS/Include",
                 "${workspaceFolder}/Libraries/CMSIS/Device/ST/STM32F4xx/Include",
                 "${workspaceFolder}/Libraries/STM32F4xx_StdPeriph_Driver/inc",
+                "${workspaceFolder}/Libraries/lwip/src/include",
+                "${workspaceFolder}/User/bsp/eth/lwip_port",
                 "${workspaceFolder}/User"
             ],
             "defines": [
@@ -27,6 +29,8 @@
                 "${workspaceFolder}/Libraries/CMSIS/Include",
                 "${workspaceFolder}/Libraries/CMSIS/Device/ST/STM32F4xx/Include",
                 "${workspaceFolder}/Libraries/STM32F4xx_StdPeriph_Driver/inc",
+                "${workspaceFolder}/Libraries/lwip/src/include",
+                "${workspaceFolder}/User/bsp/eth/lwip_port",
                 "${workspaceFolder}/User",
                 "C:/Keil_v5/ARM/ARMCC/include"
             ],

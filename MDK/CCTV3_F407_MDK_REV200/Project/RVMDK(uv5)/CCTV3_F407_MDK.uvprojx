@@ -313,7 +313,7 @@
           </ArmAdsMisc>
           <Cads>
             <interw>1</interw>
-            <Optim>1</Optim>
+            <Optim>4</Optim>
             <oTime>0</oTime>
             <SplitLS>0</SplitLS>
             <OneElfS>1</OneElfS>
@@ -339,7 +339,7 @@
               <MiscControls></MiscControls>
               <Define>USE_STDPERIPH_DRIVER,STM32F40_41xxx,</Define>
               <Undefine></Undefine>
-              <IncludePath>..\..\Libraries\CMSIS\Include;..\..\Libraries\CMSIS\Device\ST\STM32F4xx\Include;..\..\Libraries\STM32F4xx_StdPeriph_Driver\inc;..\..\User</IncludePath>
+              <IncludePath>..\..\Libraries\CMSIS\Include;..\..\Libraries\CMSIS\Device\ST\STM32F4xx\Include;..\..\Libraries\STM32F4xx_StdPeriph_Driver\inc;..\..\Libraries\lwip\src\include;..\..\User\bsp\eth\lwip_port;..\..\User</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
@@ -662,6 +662,296 @@
           </Files>
         </Group>
         <Group>
+          <GroupName>Libraris\lwip\src\api</GroupName>
+          <Files>
+            <File>
+              <FileName>api_lib.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Libraries\lwip\src\api\api_lib.c</FilePath>
+            </File>
+            <File>
+              <FileName>api_msg.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Libraries\lwip\src\api\api_msg.c</FilePath>
+            </File>
+            <File>
+              <FileName>err.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Libraries\lwip\src\api\err.c</FilePath>
+            </File>
+            <File>
+              <FileName>if_api.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Libraries\lwip\src\api\if_api.c</FilePath>
+            </File>
+            <File>
+              <FileName>netbuf.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Libraries\lwip\src\api\netbuf.c</FilePath>
+            </File>
+            <File>
+              <FileName>netdb.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Libraries\lwip\src\api\netdb.c</FilePath>
+            </File>
+            <File>
+              <FileName>netifapi.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Libraries\lwip\src\api\netifapi.c</FilePath>
+            </File>
+            <File>
+              <FileName>sockets.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Libraries\lwip\src\api\sockets.c</FilePath>
+            </File>
+            <File>
+              <FileName>tcpip.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Libraries\lwip\src\api\tcpip.c</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>Libraris\lwip\src\core</GroupName>
+          <Files>
+            <File>
+              <FileName>altcp.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Libraries\lwip\src\core\altcp.c</FilePath>
+            </File>
+            <File>
+              <FileName>altcp_alloc.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Libraries\lwip\src\core\altcp_alloc.c</FilePath>
+            </File>
+            <File>
+              <FileName>altcp_tcp.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Libraries\lwip\src\core\altcp_tcp.c</FilePath>
+            </File>
+            <File>
+              <FileName>def.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Libraries\lwip\src\core\def.c</FilePath>
+            </File>
+            <File>
+              <FileName>dns.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Libraries\lwip\src\core\dns.c</FilePath>
+            </File>
+            <File>
+              <FileName>inet_chksum.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Libraries\lwip\src\core\inet_chksum.c</FilePath>
+            </File>
+            <File>
+              <FileName>init.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Libraries\lwip\src\core\init.c</FilePath>
+            </File>
+            <File>
+              <FileName>ip.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Libraries\lwip\src\core\ip.c</FilePath>
+            </File>
+            <File>
+              <FileName>mem.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Libraries\lwip\src\core\mem.c</FilePath>
+            </File>
+            <File>
+              <FileName>memp.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Libraries\lwip\src\core\memp.c</FilePath>
+            </File>
+            <File>
+              <FileName>netif.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Libraries\lwip\src\core\netif.c</FilePath>
+            </File>
+            <File>
+              <FileName>pbuf.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Libraries\lwip\src\core\pbuf.c</FilePath>
+            </File>
+            <File>
+              <FileName>raw.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Libraries\lwip\src\core\raw.c</FilePath>
+            </File>
+            <File>
+              <FileName>stats.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Libraries\lwip\src\core\stats.c</FilePath>
+            </File>
+            <File>
+              <FileName>sys.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Libraries\lwip\src\core\sys.c</FilePath>
+            </File>
+            <File>
+              <FileName>tcp.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Libraries\lwip\src\core\tcp.c</FilePath>
+            </File>
+            <File>
+              <FileName>tcp_in.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Libraries\lwip\src\core\tcp_in.c</FilePath>
+            </File>
+            <File>
+              <FileName>tcp_out.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Libraries\lwip\src\core\tcp_out.c</FilePath>
+            </File>
+            <File>
+              <FileName>timeouts.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Libraries\lwip\src\core\timeouts.c</FilePath>
+            </File>
+            <File>
+              <FileName>udp.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Libraries\lwip\src\core\udp.c</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>Libraris\lwip\src\core\ipv4</GroupName>
+          <Files>
+            <File>
+              <FileName>autoip.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Libraries\lwip\src\core\ipv4\autoip.c</FilePath>
+            </File>
+            <File>
+              <FileName>dhcp.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Libraries\lwip\src\core\ipv4\dhcp.c</FilePath>
+            </File>
+            <File>
+              <FileName>etharp.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Libraries\lwip\src\core\ipv4\etharp.c</FilePath>
+            </File>
+            <File>
+              <FileName>icmp.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Libraries\lwip\src\core\ipv4\icmp.c</FilePath>
+            </File>
+            <File>
+              <FileName>igmp.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Libraries\lwip\src\core\ipv4\igmp.c</FilePath>
+            </File>
+            <File>
+              <FileName>ip4.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Libraries\lwip\src\core\ipv4\ip4.c</FilePath>
+            </File>
+            <File>
+              <FileName>ip4_addr.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Libraries\lwip\src\core\ipv4\ip4_addr.c</FilePath>
+            </File>
+            <File>
+              <FileName>ip4_frag.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Libraries\lwip\src\core\ipv4\ip4_frag.c</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>Libraris\lwip\src\netif</GroupName>
+          <Files>
+            <File>
+              <FileName>bridgeif.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Libraries\lwip\src\netif\bridgeif.c</FilePath>
+            </File>
+            <File>
+              <FileName>bridgeif_fdb.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Libraries\lwip\src\netif\bridgeif_fdb.c</FilePath>
+            </File>
+            <File>
+              <FileName>ethernet.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Libraries\lwip\src\netif\ethernet.c</FilePath>
+            </File>
+            <File>
+              <FileName>lowpan6.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Libraries\lwip\src\netif\lowpan6.c</FilePath>
+            </File>
+            <File>
+              <FileName>lowpan6_ble.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Libraries\lwip\src\netif\lowpan6_ble.c</FilePath>
+            </File>
+            <File>
+              <FileName>lowpan6_common.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Libraries\lwip\src\netif\lowpan6_common.c</FilePath>
+            </File>
+            <File>
+              <FileName>slipif.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Libraries\lwip\src\netif\slipif.c</FilePath>
+            </File>
+            <File>
+              <FileName>zepif.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Libraries\lwip\src\netif\zepif.c</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>User\app\mjpeg</GroupName>
+          <Files>
+            <File>
+              <FileName>mjpegd.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\User\app\mjpegd\mjpegd.c</FilePath>
+            </File>
+            <File>
+              <FileName>mjpegd_camera.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\User\app\mjpegd\mjpegd_camera.c</FilePath>
+            </File>
+            <File>
+              <FileName>mjpegd_client.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\User\app\mjpegd\mjpegd_client.c</FilePath>
+            </File>
+            <File>
+              <FileName>mjpegd_frame.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\User\app\mjpegd\mjpegd_frame.c</FilePath>
+            </File>
+            <File>
+              <FileName>mjpegd_framepool.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\User\app\mjpegd\mjpegd_framepool.c</FilePath>
+            </File>
+            <File>
+              <FileName>mjpegd_frameproc.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\User\app\mjpegd\mjpegd_frameproc.c</FilePath>
+            </File>
+            <File>
+              <FileName>mjpegd_request.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\User\app\mjpegd\mjpegd_request.c</FilePath>
+            </File>
+            <File>
+              <FileName>mjpegd_stream.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\User\app\mjpegd\mjpegd_stream.c</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
           <GroupName>User\bsp\hal</GroupName>
           <Files>
             <File>
@@ -689,6 +979,26 @@
               <FileType>1</FileType>
               <FilePath>..\..\User\bsp\hal\usart.c</FilePath>
             </File>
+            <File>
+              <FileName>dcmi.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\User\bsp\hal\dcmi.c</FilePath>
+            </File>
+            <File>
+              <FileName>i2c.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\User\bsp\hal\i2c.c</FilePath>
+            </File>
+            <File>
+              <FileName>uniqueid.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\User\bsp\hal\uniqueid.c</FilePath>
+            </File>
+            <File>
+              <FileName>rng.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\User\bsp\hal\rng.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -707,6 +1017,26 @@
           </Files>
         </Group>
         <Group>
+          <GroupName>User\bsp\platform\app</GroupName>
+          <Files>
+            <File>
+              <FileName>app_mjpegd.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\User\bsp\platform\app\app_mjpegd.c</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>User\bsp\platform\device</GroupName>
+          <Files>
+            <File>
+              <FileName>dev_cam_ov2640.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\User\bsp\platform\device\dev_cam_ov2640.c</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
           <GroupName>User\bsp\platform\periph</GroupName>
           <Files>
             <File>
@@ -718,6 +1048,21 @@
               <FileName>peri_gpio.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\User\bsp\platform\periph\peri_gpio.c</FilePath>
+            </File>
+            <File>
+              <FileName>peri_rcc.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\User\bsp\platform\periph\peri_rcc.c</FilePath>
+            </File>
+            <File>
+              <FileName>peri_rng.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\User\bsp\platform\periph\peri_rng.c</FilePath>
+            </File>
+            <File>
+              <FileName>peri_uniqueid.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\User\bsp\platform\periph\peri_uniqueid.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -753,6 +1098,51 @@
               <FileName>mem_guard.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\User\bsp\sys\mem_guard.c</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>User\bsp\eth</GroupName>
+          <Files>
+            <File>
+              <FileName>netconf.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\User\bsp\eth\netconf.c</FilePath>
+            </File>
+            <File>
+              <FileName>stm32f4x7_eth.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\User\bsp\eth\stm32f4x7_eth.c</FilePath>
+            </File>
+            <File>
+              <FileName>stm32f4x7_eth_phy.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\User\bsp\eth\stm32f4x7_eth_phy.c</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>User\bsp\eth\lwip_port</GroupName>
+          <Files>
+            <File>
+              <FileName>ethernetif.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\User\bsp\eth\lwip_port\Standalone\ethernetif.c</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>User\device\cam_ov2640</GroupName>
+          <Files>
+            <File>
+              <FileName>cam_ov2640.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\User\device\cam_ov2640\cam_ov2640.c</FilePath>
+            </File>
+            <File>
+              <FileName>cam_ov2640_configs.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\User\device\cam_ov2640\cam_ov2640_configs.c</FilePath>
             </File>
           </Files>
         </Group>
