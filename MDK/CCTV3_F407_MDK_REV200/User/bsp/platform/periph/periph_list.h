@@ -5,6 +5,7 @@
 #include "bsp/platform/periph/peri_gpio.h"
 #include "bsp/platform/periph/peri_rcc.h"
 #include "bsp/platform/periph/peri_rng.h"
+#include "bsp/platform/periph/peri_rtc.h"
 #include "bsp/platform/periph/peri_uniqueid.h"
 
 

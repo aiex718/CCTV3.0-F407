@@ -9,14 +9,12 @@
 #include "bsp/hal/systick.h"
 #include "bsp/hal/rtc.h"
 
+
 //eth & lwip
 #include "lwip/timeouts.h"
 #include "bsp/eth/stm32f4x7_eth.h"
 #include "bsp/eth/stm32f4x7_eth_phy.h"
 #include "bsp/eth/netconf.h"
-
-//apps
-#include "lwip/apps/httpd.h"
 
 
 SysTimer_t blinkTimer;
@@ -51,7 +49,7 @@ int main(void)
 	//RNG
 	HAL_Rng_Init(Peri_Rng);
 
-	//Lwip & ETH & httpd
+	//Lwip & ETH 
 	ETH_BSP_Config();	
 	LwIP_Init();
 	NetTime_Init(App_NetTime);

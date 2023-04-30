@@ -34,7 +34,6 @@
 #include "app/nettime/nettime.h" //For sntp callback
 
 #include "bsp/platform/periph/peri_rng.h"
-#include "bsp/platform/periph/peri_rtc.h"
 /**
  * SYS_LIGHTWEIGHT_PROT==1: if you want inter-task protection for certain
  * critical regions during buffer allocation, deallocation and memory
@@ -218,14 +217,6 @@ The STM32F4x7 allows computing and verifying the IP, UDP, TCP and ICMP checksums
  * LWIP_SOCKET==1: Enable Socket API (require to use sockets.c)
  */
 #define LWIP_SOCKET                     0
-
-#define LWIP_HTTPD_SUPPORT_REQUESTLIST 1
-#define LWIP_HTTPD_SUPPORT_V09         0
-#define LWIP_HTTPD_CGI_SSI             1
-
-#define LWIP_HTTPD_FS_ASYNC_READ       0
-#define LWIP_HTTPD_DYNAMIC_FILE_READ   0
-#define LWIP_HTTPD_CUSTOM_FILES        1
 
 /*
    ----------------------------------------
