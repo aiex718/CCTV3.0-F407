@@ -19,81 +19,86 @@ void HAL_RCC_Cmd(const HAL_RCC_Cmd_t *cmd, const bool en)
 void HAL_RCC_Init(const HAL_RCC_t *self)
 {
     HAL_RCC_MCO_t **mco_list = self->RCC_mco_list;
-    HAL_RCC_MCO_t *mco;
     HAL_RCC_CLK_t **clk_list = self->RCC_clk_list;
-    HAL_RCC_CLK_t *clk;
-
-    while (clk_list!=NULL && *clk_list != NULL)
+    
+    if(clk_list)
     {
-        clk = *clk_list;
-        switch (clk->CLK_Idx)
+        HAL_RCC_CLK_t *clk;
+        while (*clk_list != NULL)
         {
-        case CLK_HSE:
-            if (clk->CLK_Enable)
+            clk = *clk_list;
+            switch (clk->CLK_Idx)
             {
-                RCC_HSEConfig(RCC_HSE_ON);
-                while (RCC_GetFlagStatus(RCC_FLAG_HSERDY) == RESET)
-                    ;
-            }
-            else
-                RCC_HSEConfig(RCC_HSE_OFF);
-            break;
-        case CLK_HSI:
-            if (clk->CLK_Enable)
-            {
-                RCC_HSICmd(ENABLE);
-                while (RCC_GetFlagStatus(RCC_FLAG_HSIRDY) == RESET)
-                    ;
-            }
-            else
-                RCC_HSICmd(DISABLE);
-            break;
-        case CLK_LSE:
-            RCC_APB1PeriphClockCmd(RCC_APB1Periph_PWR, ENABLE);
-            PWR_BackupAccessCmd(ENABLE);
-            if (clk->CLK_Enable)
-            {
-                RCC_LSEConfig(RCC_LSE_ON);
-                while (RCC_GetFlagStatus(RCC_FLAG_LSERDY) == RESET)
-                    ;
-            }
-            else
-                RCC_LSEConfig(RCC_LSE_OFF);
+            case CLK_HSE:
+                if (clk->CLK_Enable)
+                {
+                    RCC_HSEConfig(RCC_HSE_ON);
+                    while (RCC_GetFlagStatus(RCC_FLAG_HSERDY) == RESET)
+                        ;
+                }
+                else
+                    RCC_HSEConfig(RCC_HSE_OFF);
+                break;
+            case CLK_HSI:
+                if (clk->CLK_Enable)
+                {
+                    RCC_HSICmd(ENABLE);
+                    while (RCC_GetFlagStatus(RCC_FLAG_HSIRDY) == RESET)
+                        ;
+                }
+                else
+                    RCC_HSICmd(DISABLE);
+                break;
+            case CLK_LSE:
+                RCC_APB1PeriphClockCmd(RCC_APB1Periph_PWR, ENABLE);
+                PWR_BackupAccessCmd(ENABLE);
+                if (clk->CLK_Enable)
+                {
+                    RCC_LSEConfig(RCC_LSE_ON);
+                    while (RCC_GetFlagStatus(RCC_FLAG_LSERDY) == RESET)
+                        ;
+                }
+                else
+                    RCC_LSEConfig(RCC_LSE_OFF);
 
-            PWR_BackupAccessCmd(DISABLE);
-            break;
-        case CLK_LSI:
-            if (clk->CLK_Enable)
-            {
-                RCC_LSICmd(ENABLE);
-                while (RCC_GetFlagStatus(RCC_FLAG_LSIRDY) == RESET)
-                    ;
+                PWR_BackupAccessCmd(DISABLE);
+                break;
+            case CLK_LSI:
+                if (clk->CLK_Enable)
+                {
+                    RCC_LSICmd(ENABLE);
+                    while (RCC_GetFlagStatus(RCC_FLAG_LSIRDY) == RESET)
+                        ;
+                }
+                else
+                    RCC_LSICmd(DISABLE);
+                break;
+            default:
+                break;
             }
-            else
-                RCC_LSICmd(DISABLE);
-            break;
-        default:
-            break;
+            clk_list++;
         }
-        clk_list++;
     }
 
-    while (mco_list!=NULL && *mco_list != NULL)
+    if(mco_list)
     {
-        mco = *mco_list;
-        switch (mco->MCO_Idx)
+        HAL_RCC_MCO_t *mco;
+        while (*mco_list != NULL)
         {
-        case MCO1:
-            RCC_MCO1Config(mco->MCO_Source, mco->MCO_ClkDiv);
-            break;
-        case MCO2:
-            RCC_MCO2Config(mco->MCO_Source, mco->MCO_ClkDiv);
-            break;
-        default:
-            break;
+            mco = *mco_list;
+            switch (mco->MCO_Idx)
+            {
+            case MCO1:
+                RCC_MCO1Config(mco->MCO_Source, mco->MCO_ClkDiv);
+                break;
+            case MCO2:
+                RCC_MCO2Config(mco->MCO_Source, mco->MCO_ClkDiv);
+                break;
+            default:
+                break;
+            }
+            HAL_GPIO_InitPin(mco->MCO_Pin);
+            mco_list++;
         }
-        HAL_GPIO_InitPin(mco->MCO_Pin);
-
-        mco_list++;
     }
 }
