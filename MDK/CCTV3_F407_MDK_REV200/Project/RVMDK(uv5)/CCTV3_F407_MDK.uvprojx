@@ -999,6 +999,16 @@
               <FileType>1</FileType>
               <FilePath>..\..\User\bsp\hal\rng.c</FilePath>
             </File>
+            <File>
+              <FileName>timer.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\User\bsp\hal\timer.c</FilePath>
+            </File>
+            <File>
+              <FileName>timer_pwm.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\User\bsp\hal\timer_pwm.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -1034,6 +1044,11 @@
               <FileType>1</FileType>
               <FilePath>..\..\User\bsp\platform\device\dev_cam_ov2640.c</FilePath>
             </File>
+            <File>
+              <FileName>dev_flashlight.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\User\bsp\platform\device\dev_flashlight.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -1063,6 +1078,11 @@
               <FileName>peri_uniqueid.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\User\bsp\platform\periph\peri_uniqueid.c</FilePath>
+            </File>
+            <File>
+              <FileName>peri_timer_pwm.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\User\bsp\platform\periph\peri_timer_pwm.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -1128,6 +1148,16 @@
               <FileName>ethernetif.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\User\bsp\eth\lwip_port\Standalone\ethernetif.c</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>User\device\</GroupName>
+          <Files>
+            <File>
+              <FileName>flashlight.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\User\device\flashlight.c</FilePath>
             </File>
           </Files>
         </Group>

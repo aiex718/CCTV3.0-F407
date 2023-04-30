@@ -6,6 +6,7 @@
 #include "bsp/platform/periph/peri_rcc.h"
 #include "bsp/platform/periph/peri_rng.h"
 #include "bsp/platform/periph/peri_uniqueid.h"
+#include "bsp/platform/periph/peri_timer_pwm.h"
 
 
 #endif

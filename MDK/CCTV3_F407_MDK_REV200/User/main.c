@@ -7,6 +7,9 @@
 #include "bsp/sys/mem_guard.h"
 #include "bsp/sys/sysctrl.h"
 #include "bsp/hal/systick.h"
+#include "bsp/hal/timer.h"
+#include "bsp/hal/timer_pwm.h"
+
 //eth & lwip
 #include "lwip/timeouts.h"
 #include "bsp/eth/stm32f4x7_eth.h"
@@ -43,6 +46,14 @@ int main(void)
 	HAL_GPIO_InitPin(Peri_LED_STAT_pin);
 	HAL_GPIO_InitPin(Peri_LED_Load_pin);
 	HAL_GPIO_WritePin(Peri_LED_STAT_pin,0);
+
+	//PWM and flashlight
+	HAL_Timer_PWM_Init(Periph_Timer_PWM_FlashLight);
+	Device_FlashLight_Attach_PWM(Dev_FlashLight_Top,Periph_Timer_PWM_FlashLight);
+	Device_FlashLight_Init(Dev_FlashLight_Top);
+	Device_FlashLight_Attach_PWM(Dev_FlashLight_Bottom,Periph_Timer_PWM_FlashLight);
+	Device_FlashLight_Init(Dev_FlashLight_Bottom);
+	HAL_Timer_PWM_Cmd(Periph_Timer_PWM_FlashLight,true);
 
 	//RNG
 	HAL_Rng_Init(Peri_Rng);

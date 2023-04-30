@@ -2,6 +2,7 @@
 #include "app/mjpegd/mjpegd_frameproc.h"
 #include "app/mjpegd/mjpegd_debug.h"
 
+#include "bsp/platform/device/dev_flashlight.h"
 
 //private functions
 static void Cam2640_NewFrame_Handler(void *sender, void *arg, void *owner);
@@ -57,6 +58,8 @@ bool Mjpegd_Camera_DoSnap(Mjpegd_Camera_t *cam,Mjpegd_Frame_t *frame)
 
 void Mjpegd_Camera_Start(Mjpegd_Camera_t *cam)
 {
+    Device_FlashLight_Cmd(Dev_FlashLight_Top,true);
+	Device_FlashLight_Cmd(Dev_FlashLight_Bottom,true);
     Device_CamOV2640_Cmd(cam->HwCam_Ov2640,true);
 
     LWIP_DEBUGF(MJPEGD_DEBUG | LWIP_DBG_STATE,
@@ -69,6 +72,8 @@ void Mjpegd_Camera_Stop(Mjpegd_Camera_t *cam)
     //stop capture will trigger dma tc callback
     //which will release frame
     Device_CamOV2640_CaptureCmd(cam->HwCam_Ov2640,false);
+    Device_FlashLight_Cmd(Dev_FlashLight_Top,false);
+	Device_FlashLight_Cmd(Dev_FlashLight_Bottom,false);
 
     LWIP_DEBUGF(MJPEGD_DEBUG | LWIP_DBG_STATE,
         MJPEGD_DBG_ARG("Camera_Stop %p\n",cam));
