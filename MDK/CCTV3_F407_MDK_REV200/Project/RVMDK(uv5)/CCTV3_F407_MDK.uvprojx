@@ -907,6 +907,16 @@
           </Files>
         </Group>
         <Group>
+          <GroupName>Libraris\lwip\src\apps\sntp</GroupName>
+          <Files>
+            <File>
+              <FileName>sntp.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Libraries\lwip\src\apps\sntp\sntp.c</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
           <GroupName>User\app\mjpeg</GroupName>
           <Files>
             <File>
@@ -948,6 +958,16 @@
               <FileName>mjpegd_stream.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\User\app\mjpegd\mjpegd_stream.c</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>User\app\nettime</GroupName>
+          <Files>
+            <File>
+              <FileName>nettime.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\User\app\nettime\nettime.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -1009,6 +1029,11 @@
               <FileType>1</FileType>
               <FilePath>..\..\User\bsp\hal\timer_pwm.c</FilePath>
             </File>
+            <File>
+              <FileName>rtc.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\User\bsp\hal\rtc.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -1033,6 +1058,11 @@
               <FileName>app_mjpegd.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\User\bsp\platform\app\app_mjpegd.c</FilePath>
+            </File>
+            <File>
+              <FileName>app_nettime.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\User\bsp\platform\app\app_nettime.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -1073,6 +1103,11 @@
               <FileName>peri_rng.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\User\bsp\platform\periph\peri_rng.c</FilePath>
+            </File>
+            <File>
+              <FileName>peri_rtc.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\User\bsp\platform\periph\peri_rtc.c</FilePath>
             </File>
             <File>
               <FileName>peri_uniqueid.c</FileName>

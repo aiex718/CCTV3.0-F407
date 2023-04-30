@@ -9,6 +9,8 @@
 #include "bsp/hal/systick.h"
 #include "bsp/hal/timer.h"
 #include "bsp/hal/timer_pwm.h"
+#include "bsp/hal/rtc.h"
+
 
 //eth & lwip
 #include "lwip/timeouts.h"
@@ -36,6 +38,9 @@ int main(void)
 	DBG_Serial_Cmd(Peri_DBG_Serial,true);
 	DBG_INFO("Built at " __DATE__ " " __TIME__ " ,Booting...\n");
 	
+	//RTC Init
+	HAL_RTC_Init(Peri_RTC);
+	
 	{
 		uint32_t stack_size  = Mem_Guard_Init();
 		DBG_INFO("Mem_Guard_Init stack size 0x%x\n",stack_size);
@@ -58,10 +63,11 @@ int main(void)
 	//RNG
 	HAL_Rng_Init(Peri_Rng);
 
-	//Lwip & ETH & httpd
+	//Lwip & ETH 
 	ETH_BSP_Config();	
 	LwIP_Init();
 	Mjpegd_Init(App_Mjpegd);
+	NetTime_Init(App_NetTime);
 	
 	SysTimer_Init(&blinkTimer,1000);
 	while(1)
@@ -71,6 +77,10 @@ int main(void)
 		{
 			if(strcmp((char*)rxcmd,"hello")==0)
 				DBG_INFO("Hello there\n");
+			else if(strcmp((char*)rxcmd,"time")==0)
+			{
+				HAL_RTC_PrintTime(Peri_RTC);
+			}
 		}
 
 		//blink Load LED

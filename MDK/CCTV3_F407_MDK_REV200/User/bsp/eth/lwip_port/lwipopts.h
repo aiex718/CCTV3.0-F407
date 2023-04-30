@@ -31,6 +31,8 @@
 #define __LWIPOPTS_H__
 
 #include "bsp/sys/systime.h"
+#include "app/nettime/nettime.h" //For sntp callback
+
 #include "bsp/platform/periph/peri_rng.h"
 /**
  * SYS_LIGHTWEIGHT_PROT==1: if you want inter-task protection for certain
@@ -216,14 +218,6 @@ The STM32F4x7 allows computing and verifying the IP, UDP, TCP and ICMP checksums
  */
 #define LWIP_SOCKET                     0
 
-// #define LWIP_HTTPD_SUPPORT_REQUESTLIST 1
-// #define LWIP_HTTPD_SUPPORT_V09         0
-// #define LWIP_HTTPD_CGI_SSI             1
-
-// #define LWIP_HTTPD_FS_ASYNC_READ       0
-// #define LWIP_HTTPD_DYNAMIC_FILE_READ   0
-// #define LWIP_HTTPD_CUSTOM_FILES        1
-
 /*
    ----------------------------------------
    ---------- Lwip Debug options ----------
@@ -270,6 +264,9 @@ The STM32F4x7 allows computing and verifying the IP, UDP, TCP and ICMP checksums
 #define MJPEGD_STREAM_CLIENT_LIMIT 3
 #define MJPEGD_FRAMEPOOL_LEN (MJPEGD_STREAM_CLIENT_LIMIT+2)
 
+//SNTP options
+#define SNTP_SET_SYSTEM_TIME NetTime_Sntp_Poll_Callback
+#define SNTP_SERVER_DNS 1
 //#define SNTP_DEBUG_TRACE LWIP_DBG_ON
 
 #endif /* __LWIPOPTS_H__ */
