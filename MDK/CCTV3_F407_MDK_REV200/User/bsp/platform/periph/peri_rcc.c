@@ -28,15 +28,7 @@ const HAL_RCC_t Peri_RCC_Inst =
 		},
 		NULL//Null terminate
 	},
-	.RCC_clk_list = __CONST_ARRAY_CAST_VAR(HAL_RCC_CLK_t*)
-	{
-		//LSE for RTC
-		__CONST_CAST_VAR(HAL_RCC_CLK_t){	
-			.CLK_Idx = CLK_LSE,
-			.CLK_Enable = true
-		},
-		NULL//Null terminate
-	}
+	.RCC_clk_list = NULL
 };
 
 const HAL_RCC_t *Peri_RCC = &Peri_RCC_Inst;

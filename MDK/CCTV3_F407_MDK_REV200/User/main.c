@@ -44,8 +44,6 @@ int main(void)
 	HAL_GPIO_InitPin(Peri_LED_Load_pin);
 	HAL_GPIO_WritePin(Peri_LED_STAT_pin,0);
 
-	//PWM and flashlight
-
 	//RNG
 	HAL_Rng_Init(Peri_Rng);
 
