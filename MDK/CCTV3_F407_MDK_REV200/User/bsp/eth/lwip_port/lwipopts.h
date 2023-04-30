@@ -34,6 +34,7 @@
 #include "app/nettime/nettime.h" //For sntp callback
 
 #include "bsp/platform/periph/peri_rng.h"
+#include "bsp/platform/periph/peri_rtc.h" //For MJPEGD_GET_UNIX_TIMESTAMP
 /**
  * SYS_LIGHTWEIGHT_PROT==1: if you want inter-task protection for certain
  * critical regions during buffer allocation, deallocation and memory
@@ -260,7 +261,7 @@ The STM32F4x7 allows computing and verifying the IP, UDP, TCP and ICMP checksums
 #define MJPEGD_SERVICE_PERIOD 10 //ms
 #define MJPEGD_ALLOW_STREAM_CORS 1
 #define MJPEGD_SHOWFPS_PERIOD 3//n^2 seconds
-//#define MJPEGD_GET_UNIX_TIMESTAMP (u32_t)HAL_RTC_GetTime(Peri_RTC)
+#define MJPEGD_GET_UNIX_TIMESTAMP (u32_t)HAL_RTC_GetTime(Peri_RTC)
 #define MJPEGD_STREAM_CLIENT_LIMIT 3
 #define MJPEGD_FRAMEPOOL_LEN (MJPEGD_STREAM_CLIENT_LIMIT+2)
 
