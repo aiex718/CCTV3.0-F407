@@ -5,23 +5,12 @@
 #include "bsp/sys/systime.h"
 #include "bsp/sys/systimer.h"
 #include "bsp/sys/sysctrl.h"
-#include "bsp/hal/systick.h"
 #include "bsp/sys/mem_guard.h"
-#include "bsp/sys/sysctrl.h"
+
 #include "bsp/hal/systick.h"
 #include "bsp/hal/timer.h"
 #include "bsp/hal/timer_pwm.h"
 #include "bsp/hal/rtc.h"
-
-
-//eth & lwip
-#include "lwip/timeouts.h"
-#include "bsp/eth/stm32f4x7_eth.h"
-#include "bsp/eth/stm32f4x7_eth_phy.h"
-#include "bsp/eth/netconf.h"
-
-//apps
-#include "app/mjpegd/mjpegd.h"
 
 //eth & lwip
 #include "lwip/timeouts.h"
