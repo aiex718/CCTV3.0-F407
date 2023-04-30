@@ -4,6 +4,8 @@
 #include "bsp/sys/dbg_serial.h"
 #include "bsp/sys/systime.h"
 #include "bsp/sys/systimer.h"
+#include "bsp/sys/sysctrl.h"
+#include "bsp/hal/systick.h"
 #include "bsp/sys/mem_guard.h"
 #include "bsp/sys/sysctrl.h"
 #include "bsp/hal/systick.h"
@@ -20,6 +22,15 @@
 
 //apps
 #include "app/mjpegd/mjpegd.h"
+
+//eth & lwip
+#include "lwip/timeouts.h"
+#include "bsp/eth/stm32f4x7_eth.h"
+#include "bsp/eth/stm32f4x7_eth_phy.h"
+#include "bsp/eth/netconf.h"
+
+//apps
+#include "lwip/apps/httpd.h"
 
 
 SysTimer_t blinkTimer;
@@ -68,6 +79,7 @@ int main(void)
 	LwIP_Init();
 	Mjpegd_Init(App_Mjpegd);
 	NetTime_Init(App_NetTime);
+	httpd_init();
 	
 	SysTimer_Init(&blinkTimer,1000);
 	while(1)
