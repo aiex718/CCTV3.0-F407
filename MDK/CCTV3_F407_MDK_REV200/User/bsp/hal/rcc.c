@@ -23,7 +23,7 @@ void HAL_RCC_Init(const HAL_RCC_t *self)
     HAL_RCC_CLK_t **clk_list = self->RCC_clk_list;
     HAL_RCC_CLK_t *clk;
 
-    while (*clk_list != NULL)
+    while (clk_list!=NULL && *clk_list != NULL)
     {
         clk = *clk_list;
         switch (clk->CLK_Idx)
@@ -78,7 +78,7 @@ void HAL_RCC_Init(const HAL_RCC_t *self)
         clk_list++;
     }
 
-    while (*mco_list != NULL)
+    while (mco_list!=NULL && *mco_list != NULL)
     {
         mco = *mco_list;
         switch (mco->MCO_Idx)
