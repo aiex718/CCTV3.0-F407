@@ -6,3 +6,8 @@ void USART3_IRQHandler(void)
     HAL_USART_IRQHandler(Peri_DBG_Serial->hal_usart);
 }
 
+void OTG_FS_IRQHandler(void)
+{
+    USBOTG_fs_IRQHandler(Dev_USBOTG_fs);
+}
+

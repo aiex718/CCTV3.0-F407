@@ -7,6 +7,10 @@
                 "${workspaceFolder}/Libraries/CMSIS/Include",
                 "${workspaceFolder}/Libraries/CMSIS/Device/ST/STM32F4xx/Include",
                 "${workspaceFolder}/Libraries/STM32F4xx_StdPeriph_Driver/inc",
+                "${workspaceFolder}/Libraries/STM32_USB_Device_Library/Class/msc/inc",
+                "${workspaceFolder}/Libraries/STM32_USB_Device_Library/Core/inc",
+                "${workspaceFolder}/Libraries/STM32_USB_OTG_Driver/inc",
+                "${workspaceFolder}/User/bsp/usb",
                 "${workspaceFolder}/User"
             ],
             "defines": [
@@ -27,6 +31,10 @@
                 "${workspaceFolder}/Libraries/CMSIS/Include",
                 "${workspaceFolder}/Libraries/CMSIS/Device/ST/STM32F4xx/Include",
                 "${workspaceFolder}/Libraries/STM32F4xx_StdPeriph_Driver/inc",
+                "${workspaceFolder}/Libraries/STM32_USB_Device_Library/Class/msc/inc",
+                "${workspaceFolder}/Libraries/STM32_USB_Device_Library/Core/inc",
+                "${workspaceFolder}/Libraries/STM32_USB_OTG_Driver/inc",
+                "${workspaceFolder}/User/bsp/usb",
                 "${workspaceFolder}/User",
                 "C:/Keil_v5/ARM/ARMCC/include"
             ],
