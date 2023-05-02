@@ -12,7 +12,7 @@ void* mem_search
     data_len=data_len - search_len + 1;
     while(data_len--)
     {
-        if(memcmp(data,search,search_len)==0)
+        if(BSP_MEMCMP(data,search,search_len)==0)
             return (void*)data;
 
         data+=inc;
