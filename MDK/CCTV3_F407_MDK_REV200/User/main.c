@@ -50,7 +50,14 @@ int main(void)
 
 	//USB
 	USBOTG_fs_Init(Dev_USBOTG_fs);
-	
+
+	//FileSys
+	FileSys_Init(App_FileSys);
+	if(FileSys_Mount(App_FileSys,""))
+		DBG_INFO("FileSys_Mount success\n");
+	else
+		DBG_ERROR("FileSys_Mount failed\n");
+
 	//Lwip & ETH & httpd
 	ETH_BSP_Config();	
 	LwIP_Init();
