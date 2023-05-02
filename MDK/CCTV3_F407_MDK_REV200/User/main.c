@@ -99,6 +99,13 @@ int main(void)
 			{
 				DBG_INFO("Stack usage 0x%x\n",Mem_Guard_GetStackDepth());
 			}
+			else if(strcmp((char*)rxcmd,"format")==0)
+			{
+				if(FileSys_Format(App_FileSys,""))
+					DBG_INFO("FileSys_Format success\n");
+				else
+					DBG_ERROR("FileSys_Format failed\n");
+			}
 		}
 
 		//blink Load LED
