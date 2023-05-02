@@ -61,6 +61,11 @@ bool FileSys_Open(FileSys_t *self,FileSys_File_t* file,const char* path,FileMode
     return fs_result==FR_OK;
 }
 
+uint32_t FileSys_GetLen(FileSys_t *self,FileSys_File_t* file)
+{
+    return f_size(&file->fp);
+}
+
 uint32_t FileSys_Read(FileSys_t *self,FileSys_File_t *file,uint8_t* buff,uint32_t len)
 {
     uint32_t read_len=0;

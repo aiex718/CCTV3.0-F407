@@ -25,13 +25,12 @@ typedef struct FileSys_s {
 
 
 void FileSys_Init(FileSys_t *self);
-
 bool FileSys_Mount(FileSys_t *self,const char* path);
 bool FileSys_Unmount(FileSys_t *self,const char* path);
-
 bool FileSys_Format(FileSys_t *self,const char* path);
 
 bool FileSys_Open(FileSys_t *self,FileSys_File_t* file,const char* path,FileMode_t mode);
+uint32_t FileSys_GetLen(FileSys_t *self,FileSys_File_t* file);
 uint32_t FileSys_Read(FileSys_t *self,FileSys_File_t *file,uint8_t* buff,uint32_t len);
 bool FileSys_Close(FileSys_t *self,FileSys_File_t *file);
 
