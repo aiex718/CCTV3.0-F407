@@ -15,6 +15,7 @@ typedef struct Disk_s
     uint32_t driv_id;
     void* p_driv;
 
+    //function pointer
     bool (*Init)(struct Disk_s *self);
     bool (*Read)(struct Disk_s *self,uint8_t *buf, uint32_t blk_addr, uint16_t blk_len);
     bool (*Write)(struct Disk_s *self,uint8_t *buf, uint32_t blk_addr, uint16_t blk_len);
