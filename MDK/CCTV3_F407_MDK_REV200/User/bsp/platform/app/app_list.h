@@ -3,5 +3,6 @@
 
 #include "bsp/platform/app/app_mjpegd.h"
 #include "bsp/platform/app/app_nettime.h"
+#include "bsp/platform/app/app_filesys.h"
 
 #endif

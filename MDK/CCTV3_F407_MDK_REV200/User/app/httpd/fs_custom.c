@@ -2,17 +2,16 @@
 #include "lwip/mem.h"
 
 #include "app/httpd/webapi.h"
-
-
-#include "string.h"
 #include "bsp/sys/dbg_serial.h"
+#include "bsp/platform/app/app_filesys.h"
 
 //functions for lwip call
 int fs_open_custom(struct fs_file *file, const char *name)
 {
+    //check if is webapi request
     if(strcmp(name,WEBAPI_ENTRY_POINT)==0)
     {
-        char* buf = (char*)mem_calloc(WEBAPI_RESPONSE_BUFFER_LEN,sizeof(char));
+        uint8_t* buf = (uint8_t*)mem_calloc(WEBAPI_RESPONSE_BUFFER_LEN,sizeof(uint8_t));
         if(buf)
         {
             //if set data to null ,lwip will treat this file as a volatile file
@@ -33,35 +32,95 @@ int fs_open_custom(struct fs_file *file, const char *name)
     }
     else
     {
-        //TODO: find file in FileSys(fat_fs) and attach to file->pextension
+        FileSys_File_t *fil = (FileSys_File_t*)mem_malloc(sizeof(FileSys_File_t));
+
+        if (fil==NULL)
+        {
+            LWIP_DEBUGF(HTTPD_DEBUG | LWIP_DBG_LEVEL_WARNING, ("fil mem_malloc fail\n"));
+            return 0;
+        }
+
+        LWIP_DEBUGF(HTTPD_DEBUG | LWIP_DBG_TRACE, ("fs_open_custom search for %s\n",name));
+        
+        if(FileSys_Open(App_FileSys ,fil , name, FILEMODE_READ) == false)
+        {
+            LWIP_DEBUGF(HTTPD_DEBUG | LWIP_DBG_LEVEL_WARNING,("fs_open_custom fail %s\n",name));
+            mem_free(fil);
+            fil=NULL;
+            return 0;
+        }
+
+        LWIP_DEBUGF(HTTPD_DEBUG | LWIP_DBG_STATE,("fs_open_custom %s at %x->%x\n",name,file,fil));
+
+        file->data=NULL;
+        file->index=0;
+        file->len=FileSys_GetLen(App_FileSys,fil);
+        file->pextension = (void*)fil;
+
+        return 1;
     }
 
     return 0;
+
 }
 
 void fs_close_custom(struct fs_file *file)
 {
-    if(file!=NULL && file->data != NULL && file->is_custom_file)
+    //is file opened from FileSys?
+    if(file==NULL)
+    {
+        LWIP_DEBUGF(HTTPD_DEBUG | LWIP_DBG_LEVEL_SERIOUS,
+            ("fs_close_custom file NULL\n"));
+        return;
+    }
+    else if(file->pextension != NULL)
+    {
+        FileSys_File_t *fil = (FileSys_File_t*)file->pextension;
+        if(FileSys_Close(App_FileSys,fil) == false)
+        {
+            LWIP_DEBUGF(HTTPD_DEBUG | LWIP_DBG_LEVEL_WARNING,
+                ("fs_close_custom fail %x->%x\n",file,fil));
+        }
+        else
+        {
+            LWIP_DEBUGF(HTTPD_DEBUG | LWIP_DBG_STATE,
+                ("fs_close_custom %x->%x\n",file,fil));
+        }
+
+        mem_free(file->pextension);
+        file->pextension=NULL;
+    }
+    //is file opened from webapi request?
+    else if(file->data != NULL && file->is_custom_file)
     {
         DBG_INFO("fs_close_custom,buf:0x%x\n",file->data);
         mem_free((void*)file->data);
         file->data=NULL;
     }
-    //TODO: release file in FileSys(fat_fs) if file->pextension is not null
+    else
+    {
+        LWIP_DEBUGF(HTTPD_DEBUG | LWIP_DBG_LEVEL_SERIOUS,
+            ("fs_close_custom file %x pex NULL\n",file));
+    }
 }
 
-// int fs_read_custom(struct fs_file *file, char *buffer, int count)
-// {
-//     int read;
-//     if (file->index == file->len) 
-//         return FS_READ_EOF;
+int fs_read_custom(struct fs_file *file, char *buffer, int count)
+{
+    uint32_t read_len=0;
+    FileSys_File_t *fil = (FileSys_File_t*)file->pextension;
 
-//     read = file->len - file->index;
-//     if (read > count) 
-//         read = count;
+    if(fil != NULL) 
+    {
+        uint32_t len = BSP_MIN(count,file->len - file->index);
+        read_len = FileSys_Read(App_FileSys,fil,(uint8_t*)buffer,len);
+        LWIP_DEBUGF(HTTPD_DEBUG | LWIP_DBG_TRACE, ("fs_read_custom index %d += %d\n",file->index,read_len));
+        file->index += read_len;
+    }
+    else
+    {
+        LWIP_DEBUGF(HTTPD_DEBUG | LWIP_DBG_LEVEL_SERIOUS,
+            ("fs_close_custom file %x pex NULL\n",file));
+    }
 
-//     MEMCPY(buffer, (char*)(file->pextension) + file->index, read);
-//     file->index += read;
-
-//     return read;
-// }
+    return read_len;
+}

@@ -16,3 +16,8 @@ void DMA2_Stream1_IRQHandler(void)
     HAL_DMA_IRQHandler(Dev_Cam_OV2640->CamOV2640_DCMI->DCMI_RxDma_Cfg);
 }
 
+void OTG_FS_IRQHandler(void)
+{
+    USBOTG_fs_IRQHandler(Dev_USBOTG_fs);
+}
+

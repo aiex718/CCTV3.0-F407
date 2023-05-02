@@ -21,7 +21,6 @@
 //apps
 #include "lwip/apps/httpd.h"
 
-
 SysTimer_t blinkTimer;
 
 int main(void)
@@ -61,7 +60,21 @@ int main(void)
 	HAL_Timer_PWM_Cmd(Periph_Timer_PWM_FlashLight,true);
 
 	//RNG
+	//TODO: use rand
 	HAL_Rng_Init(Peri_Rng);
+
+	//Disk
+	Disk_InitAll(Dev_Disk_list);
+
+	//USB
+	USBOTG_fs_Init(Dev_USBOTG_fs);
+
+	//FileSys
+	FileSys_Init(App_FileSys);
+	if(FileSys_Mount(App_FileSys,""))
+		DBG_INFO("FileSys_Mount success\n");
+	else
+		DBG_ERROR("FileSys_Mount failed\n");
 
 	//Lwip & ETH 
 	ETH_BSP_Config();	
@@ -82,6 +95,10 @@ int main(void)
 			{
 				HAL_RTC_PrintTime(Peri_RTC);
 			}
+			else if(strcmp((char*)rxcmd,"stack")==0)
+			{
+				DBG_INFO("Stack usage 0x%x\n",Mem_Guard_GetStackDepth());
+			}
 		}
 
 		//blink Load LED
@@ -90,6 +107,12 @@ int main(void)
 			HAL_GPIO_TogglePin(Peri_LED_Load_pin);
 			SysTimer_Reset(&blinkTimer);
 			//DBG_INFO("%d:Wkup pin %d\n",SysTime_Get(),HAL_GPIO_ReadPin(Periph_Button_Wkup_pin));
+		}
+
+		if(Mem_Guard_CheckOVF())
+		{
+			DBG_ERROR("Stack overflow detected\n");
+			while(1);
 		}
 		
 		/* process received ethernet packet */
