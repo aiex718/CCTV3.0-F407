@@ -17,7 +17,6 @@
 //apps
 #include "lwip/apps/httpd.h"
 
-
 SysTimer_t blinkTimer;
 
 int main(void)
@@ -28,7 +27,6 @@ int main(void)
 	delay(500); //wait 500ms for subsystems to be ready
 	
 	//DBG_Serial using USART3
-	//DBG_Serial
 	DBG_Serial_Init(Peri_DBG_Serial);
 	DBG_Serial_Cmd(Peri_DBG_Serial,true);
 	DBG_INFO("Built at " __DATE__ " " __TIME__ " ,Booting...\n");
@@ -47,15 +45,11 @@ int main(void)
 	//RNG
 	HAL_Rng_Init(Peri_Rng);
 
-	//Flash W25Qx
-	{
-		Flash_W25Qx_Status_t stat;
-		stat = Flash_W25Qx_Init(Dev_Flash_W25Qx);
-		if(stat == FLASH_W25QX_OK)
-			DBG_INFO("Flash_W25Qx_Init OK\n");
-		else
-			DBG_ERROR("Flash_W25Qx_Init failed\n");
-	}
+	//Disk
+	Disk_InitAll(Dev_Disk_list);
+
+	//USB
+	USBOTG_fs_Init(Dev_USBOTG_fs);
 	
 	//Lwip & ETH & httpd
 	ETH_BSP_Config();	

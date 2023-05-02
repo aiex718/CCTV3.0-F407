@@ -15,6 +15,13 @@
 #define DNS_DEFAULT_SERVER_0 "8.8.8.8"
 #define DNS_DEFAULT_SERVER_1 "8.8.4.4"
 
+//disks
+#define DISK_MAX_LUN_NUM 1
 #define FLASH_W25QX_MODEL 128
+
+//USB FS
+#define USE_USB_OTG_FS 
+#define USE_EMBEDDED_PHY 
+#define USE_DEVICE_MODE 
 
 #endif

@@ -37,11 +37,11 @@ OP_RESET                =0x99,
     }                                               \
 }while(0);
 
-#define IS_LEN_VALID(addr,len) (((addr)+(len))<=W25QX_STORAGE_TOTAL_SIZE && (len)>0)
-#define IS_ADDR_PAGE_ALIGN(addr) (!((addr) & (W25QX_PAGE_SIZE-1)))
+#define IS_LEN_VALID(addr,len) (((addr)+(len))<=FLASH_W25QX_STORAGE_TOTAL_SIZE && (len)>0)
+#define IS_ADDR_PAGE_ALIGN(addr) (!((addr) & (FLASH_W25QX_PAGE_SIZE-1)))
 
 //mask the address to sector boundary
-#define ADDR_TO_SECTOR_NUM(addr) ((addr)&(~(W25QX_SECTOR_SIZE-1)))
+#define ADDR_TO_SECTOR_NUM(addr) ((addr)&(~(FLASH_W25QX_SECTOR_SIZE-1)))
 
 //CS pin control
 #define CS_LOW(self) FLASH_W25QX_CS_SET((self),false)
@@ -92,28 +92,16 @@ Flash_W25Qx_Status_t Flash_W25Qx_Init(Flash_W25Qx_t *self)
     HAL_SPI_Cmd(self->hal_spi,true);
 
     //transfer dummy for cpol/cpha correction
-    SpiStatus = __w25qx_lowlevel_write(self,(uint8_t*)&id,1,W25QX_CMD_TIMEOUT);
+    SpiStatus = __w25qx_lowlevel_write(self,(uint8_t*)&id,1,FLASH_W25QX_CMD_TIMEOUT);
     RET_ERR(SpiStatus);
 
     SpiStatus = Flash_W25Qx_Reset(self);
     RET_ERR(SpiStatus);
 
-    SpiStatus = Flash_W25Qx_WaitBusy(self,1,W25QX_CMD_TIMEOUT);
+    SpiStatus = Flash_W25Qx_WaitBusy(self,1,FLASH_W25QX_CMD_TIMEOUT);
     RET_ERR(SpiStatus);
 
-    SpiStatus = Flash_W25Qx_GetJedecId(self,&id);  
-    RET_ERR(SpiStatus);
-    
-    if (id==0||id==(uint32_t)-1)
-    {
-        DBG_ERROR("Init:Flash_W25Qx_Reset Timeout\n");
-        return FLASH_W25QX_ERR_TIMEOUT;
-    }
-    else if (id!=W25QX_JEDEC_ID)
-    {
-        DBG_WARNING("W25QX_JEDEC_ID not match\r\n");
-        DBG_WARNING("Expect:%x ,Receive:%x\r\n",W25QX_JEDEC_ID,id);
-    }
+ 
     return FLASH_W25QX_OK;
 }
 
@@ -123,7 +111,7 @@ Flash_W25Qx_Status_t Flash_W25Qx_GetJedecId(Flash_W25Qx_t *self,uint32_t *id_out
     Flash_W25Qx_Status_t SpiStatus;
 
     CS_LOW(self);
-    SpiStatus = __w25qx_lowlevel_write_read(self,cmd,id,sizeof(cmd),W25QX_CMD_TIMEOUT);
+    SpiStatus = __w25qx_lowlevel_write_read(self,cmd,id,sizeof(cmd),FLASH_W25QX_CMD_TIMEOUT);
     CS_HIGH(self);
 
     RET_ERR(SpiStatus);
@@ -139,8 +127,8 @@ Flash_W25Qx_Status_t Flash_W25Qx_ReadStatusReg(Flash_W25Qx_t *self,bool cs_ctrl,
     Flash_W25Qx_Status_t SpiStatus;
 
     if(cs_ctrl) CS_LOW(self);
-    SpiStatus = __w25qx_lowlevel_write(self,&cmd,sizeof(cmd),W25QX_CMD_TIMEOUT);
-    SpiStatus = __w25qx_lowlevel_read(self,reg_out,sizeof(*reg_out),W25QX_CMD_TIMEOUT);
+    SpiStatus = __w25qx_lowlevel_write(self,&cmd,sizeof(cmd),FLASH_W25QX_CMD_TIMEOUT);
+    SpiStatus = __w25qx_lowlevel_read(self,reg_out,sizeof(*reg_out),FLASH_W25QX_CMD_TIMEOUT);
     if(cs_ctrl) CS_HIGH(self);
     
     RET_ERR(SpiStatus); 
@@ -148,7 +136,7 @@ Flash_W25Qx_Status_t Flash_W25Qx_ReadStatusReg(Flash_W25Qx_t *self,bool cs_ctrl,
     return SpiStatus;
 }
 
-Flash_W25Qx_Status_t Flash_W25Qx_WaitBusy(Flash_W25Qx_t *self,bool cs_ctrl,uint16_t timeout)
+Flash_W25Qx_Status_t Flash_W25Qx_WaitBusy(Flash_W25Qx_t *self,bool cs_ctrl,uint32_t timeout)
 {
     SysTimer_t tmr;
     uint8_t stat_reg=0;
@@ -184,7 +172,7 @@ Flash_W25Qx_Status_t Flash_W25Qx_WriteEnable(Flash_W25Qx_t *self,bool en)
     Flash_W25Qx_Status_t SpiStatus;
 
     CS_LOW(self);
-    SpiStatus = __w25qx_lowlevel_write(self,&cmd,sizeof(cmd),W25QX_CMD_TIMEOUT);
+    SpiStatus = __w25qx_lowlevel_write(self,&cmd,sizeof(cmd),FLASH_W25QX_CMD_TIMEOUT);
     CS_HIGH(self);
     RET_ERR(SpiStatus);
 
@@ -205,16 +193,14 @@ Flash_W25Qx_Status_t Flash_W25Qx_Reset(Flash_W25Qx_t *self)
 
     cmd = OP_RESET_EN;
     CS_LOW(self);
-    SpiStatus = __w25qx_lowlevel_write(self,&cmd,sizeof(cmd),W25QX_CMD_TIMEOUT);
+    SpiStatus = __w25qx_lowlevel_write(self,&cmd,sizeof(cmd),FLASH_W25QX_CMD_TIMEOUT);
     CS_HIGH(self);
     RET_ERR(SpiStatus);
 
     cmd = OP_RESET;
     CS_LOW(self);
-    SpiStatus = __w25qx_lowlevel_write(self,&cmd,sizeof(cmd),W25QX_CMD_TIMEOUT);  
+    SpiStatus = __w25qx_lowlevel_write(self,&cmd,sizeof(cmd),FLASH_W25QX_CMD_TIMEOUT);  
     CS_HIGH(self);
-
-    delay(FLASH_W25QX_RESET_DELAY);
     
     return SpiStatus;
 }
@@ -228,8 +214,11 @@ Flash_W25Qx_Status_t Flash_W25Qx_EraseChip(Flash_W25Qx_t *self)
     RET_ERR(SpiStatus);
 
     CS_LOW(self);
-    SpiStatus = __w25qx_lowlevel_write(self,&cmd,sizeof(cmd),W25QX_CMD_TIMEOUT);      
+    SpiStatus = __w25qx_lowlevel_write(self,&cmd,sizeof(cmd),FLASH_W25QX_CMD_TIMEOUT);      
     CS_HIGH(self);
+
+    SpiStatus = Flash_W25Qx_WaitBusy(self,true,FLASH_W25QX_CHIP_ERASE_TIMEOUT);  
+    RET_ERR(SpiStatus);
     
     return SpiStatus;
 }
@@ -238,14 +227,14 @@ Flash_W25Qx_Status_t Flash_W25Qx_EraseSector_4K(Flash_W25Qx_t *self,uint32_t add
 {
     Flash_W25Qx_Status_t SpiStatus;
     
-#if W25QX_STORAGE_TOTAL_SIZE <= 16*1024*1024 //16MB addressable in 3 byte
+#if FLASH_W25QX_STORAGE_TOTAL_SIZE <= 16*1024*1024 //16MB addressable in 3 byte
     uint8_t cmd[4]={
         OP_ERASE_SECTOR,
         (addr>>16)&0xff,
         (addr>>8)&0xff,
         (addr>>0)&0xff
     };
-#elif W25QX_STORAGE_TOTAL_SIZE <= 4096*1024*1024 //4GB addressable in 4 byte
+#elif FLASH_W25QX_STORAGE_TOTAL_SIZE <= 4096*1024*1024 //4GB addressable in 4 byte
     uint8_t cmd[5]= {
         OP_ERASE_SECTOR_ADDR4,
         (addr>>24)&0xff,
@@ -257,18 +246,18 @@ Flash_W25Qx_Status_t Flash_W25Qx_EraseSector_4K(Flash_W25Qx_t *self,uint32_t add
 
     addr = ADDR_TO_SECTOR_NUM(addr);
 
-    SpiStatus = IS_LEN_VALID(addr,W25QX_SECTOR_SIZE)? FLASH_W25QX_OK : FLASH_W25QX_ERR_LEN;
+    SpiStatus = IS_LEN_VALID(addr,FLASH_W25QX_SECTOR_SIZE)? FLASH_W25QX_OK : FLASH_W25QX_ERR_LEN;
     RET_ERR(SpiStatus);
 
     SpiStatus = Flash_W25Qx_WriteEnable(self,1);
     RET_ERR(SpiStatus);
     
     CS_LOW(self);
-    SpiStatus = __w25qx_lowlevel_write(self,cmd,sizeof(cmd),W25QX_CMD_TIMEOUT);
+    SpiStatus = __w25qx_lowlevel_write(self,cmd,sizeof(cmd),FLASH_W25QX_CMD_TIMEOUT);
     CS_HIGH(self);
     RET_ERR(SpiStatus);
     
-    SpiStatus = Flash_W25Qx_WaitBusy(self,true,W25QX_SECTOR_ERASE_TIMEOUT);  
+    SpiStatus = Flash_W25Qx_WaitBusy(self,true,FLASH_W25QX_SECTOR_ERASE_TIMEOUT);  
     RET_ERR(SpiStatus);
 
     return SpiStatus;
@@ -285,7 +274,7 @@ Flash_W25Qx_Status_t Flash_W25Qx_EraseRange_4K(Flash_W25Qx_t *self,uint32_t addr
     addr_end = ADDR_TO_SECTOR_NUM(len + addr-1);
     addr = ADDR_TO_SECTOR_NUM(addr);
 
-    for (; addr <= addr_end; addr+=W25QX_SECTOR_SIZE)
+    for (; addr <= addr_end; addr+=FLASH_W25QX_SECTOR_SIZE)
     {
         SpiStatus=Flash_W25Qx_EraseSector_4K(self,addr);
         RET_ERR(SpiStatus);
@@ -300,9 +289,9 @@ Flash_W25Qx_Status_t Flash_W25Qx_Write(Flash_W25Qx_t *self,uint32_t addr,uint16_
     uint16_t w_len;
     Flash_W25Qx_Status_t SpiStatus;
 
-#if W25QX_STORAGE_TOTAL_SIZE <= 16*1024*1024 //16MB addressable in 3 byte
+#if FLASH_W25QX_STORAGE_TOTAL_SIZE <= 16*1024*1024 //16MB addressable in 3 byte
     uint8_t cmd[4]={OP_WRITE_DATA};
-#elif W25QX_STORAGE_TOTAL_SIZE <= 4096*1024*1024 //4GB addressable in 4 byte
+#elif FLASH_W25QX_STORAGE_TOTAL_SIZE <= 4096*1024*1024 //4GB addressable in 4 byte
     uint8_t cmd[5]={OP_WRITE_DATA_ADDR4};
 #endif
 
@@ -311,11 +300,11 @@ Flash_W25Qx_Status_t Flash_W25Qx_Write(Flash_W25Qx_t *self,uint32_t addr,uint16_
     
     while(len)
     {
-#if W25QX_STORAGE_TOTAL_SIZE <= 16*1024*1024 //16MB addressable in 3 byte
+#if FLASH_W25QX_STORAGE_TOTAL_SIZE <= 16*1024*1024 //16MB addressable in 3 byte
         cmd[1]=(addr>>16)&0xff;
         cmd[2]=(addr>> 8)&0xff;
         cmd[3]=(addr>> 0)&0xff;
-#elif W25QX_STORAGE_TOTAL_SIZE <= 4096*1024*1024 //4GB addressable in 4 byte
+#elif FLASH_W25QX_STORAGE_TOTAL_SIZE <= 4096*1024*1024 //4GB addressable in 4 byte
         cmd[1]=(addr>>24)&0xff;
         cmd[2]=(addr>>16)&0xff;
         cmd[3]=(addr>> 8)&0xff;
@@ -325,14 +314,14 @@ Flash_W25Qx_Status_t Flash_W25Qx_Write(Flash_W25Qx_t *self,uint32_t addr,uint16_
         //if address is not page align, we limit write length till page end.
         //if address is page align, we limit write length to page size.
         w_len = BSP_MIN(len,IS_ADDR_PAGE_ALIGN(addr) ? 
-        W25QX_PAGE_SIZE :  W25QX_PAGE_SIZE - (addr&(W25QX_PAGE_SIZE-1)));
+        FLASH_W25QX_PAGE_SIZE :  FLASH_W25QX_PAGE_SIZE - (addr&(FLASH_W25QX_PAGE_SIZE-1)));
                 
         SpiStatus = Flash_W25Qx_WriteEnable(self,true);
         RET_ERR(SpiStatus);
 
         CS_LOW(self);
-        SpiStatus = __w25qx_lowlevel_write(self,cmd,sizeof(cmd),W25QX_CMD_TIMEOUT);
-        SpiStatus = __w25qx_lowlevel_write(self,data,w_len,W25QX_CMD_TIMEOUT);      
+        SpiStatus = __w25qx_lowlevel_write(self,cmd,sizeof(cmd),FLASH_W25QX_CMD_TIMEOUT);
+        SpiStatus = __w25qx_lowlevel_write(self,data,w_len,FLASH_W25QX_CMD_TIMEOUT);      
         CS_HIGH(self);
         RET_ERR(SpiStatus);
 
@@ -340,7 +329,7 @@ Flash_W25Qx_Status_t Flash_W25Qx_Write(Flash_W25Qx_t *self,uint32_t addr,uint16_
         addr+=w_len;
         len-=w_len;
 
-        SpiStatus = Flash_W25Qx_WaitBusy(self,true,W25QX_PAGEWRITE_TIMEOUT);
+        SpiStatus = Flash_W25Qx_WaitBusy(self,true,FLASH_W25QX_PAGEWRITE_TIMEOUT);
         RET_ERR(SpiStatus);
     }
     return SpiStatus;
@@ -348,7 +337,7 @@ Flash_W25Qx_Status_t Flash_W25Qx_Write(Flash_W25Qx_t *self,uint32_t addr,uint16_
 
 Flash_W25Qx_Status_t Flash_W25Qx_Write_AsEEPROM(Flash_W25Qx_t *self,uint32_t addr,uint16_t len,uint8_t* data)
 {
-    uint8_t buf[W25QX_SECTOR_SIZE];
+    uint8_t buf[FLASH_W25QX_SECTOR_SIZE];
     uint32_t Sector_HeadAddr,Sector_EdgeAddr,w_len;
     Flash_W25Qx_Status_t SpiStatus;
 
@@ -356,7 +345,7 @@ Flash_W25Qx_Status_t Flash_W25Qx_Write_AsEEPROM(Flash_W25Qx_t *self,uint32_t add
     while (len)
     {
         Sector_HeadAddr = ADDR_TO_SECTOR_NUM(addr);
-        Sector_EdgeAddr = Sector_HeadAddr+W25QX_SECTOR_SIZE;
+        Sector_EdgeAddr = Sector_HeadAddr+FLASH_W25QX_SECTOR_SIZE;
         
         //read back the data
         SpiStatus = Flash_W25Qx_Read(self,Sector_HeadAddr,sizeof(buf),buf);
@@ -383,7 +372,7 @@ Flash_W25Qx_Status_t Flash_W25Qx_Write_AsEEPROM(Flash_W25Qx_t *self,uint32_t add
 Flash_W25Qx_Status_t Flash_W25Qx_Read(Flash_W25Qx_t *self,uint32_t addr,uint16_t len,uint8_t* data)
 {
     Flash_W25Qx_Status_t SpiStatus;
-#if W25QX_STORAGE_TOTAL_SIZE <= 16*1024*1024 //16MB addressable in 3 byte
+#if FLASH_W25QX_STORAGE_TOTAL_SIZE <= 16*1024*1024 //16MB addressable in 3 byte
     #if FLASH_W25QX_FAST_READ
         uint8_t cmd[5] = {
             OP_FASTREAD_DATA,
@@ -400,7 +389,7 @@ Flash_W25Qx_Status_t Flash_W25Qx_Read(Flash_W25Qx_t *self,uint32_t addr,uint16_t
             (addr>>0)&0xff
         };
     #endif
-#elif W25QX_STORAGE_TOTAL_SIZE <= 4096*1024*1024 //4GB addressable in 4 byte
+#elif FLASH_W25QX_STORAGE_TOTAL_SIZE <= 4096*1024*1024 //4GB addressable in 4 byte
     #if FLASH_W25QX_FAST_READ
     uint8_t cmd[6]={
         OP_FASTREAD_DATA_ADDR4,
@@ -422,8 +411,8 @@ Flash_W25Qx_Status_t Flash_W25Qx_Read(Flash_W25Qx_t *self,uint32_t addr,uint16_t
 #endif
 
     CS_LOW(self);
-    SpiStatus = __w25qx_lowlevel_write(self,cmd,sizeof(cmd),W25QX_CMD_TIMEOUT);    
-    SpiStatus = __w25qx_lowlevel_read(self,data,len,W25QX_CMD_TIMEOUT);
+    SpiStatus = __w25qx_lowlevel_write(self,cmd,sizeof(cmd),FLASH_W25QX_CMD_TIMEOUT);    
+    SpiStatus = __w25qx_lowlevel_read(self,data,len,FLASH_W25QX_CMD_TIMEOUT);
     CS_HIGH(self);
 
     return SpiStatus;
@@ -434,12 +423,12 @@ Flash_W25Qx_Status_t Flash_W25Qx_Read(Flash_W25Qx_t *self,uint32_t addr,uint16_t
 Flash_W25Qx_Status_t Flash_W25Qx_DumpSector(Flash_W25Qx_t *self,uint32_t addr)
 {
     uint8_t i,DumpBuf[DumpBuf_Size];
-    uint16_t len = W25QX_SECTOR_SIZE,r_len;
+    uint16_t len = FLASH_W25QX_SECTOR_SIZE,r_len;
     
     Flash_W25Qx_Status_t SpiStatus;
 
     addr=ADDR_TO_SECTOR_NUM(addr);
-    DBG_INFO("----------DumpSector:%d, addr:0x%x\r\n",addr/W25QX_SECTOR_SIZE,addr);	
+    DBG_INFO("----------DumpSector:%d, addr:0x%x\r\n",addr/FLASH_W25QX_SECTOR_SIZE,addr);	
 	DBG_INFO("          ___0___1___2___3___4___5___6___7___8___9___A___B___C___D___E___F\r\n");
 
     while (len)
@@ -468,7 +457,7 @@ Flash_W25Qx_Status_t Flash_W25Qx_Test(Flash_W25Qx_t *self)
     Flash_W25Qx_Status_t SpiStatus;
 
     Len = FLASH_W25QX_RANDOM(FLASH_W25QX_TESTLEN_MIN,FLASH_W25QX_TESTLEN_MAX);
-    Addr = FLASH_W25QX_RANDOM(0,W25QX_STORAGE_TOTAL_SIZE - Len);  
+    Addr = FLASH_W25QX_RANDOM(0,FLASH_W25QX_STORAGE_TOTAL_SIZE - Len);  
     
     SpiStatus = Flash_W25QX_Test_RW(self,Len,ADDR_TO_SECTOR_NUM(Addr),W_Data,R_Data);
     RET_ERR(SpiStatus);    

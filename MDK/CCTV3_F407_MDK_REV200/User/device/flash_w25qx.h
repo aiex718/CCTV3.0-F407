@@ -18,10 +18,6 @@
     #define FLASH_W25QX_BLOCK_DIV 1
 #endif
 
-#ifndef FLASH_W25QX_RESET_DELAY
-    #define FLASH_W25QX_RESET_DELAY 1 //ms
-#endif
-
 //fast read is required if SPI master is faster than 50MHZ
 #ifndef FLASH_W25QX_FAST_READ
     #define FLASH_W25QX_FAST_READ 0
@@ -29,28 +25,28 @@
 
 
 #if FLASH_W25QX_MODEL == 128
-    #define W25QX_JEDEC_ID          0xEF4018
-    #define W25QX_SECTOR_CNT        0x1000 //4096
-    #define W25QX_SECTOR_SIZE       0x1000 //4096
-    #define W25QX_CHIP_ERASE_TIMEOUT    200000
+    #define FLASH_W25QX_JEDEC_ID          0xEF4018
+    #define FLASH_W25QX_SECTOR_CNT        0x1000 //4096
+    #define FLASH_W25QX_SECTOR_SIZE       0x1000 //4096
+    #define FLASH_W25QX_CHIP_ERASE_TIMEOUT    200000
 #elif FLASH_W25QX_MODEL == 256
-    #define W25QX_JEDEC_ID          0xEF4019
-    #define W25QX_SECTOR_CNT        0x2000 //8192
-    #define W25QX_SECTOR_SIZE       0x1000 //4096
-    #define W25QX_CHIP_ERASE_TIMEOUT    400000
+    #define FLASH_W25QX_JEDEC_ID          0xEF4019
+    #define FLASH_W25QX_SECTOR_CNT        0x2000 //8192
+    #define FLASH_W25QX_SECTOR_SIZE       0x1000 //4096
+    #define FLASH_W25QX_CHIP_ERASE_TIMEOUT    400000
 #else
     #error W25Q chip model not defined
 #endif
 
-#define W25QX_PAGE_SIZE             256
-#define W25QX_PAGEWRITE_TIMEOUT     3
-#define W25QX_SECTOR_ERASE_TIMEOUT  400
-#define W25QX_CMD_TIMEOUT           15
+#define FLASH_W25QX_PAGE_SIZE             256
+#define FLASH_W25QX_PAGEWRITE_TIMEOUT     3
+#define FLASH_W25QX_SECTOR_ERASE_TIMEOUT  400
+#define FLASH_W25QX_CMD_TIMEOUT           15
 
 
-#define W25QX_STORAGE_TOTAL_SIZE    (W25QX_SECTOR_CNT * W25QX_SECTOR_SIZE)
-#define W25QX_BLOCK_SIZE            (W25QX_SECTOR_SIZE/W25QX_BLOCK_DIV)
-#define W25QX_BLOCK_CNT             (W25QX_STORAGE_TOTAL_SIZE/W25QX_BLOCK_SIZE)
+#define FLASH_W25QX_STORAGE_TOTAL_SIZE    (FLASH_W25QX_SECTOR_CNT * FLASH_W25QX_SECTOR_SIZE)
+#define FLASH_W25QX_BLOCK_SIZE            (FLASH_W25QX_SECTOR_SIZE/FLASH_W25QX_BLOCK_DIV)
+#define FLASH_W25QX_BLOCK_NUM             (FLASH_W25QX_STORAGE_TOTAL_SIZE/FLASH_W25QX_BLOCK_SIZE)
 
 
 typedef enum{
@@ -73,7 +69,7 @@ Flash_W25Qx_Status_t Flash_W25Qx_Init(Flash_W25Qx_t *self);
 Flash_W25Qx_Status_t Flash_W25Qx_GetJedecId(Flash_W25Qx_t *self,uint32_t *id_out);
 //Misc
 Flash_W25Qx_Status_t Flash_W25Qx_ReadStatusReg(Flash_W25Qx_t *self,bool cs_ctrl,uint8_t *reg_out);
-Flash_W25Qx_Status_t Flash_W25Qx_WaitBusy(Flash_W25Qx_t *self,bool cs_ctrl,uint16_t timeout);
+Flash_W25Qx_Status_t Flash_W25Qx_WaitBusy(Flash_W25Qx_t *self,bool cs_ctrl,uint32_t timeout);
 
 //Control
 Flash_W25Qx_Status_t Flash_W25Qx_WriteEnable(Flash_W25Qx_t *self,bool en);
