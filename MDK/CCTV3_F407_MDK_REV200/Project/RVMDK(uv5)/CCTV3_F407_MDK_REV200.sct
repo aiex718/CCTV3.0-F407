@@ -1,0 +1,58 @@
+LR_IROM1 0x08000000 0x00004000  {    ; load region size_region
+  ER_IROM1 0x08000000 0x00004000  {  ; load address = execution address
+   *.o (RESET, +First)
+   *(InRoot$$Sections)
+   .ANY (+RO)
+   .ANY (+XO)
+  }
+  RW_IRAM1 0x20000000 0x0001C000  {  ; 112KB default ram area
+    .ANY (+RW +ZI)
+    .ANY (HW_BUF)
+    peri_*.o (HW_BUF)
+    dev_*.o (HW_BUF)
+    app_*.o (HW_BUF)
+  }
+  RW_ETHRAM 0x2001C000 0x00004000  {  ; 16KB Dedicate ram for ETH buffer
+    stm32f4x7_eth.o (+RW +ZI)
+  }
+  RW_CCMRAM 0x10000000 0x00010000  { ; 64KB CCMRAM for stack and some object instance
+    ;ST Library
+    startup_stm32f40_41xxx.o (+ZI +RW)
+    stm32f4x7_eth_phy.o (+ZI +RW)
+
+    ;Instance
+    peri_*.o (+ZI +RW)
+    dev_*.o (+ZI +RW)
+    app_*.o (+ZI +RW)
+    
+    ;LWIP Apps
+    httpd.o (+ZI +RW)
+    dhcp.o (+ZI +RW)
+    sntp.o (+ZI +RW)
+    dns.o (+ZI +RW)
+
+    ;LWIP Core
+    memp.o (+ZI +RW)
+    etharp.o (+ZI +RW)
+    ip.o (+ZI +RW)
+    udp.o (+ZI +RW)
+    tcp.o (+ZI +RW)
+    tcp_in.o (+ZI +RW)
+    ip4_addr.o (+ZI +RW)
+    netconf.o (+ZI +RW)
+    netif.o (+ZI +RW)
+
+    ;Other
+    mem_guard.o (+ZI +RW)
+    usbd_storage.o (+ZI +RW)
+    main.o (+ZI +RW)
+    stdout.o (+ZI +RW)
+  }
+}
+
+LR_IROM2 0x08010000 0x000F0000  {
+  ER_IROM2 0x08010000 0x000F0000  {  ; load address = execution address
+   .ANY (+RO)
+   .ANY (+XO)
+  }
+}

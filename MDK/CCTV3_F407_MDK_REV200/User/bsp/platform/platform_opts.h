@@ -1,6 +1,9 @@
 #ifndef __PLATFORM_OPTS_H__
 #define __PLATFORM_OPTS_H__
 
+//sections
+#define __HW_BUF_SECTION __attribute__((section("HW_BUF")))
+
 #define DEBUG_SERIAL_USART_TX_BUFFER_SIZE 256
 #define DEBUG_SERIAL_USART_RX_BUFFER_SIZE 16
 #define DEBUG_SERIAL_TX_BUFFER_SIZE 1024

@@ -63,4 +63,8 @@
     #define __STATIC_INLINE static inline
 #endif
 
+#ifndef __HW_BUF_SECTION
+    #define __HW_BUF_SECTION 
+#endif
+
 #endif

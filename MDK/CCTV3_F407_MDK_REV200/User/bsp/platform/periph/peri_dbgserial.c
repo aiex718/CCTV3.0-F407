@@ -4,6 +4,9 @@
 #include "bsp/hal/usart.h"
 #include "bsp/sys/callback.h"
 
+uint8_t _dbg_serial_hw_txbuf[DEBUG_SERIAL_USART_TX_BUFFER_SIZE] __HW_BUF_SECTION;
+uint8_t _dbg_serial_hw_rxbuf[DEBUG_SERIAL_USART_RX_BUFFER_SIZE] __HW_BUF_SECTION;
+
 DBG_Serial_t Peri_DBG_Serial_Inst= 
 {
 	.tx_con_queue = __VAR_CAST_VAR(Concurrent_Queue_uint8_t)
@@ -150,19 +153,13 @@ DBG_Serial_t Peri_DBG_Serial_Inst=
 		},
 		.USART_Tx_Buf = __VAR_CAST_VAR(Buffer_uint8_t)
 		{
-			.buf_ptr = __VAR_ARRAY_CAST_VAR(uint8_t,DEBUG_SERIAL_USART_TX_BUFFER_SIZE)
-			{
-				0
-			},
-			.len=DEBUG_SERIAL_USART_TX_BUFFER_SIZE
+			.buf_ptr = _dbg_serial_hw_txbuf,
+			.len=sizeof(_dbg_serial_hw_txbuf)
 		},
 		.USART_Rx_Buf = __VAR_CAST_VAR(Buffer_uint8_t)
 		{
-			.buf_ptr = __VAR_ARRAY_CAST_VAR(uint8_t,DEBUG_SERIAL_USART_RX_BUFFER_SIZE)
-			{
-				0
-			},
-			.len=DEBUG_SERIAL_USART_RX_BUFFER_SIZE
+			.buf_ptr = _dbg_serial_hw_rxbuf,
+			.len=sizeof(_dbg_serial_hw_rxbuf)
 		},
 		.USART_Rx_Threshold = 0,
 		.USART_Rx_Timeout = 100,
