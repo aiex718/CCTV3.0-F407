@@ -9,7 +9,7 @@
     #define FLASHLIGHT_BRIGHTNESS_MAX 50 //cap duty cycle at 50%
 #endif
 
-typedef struct 
+typedef struct Device_FlashLight_s
 {
     const HAL_Timer_PWM_t *FlashLight_Timer_PWM; //not allow to modify parent timer
     HAL_Timer_PWM_Channel_t *FlashLight_Timer_PWM_Channel;

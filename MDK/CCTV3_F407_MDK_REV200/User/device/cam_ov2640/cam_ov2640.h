@@ -32,7 +32,7 @@ typedef enum
     __NOT_CALLBACK_CAM_OV2640_MAX   ,
 }Device_CamOV2640_CallbackIdx_t;
 
-typedef struct
+typedef struct Device_CamOV2640_s
 {
     HAL_DCMI_t *CamOV2640_DCMI;
     HAL_I2C_t *CamOV2640_I2C;
