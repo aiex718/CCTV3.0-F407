@@ -23,6 +23,8 @@
 #include "bsp/sys/boolean.h"
 #include "bsp/sys/mem_utils.h"
 #include "bsp/sys/cast_ptr.h"
+
+#include <math.h>
 #include <string.h>
 
 #ifndef BSP_MEMCPY 
@@ -42,6 +44,9 @@
 #endif
 #ifndef BSP_MAX 
     #define BSP_MAX(a,b) (((a)>(b))?(a):(b))
+#endif
+#ifndef BSP_ABS
+    #define BSP_ABS(x)  (((x) < 0) ? -(x) : (x))
 #endif
 #ifndef BSP_UNUSED_ARG
     #define BSP_UNUSED_ARG(x) (void)(x)
