@@ -16,9 +16,11 @@ __STATIC_INLINE uint8_t BitFlag_BinToIdx(BitFlag_t f) {
     return result;
 }
 
+#define BitFlag_Clear(flag)         ((flag) = 0)
+
 #define BitFlag_SetBit(flag,bin)    ((flag) |= (bin))
 #define BitFlag_ClearBit(flag,bin)  ((flag) &= ~(bin))
-#define BitFlag_IsBitSet(usart,bin) ((flag) | (bin))
+#define BitFlag_IsBitSet(flag,bin) ((flag) & (bin))
 
 #define BitFlag_SetIdx(flag,idx)   BitFlag_SetBit((flag),BitFlag_IdxToBin(idx))
 #define BitFlag_ClearIdx(flag,idx) BitFlag_ClearBit((flag),BitFlag_IdxToBin(idx))
