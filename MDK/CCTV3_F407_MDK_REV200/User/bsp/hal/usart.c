@@ -82,8 +82,8 @@ bool HAL_USART_WriteByte_Polling(const HAL_USART_t* usart, uint8_t data)
         HAL_USART_IsTxStreamEnabled(usart) )
         return false;
 
-    while(USART_GetFlagStatus(usart->USARTx, USART_FLAG_TXE) == RESET);
     USART_SendData(usart->USARTx, data);
+    while(USART_GetFlagStatus(usart->USARTx, USART_FLAG_TC) == RESET);
 
     return true;
 }
