@@ -120,6 +120,8 @@ int main(void)
 			}
 			else if(strcmp((char*)rxcmd,"reset")==0)
 			{
+				DBG_Serial_SafeMode(Peri_DBG_Serial,true);
+				DBG_INFO("System resetting...\n");
 				SysCtrl_Reset();
 			}
 			else if(strcmp((char*)rxcmd,"beep")==0)
