@@ -248,6 +248,19 @@ GetStream(url);\r\n\
 </html>";
 #endif
 
+#if MJPEGD_DEBUG
+const char * const request_strreq[__NOT_REQUEST_MAX] = {
+    "REQUEST_NOTFOUND",
+    "REQUEST_TOOMANY",
+    "REQUEST_HANDSHAKE",
+    "REQUEST_VIEW_SNAP",
+    "REQUEST_VIEW_STREAM",
+    "REQUEST_VIEW_FPS",
+    "REQUEST_SNAP",
+    "REQUEST_STREAM",
+};
+#endif
+
 /** http request handlers **/
 const Mjpegd_RequestHandler_t mjpegd_request_handlers[__NOT_REQUEST_MAX]=
 {
