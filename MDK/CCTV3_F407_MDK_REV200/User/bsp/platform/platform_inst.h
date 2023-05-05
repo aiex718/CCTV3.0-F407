@@ -4,5 +4,6 @@
 #include "bsp/platform/platform_defs.h"
 
 #include "bsp/platform/periph/periph_list.h"
+#include "bsp/platform/device/device_list.h"
 
 #endif

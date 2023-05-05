@@ -689,6 +689,16 @@
               <FileType>1</FileType>
               <FilePath>..\..\User\bsp\hal\usart.c</FilePath>
             </File>
+            <File>
+              <FileName>adc.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\User\bsp\hal\adc.c</FilePath>
+            </File>
+            <File>
+              <FileName>timer.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\User\bsp\hal\timer.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -718,6 +728,21 @@
               <FileName>peri_gpio.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\User\bsp\platform\periph\peri_gpio.c</FilePath>
+            </File>
+            <File>
+              <FileName>peri_adc.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\User\bsp\platform\periph\peri_adc.c</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>User\bsp\platform\device</GroupName>
+          <Files>
+            <File>
+              <FileName>dev_current_trig.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\User\bsp\platform\device\dev_current_trig.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -753,6 +778,16 @@
               <FileName>mem_guard.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\User\bsp\sys\mem_guard.c</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>User\device</GroupName>
+          <Files>
+            <File>
+              <FileName>current_trig.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\User\device\current_trig.c</FilePath>
             </File>
           </Files>
         </Group>

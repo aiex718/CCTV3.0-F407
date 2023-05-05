@@ -6,8 +6,11 @@
 #include "bsp/sys/systimer.h"
 #include "bsp/sys/mem_guard.h"
 
+#include "bsp/hal/adc.h"
+#include "bsp/hal/timer.h"
 
 SysTimer_t blinkTimer;
+
 int main(void)
 {
 	//SystemInit() is inside system_stm32f4xx.c
@@ -27,6 +30,15 @@ int main(void)
 	HAL_GPIO_InitPin(Peri_LED_Load_pin);
 	HAL_GPIO_WritePin(Peri_LED_STAT_pin,0);
 
+	//ADC
+	HAL_ADC_CommonInit(Peri_ADC_CommonCfg);
+
+	//Current trig
+	Device_CurrentTrig_Init(Dev_CurrentTrig);
+	Device_CurrentTrig_Cmd(Dev_CurrentTrig,true);
+	
+
+
 	SysTimer_Init(&blinkTimer,1000);
 	while(1)
 	{
@@ -43,8 +55,10 @@ int main(void)
 		{
 			HAL_GPIO_TogglePin(Peri_LED_Load_pin);
 			SysTimer_Reset(&blinkTimer);
-				DBG_INFO("%d:Wkup pin %d\n",SysTime_Get(),HAL_GPIO_ReadPin(Peri_Button_Wkup_pin));
+			//DBG_INFO("%d:Wkup pin %d\n",SysTime_Get(),HAL_GPIO_ReadPin(Peri_Button_Wkup_pin));
 		}
+
+		Device_CurrentTrig_Service(Dev_CurrentTrig);
 
 		if(Mem_Guard_CheckOVF())
 		{
