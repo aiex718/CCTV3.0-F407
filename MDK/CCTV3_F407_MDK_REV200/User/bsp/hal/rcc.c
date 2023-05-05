@@ -18,15 +18,14 @@ void HAL_RCC_Cmd(const HAL_RCC_Cmd_t *cmd, const bool en)
 
 void HAL_RCC_Init(const HAL_RCC_t *self)
 {
-    HAL_RCC_MCO_t **mco_list = self->RCC_mco_list;
-    HAL_RCC_CLK_t **clk_list = self->RCC_clk_list;
-    
-    if(clk_list)
+    if(self->RCC_CLK_list)
     {
+        HAL_RCC_CLK_t **clk_list = self->RCC_CLK_list;
         HAL_RCC_CLK_t *clk;
+
         while (*clk_list != NULL)
         {
-            clk = *clk_list;
+            clk = *clk_list++;
             switch (clk->CLK_Idx)
             {
             case CLK_HSE:
@@ -76,16 +75,17 @@ void HAL_RCC_Init(const HAL_RCC_t *self)
             default:
                 break;
             }
-            clk_list++;
         }
     }
 
-    if(mco_list)
+    if(self->RCC_MCO_list)
     {
+        HAL_RCC_MCO_t **mco_list = self->RCC_MCO_list;
         HAL_RCC_MCO_t *mco;
+        
         while (*mco_list != NULL)
         {
-            mco = *mco_list;
+            mco = *mco_list++;
             switch (mco->MCO_Idx)
             {
             case MCO1:
@@ -98,7 +98,6 @@ void HAL_RCC_Init(const HAL_RCC_t *self)
                 break;
             }
             HAL_GPIO_InitPin(mco->MCO_Pin);
-            mco_list++;
         }
     }
 }
