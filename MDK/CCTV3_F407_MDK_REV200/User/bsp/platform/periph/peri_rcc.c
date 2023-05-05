@@ -3,8 +3,8 @@
 
 const HAL_RCC_t Peri_RCC_Inst = 
 {
-	.RCC_mco_list = NULL,
-	.RCC_clk_list = __CONST_ARRAY_CAST_VAR(HAL_RCC_CLK_t*)
+	.RCC_MCO_list = NULL,
+	.RCC_CLK_list = __CONST_ARRAY_CAST_VAR(HAL_RCC_CLK_t*)
 	{
 		//LSE for RTC
 		__CONST_CAST_VAR(HAL_RCC_CLK_t){	
