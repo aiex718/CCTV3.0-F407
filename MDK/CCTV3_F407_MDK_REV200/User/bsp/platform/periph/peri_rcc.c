@@ -3,7 +3,7 @@
 
 const HAL_RCC_t Peri_RCC_Inst = 
 {
-	.RCC_mco_list = __CONST_ARRAY_CAST_VAR(HAL_RCC_MCO_t*)
+	.RCC_MCO_list = __CONST_ARRAY_CAST_VAR(HAL_RCC_MCO_t*)
 	{
 		//MCO2 for camera
 		__CONST_CAST_VAR(HAL_RCC_MCO_t){
@@ -28,7 +28,7 @@ const HAL_RCC_t Peri_RCC_Inst =
 		},
 		NULL//Null terminate
 	},
-	.RCC_clk_list = NULL
+	.RCC_CLK_list = NULL
 };
 
 const HAL_RCC_t *Peri_RCC = &Peri_RCC_Inst;
