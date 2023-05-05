@@ -5,5 +5,6 @@
 #include "bsp/platform/device/dev_flashlight.h"
 #include "bsp/platform/device/dev_disk.h"
 #include "bsp/platform/device/dev_usbotg_fs.h"
+#include "bsp/platform/device/dev_current_trig.h"
 
 #endif

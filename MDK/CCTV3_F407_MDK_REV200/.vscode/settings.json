@@ -7,5 +7,17 @@
         "**/CMSIS/Device/ST/STM32F4xx/Source/Templates/**/*.S": true,
         "**/Documentation/**": true,
         "**/Output": true
+    },
+    "files.associations": {
+        "*.h": "c",
+        "limits": "c",
+        "memory": "c",
+        "streambuf": "c",
+        "bit": "c",
+        "compare": "c",
+        "cstddef": "c",
+        "string": "c",
+        "new": "c",
+        "functional": "c"
     }
 }

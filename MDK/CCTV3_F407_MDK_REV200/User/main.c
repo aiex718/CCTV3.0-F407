@@ -83,6 +83,16 @@ int main(void)
 	NetTime_Init(App_NetTime);
 	httpd_init();
 	
+	//ADC
+	HAL_ADC_CommonInit(Peri_ADC_CommonCfg);
+
+	//Current trig
+	//TODO:Regist triggered callback and webhook
+	Device_CurrentTrig_Init(Dev_CurrentTrig);
+	Device_CurrentTrig_Cmd(Dev_CurrentTrig,true);
+	
+
+
 	SysTimer_Init(&blinkTimer,1000);
 	while(1)
 	{
@@ -113,8 +123,10 @@ int main(void)
 		{
 			HAL_GPIO_TogglePin(Peri_LED_Load_pin);
 			SysTimer_Reset(&blinkTimer);
-			//DBG_INFO("%d:Wkup pin %d\n",SysTime_Get(),HAL_GPIO_ReadPin(Periph_Button_Wkup_pin));
+			//DBG_INFO("%d:Wkup pin %d\n",SysTime_Get(),HAL_GPIO_ReadPin(Peri_Button_Wkup_pin));
 		}
+
+		Device_CurrentTrig_Service(Dev_CurrentTrig);
 
 		if(Mem_Guard_CheckOVF())
 		{
