@@ -15,7 +15,7 @@
     #define CAM_OV2640_TIMEOUT     1000
 #endif 
 
-typedef struct
+typedef struct CAM_OV2640_ID_s
 {
   uint8_t Manufacturer_ID1;
   uint8_t Manufacturer_ID2;
