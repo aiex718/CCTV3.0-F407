@@ -7,7 +7,7 @@
 #include "stdio.h"
 #include "stdarg.h"
 
-static const char* http_response_header[__NOT_RESPONSE_CODE_MAX]=
+static const char* const http_response_header[__NOT_RESPONSE_CODE_MAX]=
 {
     (const char*)"HTTP/1.0 200 OK \r\n",
     (const char*)"HTTP/1.0 400 Bad Request\r\n",
@@ -15,7 +15,7 @@ static const char* http_response_header[__NOT_RESPONSE_CODE_MAX]=
     (const char*)"HTTP/1.0 501 Not Implemented\r\n",
 };
 
-static const char* http_response_default_msg[__NOT_RESPONSE_CODE_MAX]=
+static const char* const http_response_default_msg[__NOT_RESPONSE_CODE_MAX]=
 {
     NULL,
     (const char*)"Bad Command",
