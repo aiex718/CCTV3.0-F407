@@ -11,6 +11,7 @@ LR_IROM1 0x08000000 0x00004000  {    ; load region size_region
     peri_*.o (HW_BUF)
     dev_*.o (HW_BUF)
     app_*.o (HW_BUF)
+    usbd_msc_bot.o (+ZI +RW)
   }
   RW_ETHRAM 0x2001C000 0x00004000  {  ; 16KB Dedicate ram for ETH buffer
     stm32f4x7_eth.o (+RW +ZI)
@@ -32,10 +33,15 @@ LR_IROM1 0x08000000 0x00004000  {    ; load region size_region
     dns.o (+ZI +RW)
 
     ;LWIP Core
+    mem.o (+ZI +RW)
     memp.o (+ZI +RW)
     etharp.o (+ZI +RW)
     ip.o (+ZI +RW)
     udp.o (+ZI +RW)
+    err.o (+ZI +RW)
+    timeouts.o (+ZI +RW)
+    ip4.o (+ZI +RW)
+    ip4_frag.o (+ZI +RW)
     tcp.o (+ZI +RW)
     tcp_in.o (+ZI +RW)
     ip4_addr.o (+ZI +RW)
@@ -43,6 +49,9 @@ LR_IROM1 0x08000000 0x00004000  {    ; load region size_region
     netif.o (+ZI +RW)
 
     ;Other
+    usbd_*.o (+ZI +RW) ; ST USBD
+    ff.o (+ZI +RW)     ; FATFS
+    systime.o (+ZI +RW)
     mem_guard.o (+ZI +RW)
     usbd_storage.o (+ZI +RW)
     main.o (+ZI +RW)

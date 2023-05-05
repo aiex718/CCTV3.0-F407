@@ -47,7 +47,7 @@
     #define CURRENT_TRIG_ADC_VREF 3.3F
 #endif
 
-//Sensing resistor
+//Sensing resistor, normally 100 ohm
 #ifndef CURRENT_TRIG_SENSING_RES_VAL
     #error "CURRENT_TRIG_SENSING_RES_VAL not defined"
 #endif

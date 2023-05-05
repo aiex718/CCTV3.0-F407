@@ -20,17 +20,8 @@ typedef enum
 typedef s8_t request_t;
 
 #if MJPEGD_DEBUG
+extern const char * const request_strreq[__NOT_REQUEST_MAX];
 #define mjpegd_strreq(x) (request_strreq[x])
-static const char *request_strreq[__NOT_REQUEST_MAX] = {
-    "REQUEST_NOTFOUND",
-    "REQUEST_TOOMANY",
-    "REQUEST_HANDSHAKE",
-    "REQUEST_VIEW_SNAP",
-    "REQUEST_VIEW_STREAM",
-    "REQUEST_VIEW_FPS",
-    "REQUEST_SNAP",
-    "REQUEST_STREAM",
-};
 #else
 #define mjpegd_strreq(x) ""
 #endif

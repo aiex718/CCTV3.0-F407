@@ -1,7 +1,7 @@
 #include "bsp/platform/device/dev_current_trig.h"
 
 
-uint8_t _dev_current_trig_adc_buf[CURRENT_TRIG_ADC_BUF_SIZE] __HW_BUF_SECTION;
+uint8_t _dev_current_trig_adc_hwbuf[CURRENT_TRIG_ADC_BUF_SIZE] __HW_BUF_SECTION;
 
 Device_CurrentTrig_t Dev_CurrentTrig_Inst = {
     .CurrentTrig_Timer = __CONST_CAST_VAR(HAL_Timer_t){
@@ -106,7 +106,7 @@ Device_CurrentTrig_t Dev_CurrentTrig_Inst = {
     },//CurrentTrig_DMA
     .CurrentTrig_Val_Buf = __VAR_ARRAY_CAST_VAR(float,CURRENT_TRIG_VAL_BUF_SIZE) {0},
     .CurrentTrig_Val_Buf_Len = CURRENT_TRIG_VAL_BUF_SIZE,
-    .CurrentTrig_ADC_Buf = _dev_current_trig_adc_buf,
+    .CurrentTrig_ADC_Buf = _dev_current_trig_adc_hwbuf,
     .CurrentTrig_ADC_Buf_Len = CURRENT_TRIG_ADC_BUF_SIZE,
     //Peak detection parameters
     .CurrentTrig_PeakThreshold = 1.5F,
