@@ -19,8 +19,12 @@
 //private functions
 static float stddev(float data[], uint16_t len);
 static float mean(float data[], uint16_t len);
-static void Device_CurrentTrig_Read_Buf(Device_CurrentTrig_t *self, CURRENT_TRIG_FLOAT_TYPE *dst,uint16_t len);
+static void Device_CurrentTrig_ProcPendingEvent(Device_CurrentTrig_t *self);
+static void Device_CurrentTrig_ProcADCRawVal(Device_CurrentTrig_t *self,const CURRENT_TRIG_ADC_VAL_TYPE* data,uint16_t len);
+static void Device_CurrentTrig_CheckADCThres(Device_CurrentTrig_t *self,const CURRENT_TRIG_ADC_VAL_TYPE* data,uint16_t len);
+static void Device_CurrentTrig_CheckRecvLen(Device_CurrentTrig_t *self);
 static bool Device_CurrentTrig_CheckPeak(Device_CurrentTrig_t *self);
+static void Device_CurrentTrig_Read_Buf(Device_CurrentTrig_t *self, CURRENT_TRIG_FLOAT_TYPE *dst,uint16_t len);
 
 
 //private events
@@ -132,30 +136,79 @@ bool Device_CurrentTrig_Cmd(Device_CurrentTrig_t *self, bool en)
     return true;
 }
 
-/**
- * @brief Convert ADC raw value to standarized value, write to self->CurrentTrig_Val_Buf,
- *        and check for overload and disconnect event.
- */
-void Device_CurrentTrig_ProcADCRawVal(Device_CurrentTrig_t *self,const CURRENT_TRIG_ADC_VAL_TYPE* data,uint16_t len)
+void Device_CurrentTrig_Service(Device_CurrentTrig_t *self)
 {
-    const CURRENT_TRIG_FLOAT_TYPE *w_ptr_end = self->CurrentTrig_Val_Buf + self->CurrentTrig_Val_Buf_Len;
-    const CURRENT_TRIG_ADC_VAL_TYPE *data_end = data + len;
+    Device_CurrentTrig_ProcPendingEvent(self);
+    Device_CurrentTrig_CheckRecvLen(self);
+}   
 
-    const CURRENT_TRIG_ADC_VAL_TYPE low_thres = _MA_TO_ADC_RAW_VAL(self->CurrentTrig_Disconnect_Thres_mA);
-    const CURRENT_TRIG_ADC_VAL_TYPE high_thres = _MA_TO_ADC_RAW_VAL(self->CurrentTrig_Overload_Thres_mA);
-    bool dissconnect = false, overload = false;
+static void Device_CurrentTrig_ProcPendingEvent(Device_CurrentTrig_t *self)
+{
+    uint8_t event_idx;
+    CURRENT_TRIG_ADC_VAL_TYPE *adc_buf_ptr=NULL;
+    uint16_t read_len=0;
+
+    while(self->_curr_pending_event)
+    {
+        //check if DMA_HT or DMA_TC event occoured
+        event_idx = BitFlag_BinToIdx(self->_curr_pending_event);
+
+        if(event_idx == CURRENTTRIG_EVENT_DMA_HT)
+        {
+            adc_buf_ptr = self->CurrentTrig_ADC_Buf;
+            read_len = self->CurrentTrig_ADC_Buf_Len>>1;
+        }
+        else if(event_idx == CURRENTTRIG_EVENT_DMA_TC)
+        {
+            adc_buf_ptr = self->CurrentTrig_ADC_Buf+(self->CurrentTrig_ADC_Buf_Len>>1);
+            read_len = self->CurrentTrig_ADC_Buf_Len>>1;
+        }
+
+        if(adc_buf_ptr != NULL && read_len)
+        {
+            Device_CurrentTrig_ProcADCRawVal(self,adc_buf_ptr,read_len);
+            Device_CurrentTrig_CheckADCThres(self,adc_buf_ptr,read_len);
+        }
+        
+        BitFlag_ClearIdx(self->_curr_pending_event,event_idx);
+    }
+}
+
+//Convert ADC raw value to standarized value, write to self->CurrentTrig_Val_Buf.
+static void Device_CurrentTrig_ProcADCRawVal(Device_CurrentTrig_t *self,const CURRENT_TRIG_ADC_VAL_TYPE* data,uint16_t len)
+{
+    const CURRENT_TRIG_FLOAT_TYPE *buf_end = self->CurrentTrig_Val_Buf + self->CurrentTrig_Val_Buf_Len;
+    const CURRENT_TRIG_ADC_VAL_TYPE *data_end = data + len;
 
     while(data!=data_end)
     {
         //div CURRENT_TRIG_MAX_CURRENT_MA to standarize data from 0 to 1.00
         *self->_curr_buf_w_ptr= _ADC_RAW_VAL_TO_MA_DIV(*data,CURRENT_TRIG_MAX_CURRENT_MA);
 
+        ++self->_curr_buf_w_ptr;
+        ++data;
+
+        if(self->_curr_buf_w_ptr==buf_end)
+            self->_curr_buf_w_ptr=self->CurrentTrig_Val_Buf;
+    }
+}
+
+//check if adc vaule exceed threshold, trigger DISCONNECT or OVERLOAD callback if needed
+static void Device_CurrentTrig_CheckADCThres(Device_CurrentTrig_t *self,const CURRENT_TRIG_ADC_VAL_TYPE* data,uint16_t len)
+{
+    const CURRENT_TRIG_ADC_VAL_TYPE *data_end = data + len;
+    const CURRENT_TRIG_ADC_VAL_TYPE low_thres = _MA_TO_ADC_RAW_VAL(self->CurrentTrig_Disconnect_Thres_mA);
+    const CURRENT_TRIG_ADC_VAL_TYPE high_thres = _MA_TO_ADC_RAW_VAL(self->CurrentTrig_Overload_Thres_mA);
+    bool disconnect = false, overload = false;
+
+    while(data!=data_end)
+    {
         if(*data <= low_thres)
         {
 #if CURRENT_TRIG_DEBUG
-            DBG_INFO("ISEN dissconnect: %d <= %d\n", *data,low_thres);
+            DBG_INFO("ISEN disconnect: %d <= %d\n", *data,low_thres);
 #endif
-            dissconnect = true;
+            disconnect = true;
         }
         else if(*data >= high_thres)
         {
@@ -163,22 +216,17 @@ void Device_CurrentTrig_ProcADCRawVal(Device_CurrentTrig_t *self,const CURRENT_T
             DBG_INFO("ISEN overload: %d >= %d\n", *data, high_thres);
 #endif
             overload = true;
-        }   
-
-        ++self->_curr_buf_w_ptr;
+        }
         ++data;
-
-        if(self->_curr_buf_w_ptr==w_ptr_end)
-            self->_curr_buf_w_ptr=self->CurrentTrig_Val_Buf;
     }
 
 
-    if(dissconnect)
+    if(disconnect)
     {
         Callback_Invoke_Idx(
             self,NULL,self->CurrentTrig_Callbacks, 
             DEVICE_CURRENT_TRIG_CALLBACK_DISCONNECT);
-        DBG_WARNING("ISEN dissconnected!\n");
+        DBG_WARNING("ISEN disconnect!\n");
     }
 
     if(overload)
@@ -188,96 +236,40 @@ void Device_CurrentTrig_ProcADCRawVal(Device_CurrentTrig_t *self,const CURRENT_T
             DEVICE_CURRENT_TRIG_CALLBACK_OVERLOAD);
         DBG_WARNING("ISEN overloaded!\n");
     }
-
 }
 
-void Device_CurrentTrig_Service(Device_CurrentTrig_t *self)
+//check if received enough data to scan for peak value
+static void Device_CurrentTrig_CheckRecvLen(Device_CurrentTrig_t *self)
 {
-    uint8_t event_idx;
+    uint16_t recv_len;
+    
+    if(self->_curr_buf_w_ptr >= self->_curr_buf_r_ptr)
+        recv_len = self->_curr_buf_w_ptr - self->_curr_buf_r_ptr;
+    else
+        recv_len = self->CurrentTrig_Val_Buf_Len - (self->_curr_buf_r_ptr - self->_curr_buf_w_ptr);
 
-    while(self->_curr_pending_event)
+    if(recv_len >= CURRENT_TRIG_SCAN_WINDOW)
     {
-        event_idx = BitFlag_BinToIdx(self->_curr_pending_event);
-
-        if(event_idx == CURRENTTRIG_EVENT_DMA_HT)
-        {
-            Device_CurrentTrig_ProcADCRawVal
-                (self,self->CurrentTrig_ADC_Buf,self->CurrentTrig_ADC_Buf_Len>>1);
-        }
-        else if(event_idx == CURRENTTRIG_EVENT_DMA_TC)
-        {
-            Device_CurrentTrig_ProcADCRawVal
-                (self,self->CurrentTrig_ADC_Buf+(self->CurrentTrig_ADC_Buf_Len>>1),self->CurrentTrig_ADC_Buf_Len>>1);
-        }
-        
-        BitFlag_ClearIdx(self->_curr_pending_event,event_idx);
-
-        {
-            uint16_t recv_len;
-            if(self->_curr_buf_w_ptr > self->_curr_buf_r_ptr)
-                recv_len = self->_curr_buf_w_ptr - self->_curr_buf_r_ptr;
-            else
-                recv_len = self->CurrentTrig_Val_Buf_Len - (self->_curr_buf_r_ptr - self->_curr_buf_w_ptr);
-
-            if(recv_len >= CURRENT_TRIG_SCAN_WINDOW)
-            {
 #if CURRENT_TRIG_DEBUG
-                DBG_INFO("recv_len %d>=%d ,buf w_ptr 0x%p r_ptr 0x%p\n",
-                    recv_len,CURRENT_TRIG_SCAN_WINDOW,self->_curr_buf_w_ptr,self->_curr_buf_r_ptr);
+        DBG_INFO("recv_len %d>=%d ,buf w_ptr 0x%p r_ptr 0x%p\n",
+            recv_len,CURRENT_TRIG_SCAN_WINDOW,self->_curr_buf_w_ptr,self->_curr_buf_r_ptr);
 #endif
-                if(Device_CurrentTrig_CheckPeak(self))
-                {
-#if CURRENT_TRIG_DEBUG_PRINT_EVENT
-                    DBG_INFO("Triggered!\n");
-#endif
-                    Callback_Invoke_Idx(
-                        self,NULL,self->CurrentTrig_Callbacks, 
-                        DEVICE_CURRENT_TRIG_CALLBACK_TRIGGERED);
-                }
-            }
-        }
-    }
-}   
-
-static void Device_CurrentTrig_Read_Buf(Device_CurrentTrig_t *self, CURRENT_TRIG_FLOAT_TYPE *dst,uint16_t len)
-{
-    const float *buf_end = self->CurrentTrig_Val_Buf + self->CurrentTrig_Val_Buf_Len;
-    float *r_ptr = self->_curr_buf_r_ptr;
-    uint16_t partial_len, copied_len = 0;
-
-    while(len)
-    {
-        partial_len = BSP_MIN(len, buf_end - r_ptr);
-
-        if(r_ptr + partial_len > buf_end)
+        if(Device_CurrentTrig_CheckPeak(self))
         {
-            DBG_ERROR("Buf copy over edge, r_ptr 0x%p partial_len %d buf_end 0x%p\n",
-                    r_ptr, partial_len, buf_end);
+#if CURRENT_TRIG_DEBUG_PRINT_EVENT
+            DBG_INFO("Triggered!\n");
+#endif
+            Callback_Invoke_Idx(
+                self,NULL,self->CurrentTrig_Callbacks, 
+                DEVICE_CURRENT_TRIG_CALLBACK_TRIGGERED);
         }
-        BSP_MEMCPY(dst + copied_len, r_ptr, sizeof(float) * partial_len);
-
-        len -= partial_len;
-        copied_len += partial_len;
-
-        r_ptr += partial_len;
-        if(r_ptr >= buf_end)
-            r_ptr -= self->CurrentTrig_Val_Buf_Len;
     }
-
-    r_ptr -= CURRENT_TRIG_SCAN_ROLLBACK;
-    if(r_ptr < self->CurrentTrig_Val_Buf)
-        r_ptr += self->CurrentTrig_Val_Buf_Len;
-
-    self->_curr_buf_r_ptr = r_ptr;
 }
 
 static bool Device_CurrentTrig_CheckPeak(Device_CurrentTrig_t *self)
 {
     bool result = false;
     uint16_t i, lag = CURRENT_TRIG_SCAN_WINDOW / 2;
-#if CURRENT_TRIG_DEBUG_PRINT_SIGNAL
-    int8_t signals[CURRENT_TRIG_SCAN_WINDOW] = {0};
-#endif
 
     CURRENT_TRIG_FLOAT_TYPE y[CURRENT_TRIG_SCAN_WINDOW];
     CURRENT_TRIG_FLOAT_TYPE filteredY[CURRENT_TRIG_SCAN_WINDOW];
@@ -292,6 +284,10 @@ static bool Device_CurrentTrig_CheckPeak(Device_CurrentTrig_t *self)
 #if CURRENT_TRIG_DEBUG
     bool have_edge = false;
     DBG_INFO("Checking peak from 0x%p len %d \n", self->_curr_buf_r_ptr, CURRENT_TRIG_SCAN_WINDOW);
+#endif
+
+#if CURRENT_TRIG_DEBUG_PRINT_SIGNAL
+    int8_t signals[CURRENT_TRIG_SCAN_WINDOW] = {0};
 #endif
 
     //read and copy data to local y[]
@@ -379,6 +375,40 @@ static bool Device_CurrentTrig_CheckPeak(Device_CurrentTrig_t *self)
 
     return result;
 }
+
+
+static void Device_CurrentTrig_Read_Buf(Device_CurrentTrig_t *self, CURRENT_TRIG_FLOAT_TYPE *dst,uint16_t len)
+{
+    const float *buf_end = self->CurrentTrig_Val_Buf + self->CurrentTrig_Val_Buf_Len;
+    float *r_ptr = self->_curr_buf_r_ptr;
+    uint16_t partial_len, copied_len = 0;
+
+    while(len)
+    {
+        partial_len = BSP_MIN(len, buf_end - r_ptr);
+
+        if(r_ptr + partial_len > buf_end)
+        {
+            DBG_ERROR("Buf copy over edge, r_ptr 0x%p partial_len %d buf_end 0x%p\n",
+                    r_ptr, partial_len, buf_end);
+        }
+        BSP_MEMCPY(dst + copied_len, r_ptr, sizeof(float) * partial_len);
+
+        len -= partial_len;
+        copied_len += partial_len;
+
+        r_ptr += partial_len;
+        if(r_ptr >= buf_end)
+            r_ptr -= self->CurrentTrig_Val_Buf_Len;
+    }
+
+    r_ptr -= CURRENT_TRIG_SCAN_ROLLBACK;
+    if(r_ptr < self->CurrentTrig_Val_Buf)
+        r_ptr += self->CurrentTrig_Val_Buf_Len;
+
+    self->_curr_buf_r_ptr = r_ptr;
+}
+
 
 
 static float mean(float data[], uint16_t len)
