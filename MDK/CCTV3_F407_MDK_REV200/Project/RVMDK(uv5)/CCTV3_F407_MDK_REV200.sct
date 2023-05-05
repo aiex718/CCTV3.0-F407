@@ -32,10 +32,15 @@ LR_IROM1 0x08000000 0x00004000  {    ; load region size_region
     dns.o (+ZI +RW)
 
     ;LWIP Core
+    mem.o (+ZI +RW)
     memp.o (+ZI +RW)
     etharp.o (+ZI +RW)
     ip.o (+ZI +RW)
     udp.o (+ZI +RW)
+    err.o (+ZI +RW)
+    timeouts.o (+ZI +RW)
+    ip4.o (+ZI +RW)
+    ip4_frag.o (+ZI +RW)
     tcp.o (+ZI +RW)
     tcp_in.o (+ZI +RW)
     ip4_addr.o (+ZI +RW)
@@ -43,6 +48,8 @@ LR_IROM1 0x08000000 0x00004000  {    ; load region size_region
     netif.o (+ZI +RW)
 
     ;Other
+    ff.o (+ZI +RW)
+    systime.o (+ZI +RW)
     mem_guard.o (+ZI +RW)
     usbd_storage.o (+ZI +RW)
     main.o (+ZI +RW)
