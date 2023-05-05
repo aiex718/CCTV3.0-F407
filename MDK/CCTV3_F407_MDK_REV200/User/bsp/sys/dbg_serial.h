@@ -58,22 +58,24 @@ void DBG_Serial_SafeMode(DBG_Serial_t *self,bool en);
 void DBG_Serial_Service(DBG_Serial_t *self);
 uint16_t DBG_Serial_ReadLine(DBG_Serial_t *self,uint8_t* buf, uint16_t buf_len);
 
-#define DBG_PRINTF(x,lv,...)   printf(lv "%s#%d:" x,__MODULE__,__LINE__,##__VA_ARGS__)
+#define DBG_PRINTF(x,...)   printf(x,##__VA_ARGS__)
+
+#define DBG_PRINTF_LV(x,lv,...)   printf(lv "%s#%d:" x,__MODULE__,__LINE__,##__VA_ARGS__)
 
 #if DBG_SERIAL_SHOW_INFO
-#define DBG_INFO(x,...) DBG_PRINTF(x,"",##__VA_ARGS__)
+#define DBG_INFO(x,...) DBG_PRINTF_LV(x,"",##__VA_ARGS__)
 #else
 #define DBG_INFO(x,...)
 #endif
 
 #if DBG_SERIAL_SHOW_WARNING
-#define DBG_WARNING(x,...)  DBG_PRINTF(x,"WARNING,",##__VA_ARGS__)
+#define DBG_WARNING(x,...)  DBG_PRINTF_LV(x,"WARNING,",##__VA_ARGS__)
 #else
 #define DBG_WARNING(x,...)
 #endif
 
 #if DBG_SERIAL_SHOW_ERROR
-#define DBG_ERROR(x,...)    DBG_PRINTF(x,"ERROR,",##__VA_ARGS__)
+#define DBG_ERROR(x,...)    DBG_PRINTF_LV(x,"ERROR,",##__VA_ARGS__)
 #else
 #define DBG_ERROR(x,...)
 #endif
