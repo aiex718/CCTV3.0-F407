@@ -51,6 +51,10 @@ int main(void)
 	HAL_GPIO_InitPin(Peri_LED_Load_pin);
 	HAL_GPIO_WritePin(Peri_LED_STAT_pin,0);
 
+	//Buzzer
+	Device_Buzzer_Init(Dev_Buzzer);
+	Device_Buzzer_ShortBeep(Dev_Buzzer);
+
 	//PWM and flashlight
 	HAL_Timer_PWM_Init(Periph_Timer_PWM_FlashLight);
 	Device_FlashLight_Attach_PWM(Dev_FlashLight_Top,Periph_Timer_PWM_FlashLight);
@@ -90,8 +94,6 @@ int main(void)
 	//TODO:Regist triggered callback and webhook
 	Device_CurrentTrig_Init(Dev_CurrentTrig);
 	Device_CurrentTrig_Cmd(Dev_CurrentTrig,true);
-	
-
 
 	SysTimer_Init(&blinkTimer,1000);
 	while(1)
@@ -116,6 +118,14 @@ int main(void)
 				else
 					DBG_ERROR("FileSys_Format failed\n");
 			}
+			else if(strcmp((char*)rxcmd,"reset")==0)
+			{
+				SysCtrl_Reset();
+			}
+			else if(strcmp((char*)rxcmd,"beep")==0)
+			{
+				Device_Buzzer_ShortBeep(Dev_Buzzer);
+			}
 		}
 
 		//blink Load LED
@@ -125,6 +135,8 @@ int main(void)
 			SysTimer_Reset(&blinkTimer);
 			//DBG_INFO("%d:Wkup pin %d\n",SysTime_Get(),HAL_GPIO_ReadPin(Peri_Button_Wkup_pin));
 		}
+		//Buzzer
+		Device_Buzzer_Service(Dev_Buzzer);
 
 		Device_CurrentTrig_Service(Dev_CurrentTrig);
 

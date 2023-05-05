@@ -1595,6 +1595,11 @@
               <FileType>1</FileType>
               <FilePath>..\..\User\bsp\platform\device\dev_usbotg_fs.c</FilePath>
             </File>
+            <File>
+              <FileName>dev_buzzer.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\User\bsp\platform\device\dev_buzzer.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -1759,6 +1764,11 @@
               <FileName>current_trig.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\User\device\current_trig.c</FilePath>
+            </File>
+            <File>
+              <FileName>buzzer.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\User\device\buzzer.c</FilePath>
             </File>
           </Files>
         </Group>
