@@ -54,6 +54,7 @@ typedef struct DBG_Serial_s
 void DBG_Serial_Init(DBG_Serial_t *self);
 void DBG_Serial_AttachUSART(DBG_Serial_t *self,HAL_USART_t *hal_usart);
 void DBG_Serial_Cmd(DBG_Serial_t *self,bool en);
+void DBG_Serial_Flush(DBG_Serial_t *self);
 void DBG_Serial_SafeMode(DBG_Serial_t *self,bool en);
 void DBG_Serial_Service(DBG_Serial_t *self);
 uint16_t DBG_Serial_ReadLine(DBG_Serial_t *self,uint8_t* buf, uint16_t buf_len);

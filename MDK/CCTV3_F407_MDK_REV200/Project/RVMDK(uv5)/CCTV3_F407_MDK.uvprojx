@@ -1465,6 +1465,16 @@
               <FileType>1</FileType>
               <FilePath>..\..\User\bsp\platform\device\dev_disk.c</FilePath>
             </File>
+            <File>
+              <FileName>dev_led_indicator.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\User\bsp\platform\device\dev_led_indicator.c</FilePath>
+            </File>
+            <File>
+              <FileName>dev_button.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\User\bsp\platform\device\dev_button.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -1599,6 +1609,16 @@
               <FileName>disk_flash.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\User\device\disk_flash.c</FilePath>
+            </File>
+            <File>
+              <FileName>led_indicator.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\User\device\led_indicator.c</FilePath>
+            </File>
+            <File>
+              <FileName>button.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\User\device\button.c</FilePath>
             </File>
           </Files>
         </Group>
