@@ -719,6 +719,11 @@
               <FileType>1</FileType>
               <FilePath>..\..\User\bsp\platform\periph\peri_gpio.c</FilePath>
             </File>
+            <File>
+              <FileName>peri_flash_prog.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\User\bsp\platform\periph\peri_flash_prog.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -753,6 +758,16 @@
               <FileName>mem_guard.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\User\bsp\sys\mem_guard.c</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>User\device</GroupName>
+          <Files>
+            <File>
+              <FileName>config_storage.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\User\device\config_storage.c</FilePath>
             </File>
           </Files>
         </Group>
