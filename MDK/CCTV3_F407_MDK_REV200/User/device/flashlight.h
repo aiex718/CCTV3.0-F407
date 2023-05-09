@@ -9,15 +9,25 @@
     #define FLASHLIGHT_BRIGHTNESS_MAX 50 //cap duty cycle at 50%
 #endif
 
+typedef struct Device_FlashLight_ConfigFile_s
+{
+    uint8_t FlashLight_Brightness;//0~100
+    uint8_t __padding[3];
+}Device_FlashLight_ConfigFile_t;
+
 typedef struct Device_FlashLight_s
 {
     const HAL_Timer_PWM_t *FlashLight_Timer_PWM; //not allow to modify parent timer
     HAL_Timer_PWM_Channel_t *FlashLight_Timer_PWM_Channel;
     HAL_GPIO_pin_t *FlashLight_GPIO_pin;
-    uint8_t FlashLight_Brightness;
+    uint8_t FlashLight_Brightness;//0~100
 }Device_FlashLight_t;
 
 void Device_FlashLight_Init(Device_FlashLight_t *self);
+void Device_FlashLight_ConfigSet(Device_FlashLight_t *self,const Device_FlashLight_ConfigFile_t *config);
+void Device_FlashLight_ConfigExport(const Device_FlashLight_t *self,Device_FlashLight_ConfigFile_t *config);
+bool Device_FlashLight_IsConfigValid(Device_FlashLight_t *self,const Device_FlashLight_ConfigFile_t *config);
+
 void Device_FlashLight_Attach_PWM(Device_FlashLight_t *self,const HAL_Timer_PWM_t *timer_PWM);
 void Device_FlashLight_Cmd(Device_FlashLight_t *self,bool en);
 void Device_FlashLight_SetBrightness(Device_FlashLight_t *self,uint8_t brightness);
