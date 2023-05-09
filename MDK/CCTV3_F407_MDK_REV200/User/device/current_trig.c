@@ -4,17 +4,17 @@
 
 //Current(mA) to ADC raw value convertion 
 
-// ADC_raw = I(A) * CURRENT_TRIG_SENSING_RES_VAL * ADC_resolution / Vref
+// ADC_raw = I(A) * CURRENT_TRIG_SENSING_RESISTOR_VAL * ADC_resolution / Vref
 #define _MA_TO_ADC_RAW_VAL(ma) ((CURRENT_TRIG_ADC_VAL_TYPE)\
-    (ma)*CURRENT_TRIG_SENSING_RES_VAL*CURRENT_TRIG_ADC_RESOLUTION/(CURRENT_TRIG_ADC_VREF*1000))
+    (ma)*CURRENT_TRIG_SENSING_RESISTOR_VAL*CURRENT_TRIG_ADC_RESOLUTION/(CURRENT_TRIG_ADC_VREF*1000))
 
 // Current(A) = (ADC_Value * Vref) / (ADC_Resolution * Resistor) , mul 1000 to get mA value
 #define _ADC_RAW_VAL_TO_MA(ma) (((CURRENT_TRIG_FLOAT_TYPE)*data) * \
-    ((CURRENT_TRIG_ADC_VREF * 1000) / (CURRENT_TRIG_ADC_RESOLUTION * CURRENT_TRIG_SENSING_RES_VAL)))
+    ((CURRENT_TRIG_ADC_VREF * 1000) / (CURRENT_TRIG_ADC_RESOLUTION * CURRENT_TRIG_SENSING_RESISTOR_VAL)))
 
 //Same as above but with divider to standarize the value
 #define _ADC_RAW_VAL_TO_MA_DIV(ma,div) (((CURRENT_TRIG_FLOAT_TYPE)*data) * \
-    ((CURRENT_TRIG_ADC_VREF * 1000 / (div)) / (CURRENT_TRIG_ADC_RESOLUTION * CURRENT_TRIG_SENSING_RES_VAL)))
+    ((CURRENT_TRIG_ADC_VREF * 1000 / (div)) / (CURRENT_TRIG_ADC_RESOLUTION * CURRENT_TRIG_SENSING_RESISTOR_VAL)))
 
 //private functions
 static float stddev(float data[], uint16_t len);
@@ -94,6 +94,32 @@ void Device_CurrentTrig_Init(Device_CurrentTrig_t *self)
     self->_curr_dma_tc_cb.owner = self;
     HAL_DMA_SetCallback(self->CurrentTrig_DMA, DMA_CALLBACK_IRQ_TC, &self->_curr_dma_tc_cb);
 }
+
+void Device_CurrentTrig_ConfigSet(Device_CurrentTrig_t *self,const Device_CurrentTrig_ConfigFile_t *config)
+{
+    self->CurrentTrig_Disconnect_Thres_mA = config->CurrentTrig_Disconnect_Thres_mA;
+    self->CurrentTrig_Overload_Thres_mA = config->CurrentTrig_Overload_Thres_mA;
+    self->CurrentTrig_PeakThreshold = config->CurrentTrig_PeakThreshold_1000x/1000.0F;
+    self->CurrentTrig_PeakInfluence = config->CurrentTrig_PeakInfluence_1000x/1000.0F;
+}
+
+void Device_CurrentTrig_ConfigExport(const Device_CurrentTrig_t *self,Device_CurrentTrig_ConfigFile_t *config)
+{
+    config->CurrentTrig_Disconnect_Thres_mA = self->CurrentTrig_Disconnect_Thres_mA;
+    config->CurrentTrig_Overload_Thres_mA = self->CurrentTrig_Overload_Thres_mA;
+    config->CurrentTrig_PeakThreshold_1000x = self->CurrentTrig_PeakThreshold*1000;
+    config->CurrentTrig_PeakInfluence_1000x = self->CurrentTrig_PeakInfluence*1000;
+}
+
+bool Device_CurrentTrig_IsConfigValid(Device_CurrentTrig_t *self,const Device_CurrentTrig_ConfigFile_t *config)
+{
+    return (config != NULL && 
+            config->CurrentTrig_Disconnect_Thres_mA <= 8 &&
+            config->CurrentTrig_Overload_Thres_mA >= 16 && config->CurrentTrig_Overload_Thres_mA <= 24 &&
+            config->CurrentTrig_PeakThreshold_1000x > 0 && config->CurrentTrig_PeakThreshold_1000x < (uint16_t) -1 &&
+            config->CurrentTrig_PeakInfluence_1000x <=1000);
+}
+
 
 void Device_CurrentTrig_SetCallback(Device_CurrentTrig_t *self, Device_CurrentTrig_CallbackIdx_t idx, Callback_t *cb)
 {

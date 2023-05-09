@@ -48,8 +48,8 @@
 #endif
 
 //Sensing resistor, normally 100 ohm
-#ifndef CURRENT_TRIG_SENSING_RES_VAL
-    #error "CURRENT_TRIG_SENSING_RES_VAL not defined"
+#ifndef CURRENT_TRIG_SENSING_RESISTOR_VAL
+    #error "CURRENT_TRIG_SENSING_RESISTOR_VAL not defined"
 #endif
 
 #ifndef CURRENT_TRIG_MAX_CURRENT_MA
@@ -63,6 +63,16 @@
 #ifndef CURRENT_TRIG_DIFF_MIN
     #define CURRENT_TRIG_DIFF_MIN 0.1F
 #endif
+
+
+typedef struct Device_CurrentTrig_ConfigFile_s
+{
+    uint8_t CurrentTrig_Disconnect_Thres_mA;//0~20
+    uint8_t CurrentTrig_Overload_Thres_mA;//0~20
+    uint8_t __padding[2];
+    uint16_t CurrentTrig_PeakThreshold_1000x;//this value is 1000x of the real value
+    uint16_t CurrentTrig_PeakInfluence_1000x;//this value is 1000x of the real value
+}Device_CurrentTrig_ConfigFile_t;
 
 typedef enum 
 {
@@ -119,6 +129,9 @@ __STATIC_INLINE bool Device_CurrentTrig_IsEnabled(Device_CurrentTrig_t *self)
 }
 
 void Device_CurrentTrig_Init(Device_CurrentTrig_t *self);
+void Device_CurrentTrig_ConfigSet(Device_CurrentTrig_t *self,const Device_CurrentTrig_ConfigFile_t *config);
+void Device_CurrentTrig_ConfigExport(const Device_CurrentTrig_t *self,Device_CurrentTrig_ConfigFile_t *config);
+bool Device_CurrentTrig_IsConfigValid(Device_CurrentTrig_t *self,const Device_CurrentTrig_ConfigFile_t *config);
 void Device_CurrentTrig_SetCallback(Device_CurrentTrig_t *self,
     Device_CurrentTrig_CallbackIdx_t idx,Callback_t *cb);
 bool Device_CurrentTrig_Cmd(Device_CurrentTrig_t *self,bool en);
