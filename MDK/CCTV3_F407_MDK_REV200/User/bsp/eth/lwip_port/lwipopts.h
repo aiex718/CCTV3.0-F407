@@ -32,10 +32,7 @@
 
 #include "bsp/sys/systime.h"
 #include "app/nettime/nettime.h" //For sntp callback
-<<<<<<< Updated upstream
-=======
 
->>>>>>> Stashed changes
 #include "bsp/platform/periph/peri_rtc.h" //For MJPEGD_GET_UNIX_TIMESTAMP
 
 /**
