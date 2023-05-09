@@ -1600,6 +1600,8 @@
               <FileName>dev_buzzer.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\User\bsp\platform\device\dev_buzzer.c</FilePath>
+            </File>
+            <File>
               <FileName>dev_ethernetif.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\User\bsp\platform\device\dev_ethernetif.c</FilePath>
@@ -1658,11 +1660,6 @@
               <FileName>peri_uniqueid.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\User\bsp\platform\periph\peri_uniqueid.c</FilePath>
-            </File>
-            <File>
-              <FileName>peri_timer_pwm.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\User\bsp\platform\periph\peri_timer_pwm.c</FilePath>
             </File>
           </Files>
         </Group>
