@@ -5,6 +5,12 @@
 #include "app/mjpegd/mjpegd_callback.h"
 #include "lwip/err.h"
 
+typedef struct Mjpegd_ConfigFile_s
+{
+    uint16_t Mjpegd_Port;
+    uint8_t __padding[2];
+}Mjpegd_ConfigFile_t;
+
 typedef struct Mjpegd_s{
     u16_t Port;
     struct Mjpegd_FramePool_s *FramePool;
@@ -30,6 +36,9 @@ typedef struct Mjpegd_s{
 
 
 err_t Mjpegd_Init(Mjpegd_t *mjpegd);
+void Mjpegd_ConfigSet(Mjpegd_t *mjpegd,const Mjpegd_ConfigFile_t *config);
+void Mjpegd_ConfigExport(const Mjpegd_t *mjpegd,Mjpegd_ConfigFile_t *config);
+bool Mjpegd_IsConfigValid(Mjpegd_t *mjpegd,const Mjpegd_ConfigFile_t *config);
 void Mjpegd_Service(void *arg);
 
 #endif // __MJPEGD_H__

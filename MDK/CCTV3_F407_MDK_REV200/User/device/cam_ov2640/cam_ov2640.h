@@ -15,6 +15,17 @@
     #define DEVICE_CAM_OV2640_DEBUG 0
 #endif
 
+typedef struct Device_CamOV2640_ConfigFile_s
+{
+    uint8_t CamOV2640_JpegFormat;
+    uint8_t CamOV2640_Qs;
+    uint8_t CamOV2640_Brightness;
+    uint8_t CamOV2640_Contrast;
+    uint8_t CamOV2640_LightMode;
+    bool CamOV2640_Flip;
+    bool CamOV2640_Mirror;
+    uint8_t __padding[1];
+}Device_CamOV2640_ConfigFile_t;
 
 typedef enum 
 {
@@ -42,13 +53,15 @@ typedef struct Device_CamOV2640_s
     uint16_t CamOV2640_Buffer_Len;
     //callbalck
     Callback_t *CamOV2640_Callbacks[__NOT_CALLBACK_CAM_OV2640_MAX];
+    //Camera configs
+    Device_CamOV2640_ConfigFile_t *CamOV2640_Config;
     //custom data
     void *pExtension;
 
     //flag for prevent first frame error
     __IO bool _is_first_frame;
     //private flags, dont use
-    BitFlag_t _callback_pending_flag;
+    BitFlag8_t _callback_pending_flag;
     //callbacks, dont modify
     Callback_t _dcmi_frame_cb, _dcmi_rxdma_tc_cb;
 } Device_CamOV2640_t;
@@ -59,6 +72,9 @@ typedef struct Device_CamOV2640_s
 
 //common function
 void Device_CamOV2640_Init(Device_CamOV2640_t* self);
+void Device_CamOV2640_ConfigSet(Device_CamOV2640_t *self,const Device_CamOV2640_ConfigFile_t *config);
+void Device_CamOV2640_ConfigExport(const Device_CamOV2640_t *self,Device_CamOV2640_ConfigFile_t *config);
+bool Device_CamOV2640_IsConfigValid(Device_CamOV2640_t *self,const Device_CamOV2640_ConfigFile_t *config);
 void Device_CamOV2640_Attach_DCMI(Device_CamOV2640_t* self,HAL_DCMI_t* dcmi);
 void Device_CamOV2640_Attach_I2C(Device_CamOV2640_t* self,HAL_I2C_t* i2c);
 void Device_CamOV2640_SetCallback(Device_CamOV2640_t* self, \
@@ -77,7 +93,7 @@ void Device_CamOV2640_ReadID(Device_CamOV2640_t* self,CAM_OV2640_ID_t *id);
 void Device_CamOV2640_SetJpegFormat(Device_CamOV2640_t* self,CAM_OV2640_JpegFormat_Config_t jpeg_format);
 void Device_CamOV2640_SetQs(Device_CamOV2640_t* self,uint8_t qs);
 void Device_CamOV2640_SetClock(Device_CamOV2640_t* self,bool doubler,uint8_t div);
-void Device_CamOV2640_SetFlip(Device_CamOV2640_t* self,bool vert,bool hori);
+void Device_CamOV2640_SetMirrorFlip(Device_CamOV2640_t* self,bool mirror,bool flip);
 void Device_CamOV2640_SetBrightness(Device_CamOV2640_t* self,CAM_OV2640_Brightness_Config_t brightness);
 void Device_CamOV2640_SetContrast(Device_CamOV2640_t* self,CAM_OV2640_Contrast_Config_t contrast);
 void Device_CamOV2640_SetLightMode(Device_CamOV2640_t* self,CAM_OV2640_LightMode_Config_t light);

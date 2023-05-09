@@ -276,6 +276,15 @@ Device_CamOV2640_t Dev_Cam_OV2640_Inst  = {
 			.GPIO_PuPd = GPIO_PuPd_NOPULL, //external pulldown
 		},
 	},//PWDN_Pin
+	.CamOV2640_Config = __VAR_CAST_VAR(Device_CamOV2640_ConfigFile_t){
+		.CamOV2640_JpegFormat = JPEG_320x240,
+		.CamOV2640_Qs = 0x0C,
+		.CamOV2640_Brightness = BRIGHTNESS_NORMAL,
+		.CamOV2640_Contrast = CONTRAST_NORMAL,
+		.CamOV2640_LightMode = LIGHTMODE_OFFICE,
+		.CamOV2640_Mirror = false,
+		.CamOV2640_Flip = false,
+	},
 	.CamOV2640_Buffer = NULL,
 	.CamOV2640_Buffer_Len = 0,
     // buffer using frame pool

@@ -11,6 +11,22 @@ void Device_FlashLight_Init(Device_FlashLight_t *self)
     }
 }
 
+void Device_FlashLight_ConfigSet(Device_FlashLight_t *self,const Device_FlashLight_ConfigFile_t *config)
+{
+    self->FlashLight_Brightness = BSP_MIN(config->FlashLight_Brightness,FLASHLIGHT_BRIGHTNESS_MAX);
+}
+
+void Device_FlashLight_ConfigExport(const Device_FlashLight_t *self,Device_FlashLight_ConfigFile_t *config)
+{
+    config->FlashLight_Brightness = self->FlashLight_Brightness;
+}
+
+bool Device_FlashLight_IsConfigValid(Device_FlashLight_t *self,const Device_FlashLight_ConfigFile_t *config)
+{
+    return (config != NULL) && (config->FlashLight_Brightness <= FLASHLIGHT_BRIGHTNESS_MAX);
+}
+
+
 void Device_FlashLight_Attach_PWM(Device_FlashLight_t *self,const HAL_Timer_PWM_t *timer_PWM)
 {
     self->FlashLight_Timer_PWM = timer_PWM;

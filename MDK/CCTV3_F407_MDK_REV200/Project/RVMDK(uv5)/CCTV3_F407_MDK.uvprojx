@@ -1659,6 +1659,11 @@
               <FileType>1</FileType>
               <FilePath>..\..\User\bsp\platform\periph\peri_uniqueid.c</FilePath>
             </File>
+            <File>
+              <FileName>peri_timer_pwm.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\User\bsp\platform\periph\peri_timer_pwm.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>

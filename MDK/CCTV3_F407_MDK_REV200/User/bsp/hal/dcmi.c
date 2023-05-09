@@ -63,6 +63,7 @@ void HAL_DCMI_JpegCmd(HAL_DCMI_t* self, bool en)
 void HAL_DCMI_CaptureCmd(HAL_DCMI_t* self, bool en)
 {
     DCMI_CaptureCmd(en?ENABLE:DISABLE);
+    while(HAL_DCMI_IsCapturing(self)!=en);
 
     if (en==false)
     {

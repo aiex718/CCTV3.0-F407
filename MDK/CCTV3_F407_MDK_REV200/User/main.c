@@ -77,7 +77,6 @@ int main(void)
 	HAL_Timer_PWM_Cmd(Periph_Timer_PWM_FlashLight,true);
 
 	//RNG
-	//TODO: use rand
 	HAL_Rng_Init(Peri_Rng);
 	BSP_SRAND((uint16_t)HAL_Rng_Gen(Peri_Rng));
 

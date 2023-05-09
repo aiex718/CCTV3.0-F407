@@ -115,7 +115,20 @@ void Device_CamOV2640_Init(Device_CamOV2640_t* self)
 
     Device_CamOV2640_ReadID(self,&id);
     DBG_INFO("OV2640 ID: %x %x %x %x\n", id.Manufacturer_ID1, id.Manufacturer_ID2, id.PIDH, id.PIDL);
-    Device_CamOV2640_SetJpegFormat(self,JPEG_320x240);
+    
+    //Config camera
+    Device_CamOV2640_SetJpegFormat(self,
+        (CAM_OV2640_JpegFormat_Config_t)self->CamOV2640_Config->CamOV2640_JpegFormat);
+    Device_CamOV2640_SetMirrorFlip(self, self->CamOV2640_Config->CamOV2640_Mirror,self->CamOV2640_Config->CamOV2640_Flip);
+    Device_CamOV2640_SetQs(self,self->CamOV2640_Config->CamOV2640_Qs);
+    Device_CamOV2640_SetBrightness(self,
+        (CAM_OV2640_Brightness_Config_t)self->CamOV2640_Config->CamOV2640_Brightness);
+    Device_CamOV2640_SetContrast(self,
+        (CAM_OV2640_Contrast_Config_t)self->CamOV2640_Config->CamOV2640_Contrast);
+    Device_CamOV2640_SetLightMode(self,
+        (CAM_OV2640_LightMode_Config_t)self->CamOV2640_Config->CamOV2640_LightMode);
+
+
 
     self->_is_first_frame = true;
 
@@ -134,6 +147,33 @@ void Device_CamOV2640_Init(Device_CamOV2640_t* self)
     self->_dcmi_rxdma_tc_cb.invoke_cfg = INVOKE_IMMEDIATELY;
     HAL_DMA_SetCallback(self->CamOV2640_DCMI->DCMI_RxDma_Cfg,DMA_CALLBACK_IRQ_TC,&self->_dcmi_rxdma_tc_cb);
 }
+
+void Device_CamOV2640_ConfigSet(Device_CamOV2640_t *self,const Device_CamOV2640_ConfigFile_t *config)
+{
+    *self->CamOV2640_Config = *config;
+}
+
+void Device_CamOV2640_ConfigExport(const Device_CamOV2640_t *self,Device_CamOV2640_ConfigFile_t *config)
+{
+    *config = *self->CamOV2640_Config;
+}
+
+bool Device_CamOV2640_IsConfigValid(Device_CamOV2640_t *self,const Device_CamOV2640_ConfigFile_t *config)
+{
+    if( config!=NULL && 
+        config->CamOV2640_JpegFormat < __JPEGFORMAT_CONFIG_MAX &&
+        config->CamOV2640_Qs < 0xff &&
+        config->CamOV2640_Brightness < __BRIGHTNESS_CONFIG_MAX &&
+        config->CamOV2640_Contrast < __CONTRAST_CONFIG_MAX &&
+        config->CamOV2640_LightMode < __LIGHTMODE_CONFIG_MAX &&
+        (config->CamOV2640_Flip == 0 || config->CamOV2640_Flip == 1) &&
+        (config->CamOV2640_Mirror == 0 || config->CamOV2640_Mirror == 1)
+    )
+        return true;
+    else
+        return false;
+}
+
 
 void Device_CamOV2640_Attach_DCMI(Device_CamOV2640_t* self,HAL_DCMI_t* dcmi)
 {
@@ -269,7 +309,7 @@ void Device_CamOV2640_SetJpegFormat(Device_CamOV2640_t* self,CAM_OV2640_JpegForm
 
 void Device_CamOV2640_SetQs(Device_CamOV2640_t* self,uint8_t qs)
 {
-    //TODO:Set QS, default 0x0C(12), smaller is better
+    //QS default is 0x0C(12), smaller is better
     Device_CamOV2640_WriteReg(self,OV2640_DSP_RA_DLMT, 0x00);
     Device_CamOV2640_WriteReg(self,OV2640_DSP_Qs, qs);
 }
@@ -291,18 +331,18 @@ void Device_CamOV2640_SetClock(Device_CamOV2640_t* self,bool doubler,uint8_t div
     Device_CamOV2640_WriteReg(self,OV2640_SENSOR_CLKRC,clkrc);
 }
 
-void Device_CamOV2640_SetFlip(Device_CamOV2640_t* self,bool vert,bool hori)
+void Device_CamOV2640_SetMirrorFlip(Device_CamOV2640_t* self,bool mirror,bool flip)
 {
     uint8_t reg04;
     Device_CamOV2640_WriteReg(self,OV2640_DSP_RA_DLMT, 0x01);
     reg04 = Device_CamOV2640_ReadReg(self,OV2640_SENSOR_REG04);
 
-    if(hori)
+    if(mirror)
         reg04 |= 0x80;
     else
         reg04 &= ~0x80;
     
-    if(vert)
+    if(flip)
         reg04 |= 0x40;
     else
         reg04 &= ~0x40;
@@ -312,11 +352,30 @@ void Device_CamOV2640_SetFlip(Device_CamOV2640_t* self,bool vert,bool hori)
 
 void Device_CamOV2640_SetBrightness(Device_CamOV2640_t* self,CAM_OV2640_Brightness_Config_t brightness)
 {
+    uint8_t reg;
+    switch (brightness)
+    {
+    case BRIGHTNESS_P2:
+        reg = 0x40;
+        break;
+    case BRIGHTNESS_P1:
+        reg = 0x30;
+        break;
+    case BRIGHTNESS_NORMAL:
+        reg = 0x20;
+        break;
+    case BRIGHTNESS_N1:
+        reg = 0x10;
+        break;
+    case BRIGHTNESS_N2:
+        reg = 0x00;
+        break;
+    }
     Device_CamOV2640_WriteReg(self,OV2640_DSP_RA_DLMT, 0x00);
     Device_CamOV2640_WriteReg(self,OV2640_DSP_BPADDR, 0x00);
     Device_CamOV2640_WriteReg(self,OV2640_DSP_BPDATA, 0x04);
     Device_CamOV2640_WriteReg(self,OV2640_DSP_BPADDR, 0x09);
-    Device_CamOV2640_WriteReg(self,OV2640_DSP_BPDATA, (uint8_t)brightness);
+    Device_CamOV2640_WriteReg(self,OV2640_DSP_BPDATA, reg);
     Device_CamOV2640_WriteReg(self,OV2640_DSP_BPDATA, 0x00);
 }
 
