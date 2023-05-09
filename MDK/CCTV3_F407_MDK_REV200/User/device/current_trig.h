@@ -106,7 +106,7 @@ typedef struct Device_CurrentTrig_s
     //runtime flags
     CURRENT_TRIG_FLOAT_TYPE *_curr_buf_w_ptr;
     CURRENT_TRIG_FLOAT_TYPE *_curr_buf_r_ptr;
-    BitFlag_t _curr_pending_event;
+    BitFlag8_t _curr_pending_event;
     //callback
     Callback_t _curr_dma_ht_cb;
     Callback_t _curr_dma_tc_cb;

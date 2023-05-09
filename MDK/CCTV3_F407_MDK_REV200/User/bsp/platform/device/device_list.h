@@ -2,5 +2,7 @@
 #define __DEVICE_LIST_H__
 
 #include "bsp/platform/device/dev_current_trig.h"
+#include "bsp/platform/device/dev_led_indicator.h"
+#include "bsp/platform/device/dev_button.h"
 
 #endif
