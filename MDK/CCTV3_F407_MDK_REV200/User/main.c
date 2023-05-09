@@ -144,6 +144,7 @@ int main(void)
 
 		//Buzzer
 		Device_Buzzer_Service(Dev_Buzzer);
+		
 		DBG_Serial_Service(Peri_DBG_Serial);
 		Device_LedIndicator_Service(Dev_Led_Blink);
 		Device_Button_Service(Dev_Button_Wkup);

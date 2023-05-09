@@ -32,8 +32,6 @@
 
 #include "bsp/sys/systime.h"
 #include "app/nettime/nettime.h" //For sntp callback
-
-#include "bsp/platform/periph/peri_rng.h"
 #include "bsp/platform/periph/peri_rtc.h" //For MJPEGD_GET_UNIX_TIMESTAMP
 
 /**

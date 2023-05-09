@@ -1,7 +1,8 @@
 #include "app_nettime.h"
 
 NetTime_t App_NetTime_Inst = {
-	.NTP_Server = NTP_DEFAULT_SERVER,
+	.NetTime_Enable = true,
+	.NetTime_SNTP_Server = "time.stdtime.gov.tw",
 };
 
 NetTime_t* App_NetTime = &App_NetTime_Inst;

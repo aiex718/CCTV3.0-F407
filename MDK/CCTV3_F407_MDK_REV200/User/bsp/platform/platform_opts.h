@@ -13,12 +13,7 @@
 #define DBG_SERIAL_SHOW_INFO 1
 
 #define ETHERNETIF_SERVICE_PERIOD 200
-#define DEVICE_CAM_OV2640_DEBUG 0`
-
-#define DHCP_EN 1
-#define DNS_DEFAULT_SERVER_0 "8.8.8.8"
-#define DNS_DEFAULT_SERVER_1 "8.8.4.4"
-#define NTP_DEFAULT_SERVER "time.stdtime.gov.tw"
+#define DEVICE_CAM_OV2640_DEBUG 0
 
 //disks
 #define FLASH_W25QX_MODEL 128
