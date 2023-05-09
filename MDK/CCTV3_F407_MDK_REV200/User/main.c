@@ -8,8 +8,15 @@
 #include "bsp/hal/systick.h"
 #include "bsp/sys/mem_guard.h"
 
+void Button_Wkup_ShortPress_Handler(void* sender, void* args,void* owner)
+{
+	DBG_INFO("Button_Wkup_ShortPress_Handler\n");
+}
 
-SysTimer_t blinkTimer;
+const Callback_t Button_Wkup_ShortPress_CB = 
+{
+	.func = Button_Wkup_ShortPress_Handler,
+};
 
 int main(void)
 {
@@ -28,10 +35,14 @@ int main(void)
 		DBG_INFO("Mem_Guard_Init stack size 0x%x\n",stack_size);
 	}
 
-	//GPIO
-	HAL_GPIO_InitPin(Peri_Button_Wkup_pin);
+	//Led Indicator
+	Device_LedIndicator_Init(Dev_Led_Blink);
+	//Button
+	Device_Button_Init(Dev_Button_Wkup);
+	//regist button callbacks
+	Device_Button_SetCallback(Dev_Button_Wkup,BUTTON_CALLBACK_SHORT_PRESS,(Callback_t*)&Button_Wkup_ShortPress_CB);
+
 	HAL_GPIO_InitPin(Peri_LED_STAT_pin);
-	HAL_GPIO_InitPin(Peri_LED_Load_pin);
 	HAL_GPIO_WritePin(Peri_LED_STAT_pin,0);
 
 	//Disk
@@ -39,8 +50,8 @@ int main(void)
 
 	//USB
 	USBOTG_fs_Init(Dev_USBOTG_fs);
-	
-	SysTimer_Init(&blinkTimer,1000);
+
+
 	while(1)
 	{
 		uint8_t rxcmd[DEBUG_SERIAL_RX_BUFFER_SIZE]={0};
@@ -51,12 +62,8 @@ int main(void)
 		}
 		
 		DBG_Serial_Service(Peri_DBG_Serial);
-		//blink Load LED
-		if(SysTimer_IsElapsed(&blinkTimer))
-		{
-			HAL_GPIO_TogglePin(Peri_LED_Load_pin);
-			SysTimer_Reset(&blinkTimer);
-		}
+		Device_LedIndicator_Service(Dev_Led_Blink);
+		Device_Button_Service(Dev_Button_Wkup);
 
 		if(Mem_Guard_CheckOVF())
 		{
