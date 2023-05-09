@@ -317,7 +317,7 @@ static err_t Mjpegd_LwipSent_Handler(void *arg, struct tcp_pcb *pcb, u16_t len)
     try
     {
         throwif(cs == NULL,BAD_CLIENT_NULL);
-        throwif(cs == NULL,BAD_CLIENT_NULL);
+        throwif(cs->conn_state != CS_RECEIVED,BAD_CLIENT_STATE);
         cs->retries=0;
         err = Mjpegd_SendData(pcb,cs);//try send more data
         throwif(err != ERR_OK,ERR_SEND);
@@ -328,19 +328,29 @@ static err_t Mjpegd_LwipSent_Handler(void *arg, struct tcp_pcb *pcb, u16_t len)
             MJPEGD_DBG_ARG("sent BAD_CLIENT_NULL\n"));
         err = ERR_ARG;
     }
+    catch(BAD_CLIENT_STATE)
+    {
+        if(cs->conn_state==CS_CLOSING)
+            err = ERR_CLSD;
+        else
+        {
+            LWIP_DEBUGF(MJPEGD_DEBUG | LWIP_DBG_LEVEL_SERIOUS,
+                MJPEGD_DBG_ARG("sent 0x%p BAD_CLIENT_STATE %d\n",cs,cs->conn_state));
+        }
+    }
     catch(ERR_SEND)
     {
         if(err==ERR_MEM)
         {
             //ERR_MEM happen quite often when streaming
-            //It'll retry when tcp_sndbuf is available
+            //It'll retry in poll when tcp_sndbuf is available
             LWIP_DEBUGF(MJPEGD_DEBUG | LWIP_DBG_TRACE,
                 MJPEGD_DBG_ARG("sent ERR_SEND out of ram\n"));
         }
         else
         {
             LWIP_DEBUGF(MJPEGD_DEBUG | LWIP_DBG_LEVEL_WARNING,
-                MJPEGD_DBG_ARG("sent ERR_SEND :%s\n",lwip_strerr(err)));
+                MJPEGD_DBG_ARG("sent cs 0x%p ERR_SEND :%s\n",cs,lwip_strerr(err)));
         }
     }
     finally
@@ -450,7 +460,7 @@ static err_t Mjpegd_SendData(struct tcp_pcb *pcb, ClientState_t *cs)
     try
     {
         throwif(cs==NULL ,NULL_CS);
-        throwif(cs->conn_state!=CS_RECEIVED ,CLIENT_NOT_RECEIVED);
+        throwif(cs->conn_state!=CS_RECEIVED ,CLIENT_INVALID_STATE);
         throwif(cs->request_handler==NULL ,NULL_REQUEST_HANDLER);        
 
         //check if we have data left to send
@@ -510,16 +520,16 @@ static err_t Mjpegd_SendData(struct tcp_pcb *pcb, ClientState_t *cs)
             MJPEGD_DBG_ARG("send NULL_CLIENT\n"));
         err=ERR_ARG;
     }
-    catch(CLIENT_NOT_RECEIVED)
+    catch(CLIENT_INVALID_STATE)
     {
         LWIP_DEBUGF(MJPEGD_DEBUG | LWIP_DBG_LEVEL_SERIOUS,
-            MJPEGD_DBG_ARG("send CLIENT_NOT_RECEIVED\n"));
+            MJPEGD_DBG_ARG("send cs 0x%p CLIENT_INVALID_STATE %d\n",cs,cs->conn_state));
         err=ERR_ARG;
     }
     catch(NULL_REQUEST_HANDLER)
     {
         LWIP_DEBUGF(MJPEGD_DEBUG | LWIP_DBG_LEVEL_SERIOUS,
-            MJPEGD_DBG_ARG("send NULL_REQUEST_HANDLER\n"));
+            MJPEGD_DBG_ARG("send cs 0x%p NULL_REQUEST_HANDLER\n",cs));
         err=ERR_ARG;
     }
     catch(ERR_GET_NEXTFILE_INPROGRESS)
