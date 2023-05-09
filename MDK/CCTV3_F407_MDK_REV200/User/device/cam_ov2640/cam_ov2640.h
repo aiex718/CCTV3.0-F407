@@ -48,7 +48,7 @@ typedef struct Device_CamOV2640_s
     //flag for prevent first frame error
     __IO bool _is_first_frame;
     //private flags, dont use
-    BitFlag_t _callback_pending_flag;
+    BitFlag8_t _callback_pending_flag;
     //callbacks, dont modify
     Callback_t _dcmi_frame_cb, _dcmi_rxdma_tc_cb;
 } Device_CamOV2640_t;

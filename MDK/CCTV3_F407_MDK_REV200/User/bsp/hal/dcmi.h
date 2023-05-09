@@ -41,7 +41,7 @@ typedef struct HAL_DCMI_s
     //customize data structure
     void* pExtension;
     //private flags, dont use
-    BitFlag_t _callback_pending_flag;
+    BitFlag8_t _callback_pending_flag;
 }HAL_DCMI_t;
 
 void HAL_DCMI_Init(HAL_DCMI_t* self);
