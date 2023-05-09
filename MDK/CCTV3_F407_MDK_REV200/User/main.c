@@ -36,7 +36,7 @@ int main(void)
 	Device_Button_Init(Dev_Button_Wkup);
 
 	//regist button callbacks
-	Device_Button_SetCallback(Dev_Button_Wkup,BUTTON_CALLBACK_SHORT_PRESS,&Button_Wkup_ShortPress_CB);
+	Device_Button_SetCallback(Dev_Button_Wkup,BUTTON_CALLBACK_SHORT_PRESS,(Callback_t*)&Button_Wkup_ShortPress_CB);
 
 	HAL_GPIO_InitPin(Peri_LED_STAT_pin);
 	HAL_GPIO_WritePin(Peri_LED_STAT_pin,0);
