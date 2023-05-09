@@ -5,12 +5,21 @@
 
 //make sure your cpu can read/write BitFlag_t atomically
 //otherwise, you should use mutex or cas to protect it
-#ifndef BitFlag_t
-typedef __IO uint32_t BitFlag_t;
+#ifndef BitFlag32_t
+typedef __IO uint32_t BitFlag32_t;
+#endif
+
+#ifndef BitFlag16_t
+typedef __IO uint16_t BitFlag16_t;
+#endif
+
+#ifndef BitFlag8_t
+typedef __IO uint8_t BitFlag8_t;
 #endif
 
 #define BitFlag_IdxToBin(idx) (1<<(idx))
-__STATIC_INLINE uint8_t BitFlag_BinToIdx(BitFlag_t f) {
+
+__STATIC_INLINE uint8_t BitFlag_BinToIdx(BitFlag32_t f){
     uint8_t result = 0;
     while (f >>= 1)result++;
     return result;
