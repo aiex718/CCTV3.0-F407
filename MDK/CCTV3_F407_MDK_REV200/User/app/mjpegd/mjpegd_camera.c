@@ -23,7 +23,8 @@ void Mjpegd_Camera_Init(Mjpegd_Camera_t *cam,Mjpegd_t *mjpegd)
 // Caller MUST release frame when capture failed.
 bool Mjpegd_Camera_DoSnap(Mjpegd_Camera_t *cam,Mjpegd_Frame_t *frame)
 {
-    if(Mjpegd_Camera_IsEnabled(cam) && frame!=NULL)
+    if(frame!=NULL && Mjpegd_Camera_IsEnabled(cam) && 
+        Mjpegd_Camera_IsSnapping(cam)==false)
     {
         Device_CamOV2640_Status_t status;
 
@@ -32,11 +33,22 @@ bool Mjpegd_Camera_DoSnap(Mjpegd_Camera_t *cam,Mjpegd_Frame_t *frame)
         if(oldframe)
         {
             LWIP_DEBUGF(MJPEGD_DEBUG | LWIP_DBG_LEVEL_SEVERE,
-                MJPEGD_DBG_ARG("DoSnap old frame not NULL, Memory Leaked %p\n",oldframe));
+                MJPEGD_DBG_ARG("DoSnap old frame not NULL %p\n",oldframe));
+            return false;
         }
 
+        if(MJPEGD_ATOMIC_CMPXCHG(
+            &cam->HwCam_Ov2640->pExtension,
+            (uint32_t)frame,
+            (uint32_t)oldframe)!=(uint32_t)oldframe)
+        {
+            LWIP_DEBUGF(MJPEGD_DEBUG | LWIP_DBG_LEVEL_SEVERE,
+                MJPEGD_DBG_ARG("DoSnap attach frame CMPXCHG fail %p!=%p\n",
+                    oldframe,cam->HwCam_Ov2640->pExtension));
+            return false;
+        }
+        //cam->HwCam_Ov2640->pExtension = frame;
         Mjpegd_Frame_Clear(frame);
-        cam->HwCam_Ov2640->pExtension = frame;
         Device_CamOV2640_SetBuf(cam->HwCam_Ov2640,frame->payload,frame->payload_len);
         status = Device_CamOV2640_CaptureCmd(cam->HwCam_Ov2640,true);
 

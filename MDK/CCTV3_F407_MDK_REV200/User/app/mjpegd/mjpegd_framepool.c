@@ -39,7 +39,11 @@ bool Mjpegd_FramePool_TryClear(Mjpegd_FramePool_t* self)
             Mjpegd_Frame_Unlock(frame);
         }
         else
+        {
+            LWIP_DEBUGF(MJPEGD_FRAMEPOOL_DEBUG | LWIP_DBG_LEVEL_WARNING , 
+                        MJPEGD_DBG_ARG("Clear failed at frame 0x%p\n",frame));
             return false;
+        }
     }
     return true;
 }
@@ -59,7 +63,6 @@ void Mjpegd_FramePool_SetCallback(
 Mjpegd_Frame_t* Mjpegd_FramePool_GetLatest(Mjpegd_FramePool_t* self,
     MJPEGD_SYSTIME_T last_frame_time)
 {
-    //vla on armcc alloc using malloc (heap)
     u8_t i,sorted_idx[MJPEGD_FRAMEPOOL_LEN];
     MJPEGD_SYSTIME_T now = sys_now();
     Mjpegd_Frame_t* frame;
@@ -132,9 +135,23 @@ void Mjpegd_FramePool_Release(Mjpegd_FramePool_t* self,Mjpegd_Frame_t* frame)
 
 Mjpegd_Frame_t* Mjpegd_FramePool_GetIdle(Mjpegd_FramePool_t* self)
 {
-    u8_t i,sorted_idx[MJPEGD_FRAMEPOOL_LEN];
+    u8_t i,lock_cnt,sorted_idx[MJPEGD_FRAMEPOOL_LEN];
     MJPEGD_SYSTIME_T now = sys_now();
     Mjpegd_Frame_t* frame;
+
+    //check lock
+    for (i = 0; i < MJPEGD_FRAMEPOOL_LEN; i++)
+    {
+        if(self->_frames[i]._sem==0)
+            lock_cnt++;
+    }
+
+    if(lock_cnt>1)
+    {
+        //multi cpature device?
+        LWIP_DEBUGF(MJPEGD_FRAMEPOOL_DEBUG | LWIP_DBG_LEVEL_WARNING, 
+            MJPEGD_DBG_ARG("Multi frame locked %d\n",lock_cnt));
+    }
 
     //Try to get and lock oldest idle node.
     //Oldest node should be the last node.
@@ -156,7 +173,9 @@ Mjpegd_Frame_t* Mjpegd_FramePool_GetIdle(Mjpegd_FramePool_t* self)
 
     LWIP_DEBUGF(MJPEGD_FRAMEPOOL_DEBUG | LWIP_DBG_LEVEL_SERIOUS, 
         MJPEGD_DBG_ARG("no idle frame\n"));
-    
+
+  
+
     return NULL;
 }
 

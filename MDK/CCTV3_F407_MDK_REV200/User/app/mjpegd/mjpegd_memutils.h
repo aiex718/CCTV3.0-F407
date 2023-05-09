@@ -17,6 +17,7 @@
 #define MJPEGD_ATOI atoi
 
 #define MJPEGD_ATOMIC_XCHG(p,val) Atomic_Exchange((p),(val))
+#define MJPEGD_ATOMIC_CMPXCHG(p,val,expect) Atomic_Cmpxchg((p),(val),(expect))
 #define MJPEGD_ATOMIC_INC(p) Atomic_Increment((p))
 
 
