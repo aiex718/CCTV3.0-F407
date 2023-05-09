@@ -10,6 +10,7 @@
       <TargetName>Target 1</TargetName>
       <ToolsetNumber>0x4</ToolsetNumber>
       <ToolsetName>ARM-ADS</ToolsetName>
+      <pArmCC>5060960::V5.06 update 7 (build 960)::.\ARMCC</pArmCC>
       <pCCUsed>5060960::V5.06 update 7 (build 960)::.\ARMCC</pCCUsed>
       <uAC6>0</uAC6>
       <TargetOption>
@@ -1600,6 +1601,16 @@
               <FileType>1</FileType>
               <FilePath>..\..\User\bsp\platform\device\dev_buzzer.c</FilePath>
             </File>
+            <File>
+              <FileName>dev_led_indicator.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\User\bsp\platform\device\dev_led_indicator.c</FilePath>
+            </File>
+            <File>
+              <FileName>dev_button.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\User\bsp\platform\device\dev_button.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -1769,6 +1780,16 @@
               <FileName>buzzer.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\User\device\buzzer.c</FilePath>
+            </File>
+            <File>
+              <FileName>led_indicator.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\User\device\led_indicator.c</FilePath>
+            </File>
+            <File>
+              <FileName>button.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\User\device\button.c</FilePath>
             </File>
           </Files>
         </Group>

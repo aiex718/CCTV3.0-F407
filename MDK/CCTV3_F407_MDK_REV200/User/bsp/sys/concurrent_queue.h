@@ -80,6 +80,41 @@ bool Concurrent_Queue_TryPush(__CONCURRENT_QUEUE_T *self, \
 bool Concurrent_Queue_TryPop(__CONCURRENT_QUEUE_T *self, \
                              CONCURRENT_QUEUE_STORAGE_T *out);
 
+__STATIC_INLINE bool Concurrent_Queue_IsEmpty(__CONCURRENT_QUEUE_T *self)
+{
+    return self->w_idx==self->r_idx;
+}
+
+__STATIC_INLINE bool Concurrent_Queue_IsFull(__CONCURRENT_QUEUE_T *self)
+{
+    return self->w_idx-self->r_idx>=self->mem_len;
+}
+
+//check if concurrent queue can push immediately without CAS loop
+__STATIC_INLINE bool Concurrent_Queue_CanPushNow(__CONCURRENT_QUEUE_T *self)
+{
+    if(Concurrent_Queue_IsFull(self))
+        return false;
+    else if(self->allow_push_preempt)
+        return true;
+    else if (self->w_idx==self->l_idx) 
+        return true;//not allow_push_preempt and all write is committed
+    else
+        return false;//other thread is pushing data
+}
+
+//check if concurrent queue can pop immediately without CAS loop
+__STATIC_INLINE bool Concurrent_Queue_CanPopNow(__CONCURRENT_QUEUE_T *self)
+{
+    if(Concurrent_Queue_IsEmpty(self))
+        return false;
+    else if(self->allow_push_preempt==false)
+        return true;//if not allow push_preempt, we always can pop immediately
+    else if(self->w_idx==self->l_idx)
+        return true;//allow_push_preempt and all write is committed
+    else
+        return false;//allow_push_preempt and other thread is pushing data
+}
 
 #endif
 

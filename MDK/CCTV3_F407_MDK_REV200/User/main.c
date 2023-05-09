@@ -11,6 +11,7 @@
 #include "bsp/hal/timer.h"
 #include "bsp/hal/timer_pwm.h"
 #include "bsp/hal/rtc.h"
+#include "bsp/hal/adc.h"
 
 //eth & lwip
 #include "lwip/timeouts.h"
@@ -21,7 +22,15 @@
 //apps
 #include "lwip/apps/httpd.h"
 
-SysTimer_t blinkTimer;
+void Button_Wkup_ShortPress_Handler(void* sender, void* args,void* owner)
+{
+	DBG_INFO("Button_Wkup_ShortPress_Handler\n");
+}
+
+const Callback_t Button_Wkup_ShortPress_CB = 
+{
+	.func = Button_Wkup_ShortPress_Handler,
+};
 
 int main(void)
 {
@@ -45,10 +54,14 @@ int main(void)
 		DBG_INFO("Mem_Guard_Init stack size 0x%x\n",stack_size);
 	}
 
-	//GPIO
-	HAL_GPIO_InitPin(Peri_Button_Wkup_pin);
+	//Led Indicator
+	Device_LedIndicator_Init(Dev_Led_Blink);
+	//Button
+	Device_Button_Init(Dev_Button_Wkup);
+	//regist button callbacks
+	Device_Button_SetCallback(Dev_Button_Wkup,BUTTON_CALLBACK_SHORT_PRESS,(Callback_t*)&Button_Wkup_ShortPress_CB);
+
 	HAL_GPIO_InitPin(Peri_LED_STAT_pin);
-	HAL_GPIO_InitPin(Peri_LED_Load_pin);
 	HAL_GPIO_WritePin(Peri_LED_STAT_pin,0);
 
 	//Buzzer
@@ -94,8 +107,7 @@ int main(void)
 	//TODO:Regist triggered callback and webhook
 	Device_CurrentTrig_Init(Dev_CurrentTrig);
 	Device_CurrentTrig_Cmd(Dev_CurrentTrig,true);
-
-	SysTimer_Init(&blinkTimer,1000);
+	
 	while(1)
 	{
 		uint8_t rxcmd[DEBUG_SERIAL_RX_BUFFER_SIZE]={0};
@@ -130,15 +142,11 @@ int main(void)
 			}
 		}
 
-		//blink Load LED
-		if(SysTimer_IsElapsed(&blinkTimer))
-		{
-			HAL_GPIO_TogglePin(Peri_LED_Load_pin);
-			SysTimer_Reset(&blinkTimer);
-			//DBG_INFO("%d:Wkup pin %d\n",SysTime_Get(),HAL_GPIO_ReadPin(Peri_Button_Wkup_pin));
-		}
 		//Buzzer
 		Device_Buzzer_Service(Dev_Buzzer);
+		DBG_Serial_Service(Peri_DBG_Serial);
+		Device_LedIndicator_Service(Dev_Led_Blink);
+		Device_Button_Service(Dev_Button_Wkup);
 
 		Device_CurrentTrig_Service(Dev_CurrentTrig);
 

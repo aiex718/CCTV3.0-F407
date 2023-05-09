@@ -114,8 +114,14 @@ void DBG_Serial_Cmd(DBG_Serial_t *self,bool en)
     }
 }
 
+void DBG_Serial_Flush(DBG_Serial_t *self)
+{
+    while(Concurrent_Queue_IsEmpty(self->tx_con_queue)==false);
+}
+
 //This is a safemode function, it'll stop any ongoing transfer,
 //drop all data, and reset all configure, including callbacks.
+//If drop data is not acceptable, call DBG_Serial_Flush() before this.
 //Any transfer after this function call will use polling mode.
 //Typically for print info in serious hardware error handling.
 void DBG_Serial_SafeMode(DBG_Serial_t *self,bool en)
