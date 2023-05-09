@@ -110,6 +110,24 @@ err_t Mjpegd_Init(Mjpegd_t *mjpegd)
     return err;
 }
 
+void Mjpegd_ConfigSet(Mjpegd_t *mjpegd,const Mjpegd_ConfigFile_t *config)
+{
+    mjpegd->Port = config->Mjpegd_Port;
+}
+
+void Mjpegd_ConfigExport(const Mjpegd_t *mjpegd,Mjpegd_ConfigFile_t *config)
+{
+    config->Mjpegd_Port = mjpegd->Port;
+}
+
+bool Mjpegd_IsConfigValid(Mjpegd_t *mjpegd,const Mjpegd_ConfigFile_t *config)
+{
+    if(config==NULL || config->Mjpegd_Port == 0 || config->Mjpegd_Port > 65535)
+        return false;
+
+    return true;
+}
+
 static err_t Mjpegd_LwipAccept_Handler(void *arg, struct tcp_pcb *newpcb, err_t err)
 {
     ClientState_t* cs;
