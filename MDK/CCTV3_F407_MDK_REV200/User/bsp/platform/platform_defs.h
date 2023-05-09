@@ -26,9 +26,13 @@
 
 #include <math.h>
 #include <string.h>
+#include <stdlib.h>
 
 #ifndef BSP_MEMCPY 
     #define BSP_MEMCPY memcpy
+#endif
+#ifndef BSP_MEMMOVE 
+    #define BSP_MEMMOVE memmove
 #endif
 #ifndef BSP_MEMSET 
     #define BSP_MEMSET memset
@@ -39,6 +43,16 @@
 #ifndef BSP_MEMSEARCH
     #define BSP_MEMSEARCH mem_search
 #endif
+#ifndef BSP_STRNCPY 
+    #define BSP_STRNCPY strncpy
+#endif
+#ifndef BSP_RAND 
+    #define BSP_RAND rand
+#endif
+#ifndef BSP_SRAND 
+    #define BSP_SRAND srand
+#endif
+
 #ifndef BSP_MIN 
     #define BSP_MIN(a,b) (((a)<(b))?(a):(b))
 #endif
@@ -66,6 +80,10 @@
 #endif
 #ifndef __STATIC_INLINE 
     #define __STATIC_INLINE static inline
+#endif
+
+#ifndef __HW_BUF_SECTION
+    #define __HW_BUF_SECTION 
 #endif
 
 #endif

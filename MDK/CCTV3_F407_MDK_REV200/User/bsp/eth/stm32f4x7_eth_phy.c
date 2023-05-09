@@ -27,15 +27,16 @@
 
 /* Includes ------------------------------------------------------------------*/
 #include "bsp/platform/platform_defs.h"
-#include "bsp/platform/periph/peri_uniqueid.h"
-#include "bsp/sys/dbg_serial.h"
+#include "bsp/eth/stm32f4x7_eth_phy.h"
+#include "bsp/eth/stm32f4x7_eth.h"
+#include "bsp/eth/netconf.h"
+
 #include "lwip/opt.h"
 #include "lwip/dhcp.h"
 #include "lwip/dns.h"
 #include "lwip/netif.h"
-#include "bsp/eth/stm32f4x7_eth.h"
-#include "bsp/eth/stm32f4x7_eth_phy.h"
-#include "bsp/eth/netconf.h"
+
+#include "bsp/sys/dbg_serial.h"
 
 /* Private typedef -----------------------------------------------------------*/
 /* Private define ------------------------------------------------------------*/
@@ -44,8 +45,7 @@
 /* Private macro -------------------------------------------------------------*/
 /* Private variables ---------------------------------------------------------*/
 ETH_InitTypeDef ETH_InitStructure;
-__IO uint32_t  EthStatus = 0;
-extern struct netif gnetif;
+//extern struct netif gnetif;
 
 /* Private function prototypes -----------------------------------------------*/
 static void ETH_GPIO_Config(void);
@@ -65,12 +65,6 @@ void ETH_BSP_Config(void)
 	
 	/* Configure the Ethernet MAC/DMA */
 	ETH_MACDMA_Config();
-
-	/* Get Ethernet link status*/
-	if(GET_PHY_LINK_STATUS())  
-	{
-		EthStatus |= ETH_LINK_FLAG;
-	}
 
 	// /* Configure the PHY to generate an interrupt on change of link status */
 	// Eth_Link_PHYITConfig(ETHERNET_PHY_ADDRESS);
@@ -141,7 +135,7 @@ static void ETH_MACDMA_Config(void)
 	ETH_InitStructure.ETH_DMAArbitration = ETH_DMAArbitration_RoundRobin_RxTx_2_1;
 
 	/* Configure Ethernet */
-	EthStatus = ETH_Init(&ETH_InitStructure, ETHERNET_PHY_ADDRESS);
+	ETH_Init(&ETH_InitStructure, ETHERNET_PHY_ADDRESS);
 }
 
 /**
@@ -154,11 +148,11 @@ void ETH_GPIO_Config(void)
 	GPIO_InitTypeDef GPIO_InitStructure;
 	
 	/* Enable GPIOs clocks */
-	RCC_AHB1PeriphClockCmd(ETH_MDIO_GPIO_CLK            | ETH_MDC_GPIO_CLK          |
-												 ETH_RMII_REF_CLK_GPIO_CLK    | ETH_RMII_CRS_DV_GPIO_CLK  |
-												 ETH_RMII_RXD0_GPIO_CLK       | ETH_RMII_RXD1_GPIO_CLK    |
-												 ETH_RMII_TX_EN_GPIO_CLK      | ETH_RMII_TXD0_GPIO_CLK    |
-												 ETH_RMII_TXD1_GPIO_CLK       | ETH_NRST_GPIO_CLK         , ENABLE);
+	RCC_AHB1PeriphClockCmd(ETH_MDIO_GPIO_CLK         | ETH_MDC_GPIO_CLK          |
+						ETH_RMII_REF_CLK_GPIO_CLK    | ETH_RMII_CRS_DV_GPIO_CLK  |
+						ETH_RMII_RXD0_GPIO_CLK       | ETH_RMII_RXD1_GPIO_CLK    |
+						ETH_RMII_TX_EN_GPIO_CLK      | ETH_RMII_TXD0_GPIO_CLK    |
+						ETH_RMII_TXD1_GPIO_CLK       | ETH_NRST_GPIO_CLK         , ENABLE);
 
 	/* Enable SYSCFG clock */
 	RCC_APB2PeriphClockCmd(RCC_APB2Periph_SYSCFG, ENABLE);  
@@ -264,18 +258,9 @@ void ETH_GPIO_Config(void)
  *        It checks link status for ethernet,
  * 		  let callback triggered if link status changed.
  */
-void ETH_CheckLinkStatus(void)
+bool ETH_CheckLinkStatus(struct netif *gnetif)
 {
-	static uint16_t status = 0;
-	uint16_t link = GET_PHY_LINK_STATUS();
-	if (link != status) {
-		status = link;
-		//DBG_INFO("Eth link changed %d\n", link);
-		if(link)
-			netif_set_link_up(&gnetif);
-		else
-			netif_set_link_down(&gnetif);
-	}	
+	return GET_PHY_LINK_STATUS()>0;
 }
 
 /**
@@ -283,15 +268,12 @@ void ETH_CheckLinkStatus(void)
 	* @param  The network interface
 	* @retval None
 	*/
-void ETH_LinkChanged_callback(struct netif *netif)
+void ETH_LinkChanged_callback(struct netif *gnetif)
 {
 	__IO uint32_t timeout = 0;
  	uint32_t tmpreg,RegValue;
-	ip_addr_t ipaddr;
-	ip_addr_t netmask;
-	ip_addr_t gw;
 
-	if(netif_is_link_up(netif))
+	if(netif_is_link_up(gnetif))
 	{
 		DBG_INFO("Network cable connected\n");
 
@@ -370,64 +352,12 @@ void ETH_LinkChanged_callback(struct netif *netif)
 
 		/* Restart MAC interface */
 		ETH_Start();
-
-		netif_set_addr(&gnetif, IP4_ADDR_ANY4 , IP4_ADDR_ANY4, IP4_ADDR_ANY4);
-		/* When the netif is fully configured this function must be called.*/
-		netif_set_up(&gnetif);    
-
-		if(DHCP_EN)
-		{
-			struct dhcp *dhcp_data;
-			uint32_t uid=0;
-			uint8_t uid_cnt;
-
-			uid_cnt = HAL_UniqueID_GetLen(Periph_UniqueID);
-			while (uid_cnt)
-				uid^=HAL_UniqueID_Read(Periph_UniqueID,uid_cnt--);
-			
-			DBG_INFO("Using dhcp\n");
-			//set a fall back ip address
-			IP4_ADDR(&ipaddr, 169, 254, (uid>>8)&0xff, uid&0xff);
-			IP4_ADDR(&netmask, 255, 255, 0, 0);
-			IP4_ADDR(&gw, 0, 0, 0, 0);	
-
-			/*	if dhcp_data is null, start dhcp here, otherwise
-			 	dhcp is already started, let lwip handle it.  */
-			dhcp_data = netif_dhcp_data(&gnetif);
-			if(dhcp_data==NULL)
-				dhcp_start(&gnetif);
-		}
-		else
-		{
-			#if LWIP_DNS
-			ip_addr_t dns0, dns1;
-			ip4addr_aton(DNS_DEFAULT_SERVER_0,&dns0);
-      		ip4addr_aton(DNS_DEFAULT_SERVER_1,&dns1);
-			dns_setserver(0,&dns0);
-      		dns_setserver(1,&dns1);
-			#endif
-
-			DBG_INFO("Using static IP address\n");
-			//TODO:Read user config ip
-			IP4_ADDR(&ipaddr, IP_ADDR0, IP_ADDR1, IP_ADDR2, IP_ADDR3);
-			IP4_ADDR(&netmask, NETMASK_ADDR0, NETMASK_ADDR1, NETMASK_ADDR2, NETMASK_ADDR3);
-			IP4_ADDR(&gw, GW_ADDR0, GW_ADDR1, GW_ADDR2, GW_ADDR3);
-		}
-			
-		netif_set_addr(&gnetif, &ipaddr , &netmask, &gw);
-		//print_netif_addr(&gnetif);
 	}
 	else
 	{
-		DBG_INFO("Network Cable disconnected\n");
+		DBG_INFO("Network cable disconnected\n");
+
 		ETH_Stop();
-		netif_set_addr(&gnetif, IP4_ADDR_ANY4 , IP4_ADDR_ANY4, IP4_ADDR_ANY4);
-		#if LWIP_DNS
-		dns_setserver(0,IP4_ADDR_ANY4);
-		dns_setserver(1,IP4_ADDR_ANY4);
-		#endif
-		/*  When the netif link is down this function must be called.*/
-		netif_set_down(&gnetif);
 	}
 }
 

@@ -26,31 +26,30 @@
  */
 
 /* Includes ------------------------------------------------------------------*/
-#include "bsp/sys/dbg_serial.h"
+#include "bsp/eth/netconf.h"
 
 #include "lwip/mem.h"
 #include "lwip/memp.h"
 #include "lwip/tcp.h"
-#include "lwip/dns.h"
+
 #include "lwip/timeouts.h"
 #include "lwip/udp.h"
-#include "lwip/dhcp.h"
+
 #include "lwip/init.h"
 #include "netif/etharp.h"
+
 #include "bsp/eth/lwip_port/Standalone/ethernetif.h"
-#include "bsp/eth/netconf.h"
 #include "bsp/eth/stm32f4x7_eth_phy.h"
+#include "bsp/sys/dbg_serial.h"
+
+#include "bsp/platform/device/dev_ethernetif.h"
 
 /* Private typedef -----------------------------------------------------------*/
-
 /* Private define ------------------------------------------------------------*/
 /* Private macro -------------------------------------------------------------*/
 /* Private variables ---------------------------------------------------------*/
-struct netif gnetif;
-extern __IO uint32_t EthStatus;
 
 /* Private functions ---------------------------------------------------------*/
-static void Netconf_Service(void* arg);
 
 /**
  * @brief  Initializes the lwIP stack
@@ -79,21 +78,21 @@ void LwIP_Init(void)
 
 	The init function pointer must point to a initialization function for
 	your ethernet netif interface. The following code illustrates it's use.*/
-	netif_add(&gnetif, IP4_ADDR_ANY4, IP4_ADDR_ANY4, IP4_ADDR_ANY4,
-		 NULL, &ethernetif_init, &ethernet_input);
+	netif_add(&Dev_Ethernetif_Default->_netif, IP4_ADDR_ANY4, IP4_ADDR_ANY4, IP4_ADDR_ANY4,
+		Dev_Ethernetif_Default, &Ethernetif_Init, &ethernet_input);
 
 	/*  Registers the default network interface.*/
-	netif_set_default(&gnetif);
+	netif_set_default(&Dev_Ethernetif_Default->_netif);
 
-	if (EthStatus == (ETH_INIT_FLAG | ETH_LINK_FLAG))
+	if (ETH_CheckLinkStatus(&Dev_Ethernetif_Default->_netif))
 	{
 		/* When the netif is fully configured this function must be called.*/
-		netif_set_up(&gnetif);
+		netif_set_link_up(&Dev_Ethernetif_Default->_netif);
 	}
 	else
 	{
 		/*  When the netif link is down this function must be called.*/
-		netif_set_down(&gnetif);
+		netif_set_link_down(&Dev_Ethernetif_Default->_netif);
 		DBG_INFO("Network cable not connected\n");
 	}
 
@@ -103,11 +102,11 @@ void LwIP_Init(void)
 	 * Refer to lwip/timeouts.c/.h for more details. */
 
 	/* Set the link callback function, this function is called on change of link status*/
-	netif_set_link_callback(&gnetif, ETH_LinkChanged_callback);
+	netif_set_link_callback(&Dev_Ethernetif_Default->_netif, ETH_LinkChanged_callback);
 	
-	/* call Netconf_Service to trigger link status check, if network cable is connected
+	/* call Ethernetif_Service to trigger link status check, if network cable is connected
 	ETH_LinkChanged_callback will be invoked to set netif and ip address. */
-	Netconf_Service(NULL);
+	Ethernetif_Service(&Dev_Ethernetif_Default->_netif);
 }
 
 /**
@@ -118,61 +117,8 @@ void LwIP_Init(void)
 void LwIP_Pkt_Handle(void)
 {
 	/* Read a received packet from the Ethernet buffers and send it to the lwIP for handling */
-	ethernetif_input(&gnetif);
+	Ethernetif_Input(&Dev_Ethernetif_Default->_netif);
 }
-
-void print_netif_addr(struct netif *netif)
-{
-	DBG_INFO("IP  : %s\n",ip4addr_ntoa(&(netif->ip_addr)));
-	DBG_INFO("MASK: %s\n",ip4addr_ntoa(&(netif->netmask)));
-	DBG_INFO("GW  : %s\n",ip4addr_ntoa(&(netif->gw)));
-#if LWIP_DNS
-	//TODO:Impl DNS
-	DBG_INFO("DNS0:%s\n",ip4addr_ntoa((const ip_addr_t*)dns_getserver(0)));
-	DBG_INFO("DNS1:%s\n",ip4addr_ntoa((const ip_addr_t*)dns_getserver(1)));
-#endif
-}
-
-static void Netconf_CheckIPaddress(void)
-{
-	static u32_t _ipaddr,_netmask,_gw;
-	
-	if( gnetif.ip_addr.addr!=_ipaddr || 
-		gnetif.netmask.addr!=_netmask || 
-		gnetif.gw.addr!=_gw)
-	{
-		_ipaddr = gnetif.ip_addr.addr;
-		_netmask = gnetif.netmask.addr;
-		_gw = gnetif.gw.addr;
-		DBG_INFO("IP address changed\n");
-		print_netif_addr(&gnetif);
-	}
-}
-
-static void Netconf_CheckDHCPStatus(void)
-{
-	static u8_t old_state =0 ;
-	u8_t new_state = 0;
-	new_state = dhcp_supplied_address(&gnetif);
-	if (new_state != old_state)
-	{
-		old_state = new_state;
-		if(new_state)
-		{
-			DBG_INFO("DHCP get new IP address\n");
-		}
-	}
-}
-
-static void Netconf_Service(void* arg)
-{
-	if(DHCP_EN)
-		Netconf_CheckDHCPStatus();
-	Netconf_CheckIPaddress();
-	ETH_CheckLinkStatus();
-	sys_timeout(NETCONF_CHECK_LINK_PERIOD, Netconf_Service, NULL);
-}
-
 
 #if defined ( __CC_ARM )  /* MDK ARM Compiler */
 #include "lwip/sio.h"

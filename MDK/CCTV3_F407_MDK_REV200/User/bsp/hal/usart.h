@@ -68,7 +68,7 @@ __BSP_STRUCT_ALIGN typedef struct HAL_USART_s
     void* pExtension;
 
     //private flags, dont use
-    BitFlag_t _callback_pending_flag;
+    BitFlag8_t _callback_pending_flag;
     SysTime_t _last_rx_time;
 }HAL_USART_t;
 
