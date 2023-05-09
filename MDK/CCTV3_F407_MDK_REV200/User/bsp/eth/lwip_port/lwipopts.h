@@ -31,7 +31,6 @@
 #define __LWIPOPTS_H__
 
 #include "bsp/sys/systime.h"
-#include "bsp/platform/periph/peri_rng.h"
 /**
  * SYS_LIGHTWEIGHT_PROT==1: if you want inter-task protection for certain
  * critical regions during buffer allocation, deallocation and memory
@@ -53,9 +52,8 @@
 
 #define sys_now SysTime_Get
 
-
 /* RAND */
-#define LWIP_RAND()     HAL_Rng_Gen(Peri_Rng)
+#define LWIP_RAND()     (u32_t)BSP_RAND()
 
 /* ---------- Memory options ---------- */
 /* MEM_ALIGNMENT: should be set to the alignment of the CPU for which
@@ -76,13 +74,13 @@ a lot of data that needs to be copied, this should be set high. */
 #define MEMP_NUM_UDP_PCB        6
 /* MEMP_NUM_TCP_PCB: the number of simulatenously active TCP
    connections. */
-#define MEMP_NUM_TCP_PCB        20//16
+#define MEMP_NUM_TCP_PCB        16
 /* MEMP_NUM_TCP_PCB_LISTEN: the number of listening TCP
    connections. */
 #define MEMP_NUM_TCP_PCB_LISTEN 6
 /* MEMP_NUM_TCP_SEG: the number of simultaneously queued TCP
    segments. */
-#define MEMP_NUM_TCP_SEG        12//24
+#define MEMP_NUM_TCP_SEG        12
 /* MEMP_NUM_SYS_TIMEOUT: the number of simulateously active
    timeouts. */
 #define MEMP_NUM_SYS_TIMEOUT    20
@@ -90,9 +88,8 @@ a lot of data that needs to be copied, this should be set high. */
 
 /* ---------- Pbuf options ---------- */
 /* PBUF_POOL_SIZE: the number of buffers in the pbuf pool. */
-//Pbuf_Pool mainly for rx, since mjpegd rarely use rx, 
-//we can reduce the size of Pbuf_Pool
-#define PBUF_POOL_SIZE          10
+//PBUF_POOL mainly for rx
+#define PBUF_POOL_SIZE          8
 
 /* PBUF_POOL_BUFSIZE: the size of each pbuf in the pbuf pool. */
 #define PBUF_POOL_BUFSIZE       500
@@ -148,6 +145,8 @@ a lot of data that needs to be copied, this should be set high. */
  * whenever the link changes (i.e., link down)
  */
 #define LWIP_NETIF_LINK_CALLBACK        1
+
+#define LWIP_SINGLE_NETIF 1
 
 /*
    --------------------------------------
@@ -215,14 +214,6 @@ The STM32F4x7 allows computing and verifying the IP, UDP, TCP and ICMP checksums
  * LWIP_SOCKET==1: Enable Socket API (require to use sockets.c)
  */
 #define LWIP_SOCKET                     0
-
-#define LWIP_HTTPD_SUPPORT_REQUESTLIST 1
-#define LWIP_HTTPD_SUPPORT_V09         0
-#define LWIP_HTTPD_CGI_SSI             1
-
-#define LWIP_HTTPD_FS_ASYNC_READ       0
-#define LWIP_HTTPD_DYNAMIC_FILE_READ   0
-#define LWIP_HTTPD_CUSTOM_FILES        1
 
 /*
    ----------------------------------------

@@ -66,7 +66,7 @@ const struct eth_addr ethzero = {{0, 0, 0, 0, 0, 0}};
 /**
  * @ingroup lwip_nosys
  * Process received ethernet frames. Using this function instead of directly
- * calling ip_input and passing ARP frames through etharp in ethernetif_input,
+ * calling ip_input and passing ARP frames through etharp in Ethernetif_Input,
  * the ARP cache is protected from concurrent access.\n
  * Don't call directly, pass to netif_add() and call netif->input().
  *

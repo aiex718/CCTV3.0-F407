@@ -16,7 +16,6 @@
 
 
 SysTimer_t blinkTimer;
-
 int main(void)
 {
 	//SystemInit() is inside system_stm32f4xx.c
@@ -44,12 +43,14 @@ int main(void)
 
 	//RNG
 	HAL_Rng_Init(Peri_Rng);
+	BSP_SRAND((uint16_t)HAL_Rng_Gen(Peri_Rng));
 
 	//Lwip & ETH & httpd
 	ETH_BSP_Config();	
 	LwIP_Init();
 	
 	SysTimer_Init(&blinkTimer,1000);
+	
 	while(1)
 	{
 		uint8_t rxcmd[DEBUG_SERIAL_RX_BUFFER_SIZE]={0};
