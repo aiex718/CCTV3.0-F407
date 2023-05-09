@@ -707,6 +707,21 @@
           </Files>
         </Group>
         <Group>
+          <GroupName>User\bsp\platform\device</GroupName>
+          <Files>
+            <File>
+              <FileName>dev_led_indicator.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\User\bsp\platform\device\dev_led_indicator.c</FilePath>
+            </File>
+            <File>
+              <FileName>dev_button.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\User\bsp\platform\device\dev_button.c</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
           <GroupName>User\bsp\platform\periph</GroupName>
           <Files>
             <File>
@@ -753,6 +768,21 @@
               <FileName>mem_guard.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\User\bsp\sys\mem_guard.c</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>User\device</GroupName>
+          <Files>
+            <File>
+              <FileName>led_indicator.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\User\device\led_indicator.c</FilePath>
+            </File>
+            <File>
+              <FileName>button.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\User\device\button.c</FilePath>
             </File>
           </Files>
         </Group>
