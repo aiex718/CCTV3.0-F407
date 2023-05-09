@@ -29,15 +29,17 @@ typedef enum
     JPEG_176x144      ,
     JPEG_320x240      ,
     JPEG_352x288      ,
+    __JPEGFORMAT_CONFIG_MAX   
 }CAM_OV2640_JpegFormat_Config_t;
 
 typedef enum   
 {
-    BRIGHTNESS_P2       = 0x40,
-    BRIGHTNESS_P1       = 0x30,
-    BRIGHTNESS_NORMAL   = 0x20,
-    BRIGHTNESS_N1       = 0x10,
-    BRIGHTNESS_N2       = 0x00,
+    BRIGHTNESS_P2       = 0 ,
+    BRIGHTNESS_P1           ,
+    BRIGHTNESS_NORMAL       ,
+    BRIGHTNESS_N1           ,
+    BRIGHTNESS_N2           ,
+    __BRIGHTNESS_CONFIG_MAX
 }CAM_OV2640_Brightness_Config_t;
 
 
@@ -48,6 +50,7 @@ typedef enum
     CONTRAST_NORMAL         ,
     CONTRAST_N1             ,
     CONTRAST_N2             ,
+    __CONTRAST_CONFIG_MAX
 }CAM_OV2640_Contrast_Config_t;
 
 typedef enum   
@@ -57,6 +60,7 @@ typedef enum
     LIGHTMODE_CLOUDY        ,
     LIGHTMODE_OFFICE        ,
     LIGHTMODE_HOME          ,
+    __LIGHTMODE_CONFIG_MAX
 }CAM_OV2640_LightMode_Config_t;
 
 typedef enum   
@@ -69,6 +73,7 @@ typedef enum
     SPECIALEFFECT_NEGATIVE                  ,
     SPECIALEFFECT_BLACKWHITE_NEGATIVE       ,
     SPECIALEFFECT_NORMAL                    ,
+    __SPECIALEFFECTS_CONFIG_MAX
 }CAM_OV2640_SpecialEffects_Config_t;
 
 //init configs 
