@@ -34,12 +34,20 @@
 #endif
 
 /* Includes ------------------------------------------------------------------*/
-
 #include "lwip/netif.h"
 #include "stm32f4xx.h"
 /* Exported types ------------------------------------------------------------*/
 /* Exported constants --------------------------------------------------------*/
 #define ETHERNET_PHY_ADDRESS       0x01 //Refer to LAN8720 PHYAD0 pin
+
+/* MII and RMII mode selection ***********/
+#define RMII_MODE
+// #define MII_MODE
+
+#ifdef MII_MODE
+#define PHY_CLOCK_MCO
+#endif
+
 
 /*
 	ETH_MDIO -------------------------> PA2
@@ -133,16 +141,11 @@
 // #define ETH_LINK_GPIO_PORT             GPIOB
 // #define ETH_LINK_GPIO_CLK              RCC_AHB1Periph_GPIOB
 
-
-/* Ethernet Flags for EthStatus variable */
-#define ETH_INIT_FLAG           0x01 /* Ethernet Init Flag */
-#define ETH_LINK_FLAG           0x10 /* Ethernet Link Flag */
-
 /* Exported macro ------------------------------------------------------------*/
 /* Exported functions ------------------------------------------------------- */
 void ETH_BSP_Config(void);
-void ETH_CheckLinkStatus(void);
-void ETH_LinkChanged_callback(struct netif *netif);
+bool ETH_CheckLinkStatus(struct netif *gnetif);
+void ETH_LinkChanged_callback(struct netif *gnetif);
 
 
 // uint32_t Eth_Link_PHYITConfig(uint16_t PHYAddress);
