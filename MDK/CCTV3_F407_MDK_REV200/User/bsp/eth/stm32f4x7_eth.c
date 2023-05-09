@@ -270,7 +270,7 @@ void ETH_StructInit(ETH_InitTypeDef* ETH_InitStruct)
   * @retval ETH_ERROR: Ethernet initialization failed
   *         ETH_SUCCESS: Ethernet successfully initialized
   */
-uint32_t ETH_Init(ETH_InitTypeDef* ETH_InitStruct, uint16_t PHYAddress)
+bool ETH_Init(ETH_InitTypeDef* ETH_InitStruct, uint16_t PHYAddress)
 {
   uint32_t RegValue = 0, tmpreg = 0;
   __IO uint32_t i = 0;
@@ -643,12 +643,12 @@ error:
   if(err == ETH_SUCCESS)
   {
     /* Return Ethernet configuration success */
-    return ETH_SUCCESS;
+    return true;
   }
   else /* Auto-negotiation failed */
   {
     /* Return Ethernet error */
-    return ETH_ERROR;
+    return false;
   }
 }
 

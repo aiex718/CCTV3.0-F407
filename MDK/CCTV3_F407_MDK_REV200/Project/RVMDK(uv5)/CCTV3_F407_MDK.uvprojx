@@ -1600,6 +1600,9 @@
               <FileName>dev_buzzer.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\User\bsp\platform\device\dev_buzzer.c</FilePath>
+              <FileName>dev_ethernetif.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\User\bsp\platform\device\dev_ethernetif.c</FilePath>
             </File>
             <File>
               <FileName>dev_led_indicator.c</FileName>
