@@ -1616,6 +1616,11 @@
               <FileType>1</FileType>
               <FilePath>..\..\User\bsp\platform\device\dev_button.c</FilePath>
             </File>
+            <File>
+              <FileName>dev_config_storage.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\User\bsp\platform\device\dev_config_storage.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
