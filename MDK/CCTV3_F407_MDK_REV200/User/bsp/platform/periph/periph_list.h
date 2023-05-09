@@ -9,6 +9,7 @@
 #include "bsp/platform/periph/peri_timer_pwm.h"
 #include "bsp/platform/periph/peri_rtc.h"
 #include "bsp/platform/periph/peri_adc.h"
+#include "bsp/platform/periph/peri_flash_prog.h"
 
 
 #endif

@@ -1666,6 +1666,11 @@
               <FileType>1</FileType>
               <FilePath>..\..\User\bsp\platform\periph\peri_uniqueid.c</FilePath>
             </File>
+            <File>
+              <FileName>peri_flash_prog.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\User\bsp\platform\periph\peri_flash_prog.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -1800,6 +1805,11 @@
               <FileName>button.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\User\device\button.c</FilePath>
+            </File>
+            <File>
+              <FileName>config_storage.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\User\device\config_storage.c</FilePath>
             </File>
           </Files>
         </Group>

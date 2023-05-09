@@ -5,6 +5,8 @@
 #include "lwip/pbuf.h"
 #include "lwip/stats.h"
 
+#include "bsp/platform/device/dev_config_storage.h"
+
 #include "app/mjpegd/mjpegd_debug.h"
 #include "app/mjpegd/mjpegd_memutils.h"
 #include "app/mjpegd/trycatch.h"
@@ -35,6 +37,10 @@ static void Mjpegd_ShowDrop(Mjpegd_t *mjpegd);
 
 /** callbacks **/
 static void Mjpegd_RecvNewFrame_handler(void *sender, void *arg, void *owner);
+
+const Mjpegd_ConfigFile_t Mjpegd_Config_Default ={
+    .Mjpegd_Port = 8080,
+};
 
 err_t Mjpegd_Init(Mjpegd_t *mjpegd)
 {

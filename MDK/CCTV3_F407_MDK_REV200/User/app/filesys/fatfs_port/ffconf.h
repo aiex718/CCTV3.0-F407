@@ -241,7 +241,6 @@
 /  Note that enabling exFAT discards ANSI C (C89) compatibility. */
 
 
-//TODO:use rtc
 #define FF_FS_NORTC		1
 #define FF_NORTC_MON	1
 #define FF_NORTC_MDAY	1

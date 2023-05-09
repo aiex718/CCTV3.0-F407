@@ -37,7 +37,7 @@ int main(void)
 	//SystemInit() is inside system_stm32f4xx.c
 	HAL_Systick_Init();
 	delay(500); //wait 500ms for subsystems to be ready
-	
+
 	//RCC
 	HAL_RCC_Init(Peri_RCC);
 
@@ -45,7 +45,16 @@ int main(void)
 	DBG_Serial_Init(Peri_DBG_Serial);
 	DBG_Serial_Cmd(Peri_DBG_Serial,true);
 	DBG_INFO("Built at " __DATE__ " " __TIME__ " ,Booting...\n");
-	
+
+	//Configs
+	Config_Storage_Init(Dev_ConfigStorage);
+	Config_Storage_LoadAll(Dev_ConfigStorage);
+	if(Config_Storage_IsChanged(Dev_ConfigStorage))
+	{
+		bool b = Config_Storage_Commit(Dev_ConfigStorage);
+		DBG_INFO("Config_Storage_Commit %s\n",b?"OK":"Failed");
+	}
+
 	//RTC Init
 	HAL_RTC_Init(Peri_RTC);
 	
@@ -132,13 +141,48 @@ int main(void)
 			}
 			else if(strcmp((char*)rxcmd,"reset")==0)
 			{
+				if(Config_Storage_EraseAll(Dev_ConfigStorage))
+				{
+					DBG_Serial_SafeMode(Peri_DBG_Serial,true);
+					DBG_INFO("System reset success, rebooting...\n");
+					SysCtrl_Reset();
+				}
+				else
+					DBG_ERROR("System reset failed\n");
+			}
+			else if(strcmp((char*)rxcmd,"reboot")==0)
+			{
 				DBG_Serial_SafeMode(Peri_DBG_Serial,true);
-				DBG_INFO("System resetting...\n");
+				DBG_INFO("System rebooting...\n");
 				SysCtrl_Reset();
 			}
 			else if(strcmp((char*)rxcmd,"beep")==0)
 			{
 				Device_Buzzer_ShortBeep(Dev_Buzzer);
+			}
+			else if(strcmp((char*)rxcmd,"dhcp")==0)
+			{
+				const Ethernetif_ConfigFile_t *eth_conf = (const Ethernetif_ConfigFile_t *)
+					Config_Storage_Read(Dev_ConfigStorage,Dev_Ethernetif_Default,NULL);
+
+				if(eth_conf)
+				{
+					Ethernetif_ConfigFile_t eth_conf_copy;
+					eth_conf_copy = *eth_conf;  
+					eth_conf_copy.Netif_Config_DHCP_Enable = !eth_conf_copy.Netif_Config_DHCP_Enable;
+
+					Config_Storage_Write(Dev_ConfigStorage,Dev_Ethernetif_Default,&eth_conf_copy);
+					Config_Storage_Commit(Dev_ConfigStorage);
+
+					DBG_Serial_SafeMode(Peri_DBG_Serial,true);
+					DBG_INFO("DHCP is now %s\n",eth_conf->Netif_Config_DHCP_Enable?"enabled":"disabled");
+					DBG_INFO("System rebooting...\n");
+					SysCtrl_Reset();
+				}
+				else
+				{
+					DBG_ERROR("Failed to read ethernet config\n");
+				}
 			}
 		}
 

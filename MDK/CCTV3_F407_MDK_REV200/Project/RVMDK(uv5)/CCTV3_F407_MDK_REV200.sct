@@ -45,7 +45,6 @@ LR_IROM1 0x08000000 0x00004000  {    ; load region size_region
     tcp.o (+ZI +RW)
     tcp_in.o (+ZI +RW)
     ip4_addr.o (+ZI +RW)
-    netconf.o (+ZI +RW)
     netif.o (+ZI +RW)
 
     ;Other
