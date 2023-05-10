@@ -46,6 +46,17 @@
 #ifndef BSP_STRNCPY 
     #define BSP_STRNCPY strncpy
 #endif
+
+#ifndef BSP_MALLOC
+    #define BSP_MALLOC malloc
+#endif
+#ifndef BSP_CALLOC
+    #define BSP_CALLOC calloc
+#endif
+#ifndef BSP_FREE
+    #define BSP_FREE free
+#endif
+
 #ifndef BSP_RAND 
     #define BSP_RAND rand
 #endif
@@ -62,6 +73,7 @@
 #ifndef BSP_ABS
     #define BSP_ABS(x)  (((x) < 0) ? -(x) : (x))
 #endif
+
 #ifndef BSP_UNUSED_ARG
     #define BSP_UNUSED_ARG(x) (void)(x)
 #endif 
