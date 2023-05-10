@@ -114,7 +114,7 @@ void Mjpegd_FrameProc_ProcPending(Mjpegd_t *mjpegd)
     
     if(local_frame!=NULL)
     {
-        LWIP_DEBUGF(MJPEGD_FRAMEPOOL_DEBUG | LWIP_DBG_TRACE, 
+        LWIP_DEBUGF(MJPEGD_DEBUG | LWIP_DBG_TRACE, 
             MJPEGD_DBG_ARG("ProcPending %p start, _sem=%d\n",local_frame,local_frame->_sem));
         Mjpegd_FrameProc_ProcessRawFrame(local_frame);
         Mjpegd_FramePool_ReturnIdle(mjpegd->FramePool,local_frame);
