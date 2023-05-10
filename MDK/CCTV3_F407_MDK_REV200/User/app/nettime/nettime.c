@@ -3,7 +3,6 @@
 #include "lwip/apps/sntp.h"
 #include "bsp/sys/dbg_serial.h"
 #include "bsp/platform/periph/peri_rtc.h"
-#include "bsp/platform/device/dev_config_storage.h"
 
 //This module enable lwip sntp client, and set RTC time from sntp server
 void NetTime_Init(NetTime_t *self)
