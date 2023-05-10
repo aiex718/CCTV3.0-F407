@@ -251,17 +251,17 @@ The STM32F4x7 allows computing and verifying the IP, UDP, TCP and ICMP checksums
 
 // #define IP_DEBUG                       LWIP_DBG_ON
 // #define NETIF_DEBUG                    LWIP_DBG_ON
-// #define RAW_DEBUG                       LWIP_DBG_ON
-// #define TCPIP_DEBUG                     LWIP_DBG_ON
+// #define RAW_DEBUG                      LWIP_DBG_ON
+// #define TCPIP_DEBUG                    LWIP_DBG_ON
 
-//#define TIMERS_DEBUG                      (LWIP_DBG_ON|LWIP_DBG_LEVEL_SEVERE|LWIP_DBG_STATE|LWIP_DBG_TRACE)
-//#define LWIP_DEBUG_TIMERNAMES             LWIP_DBG_ON
+//#define TIMERS_DEBUG                    (LWIP_DBG_ON|LWIP_DBG_LEVEL_SEVERE|LWIP_DBG_STATE|LWIP_DBG_TRACE)
+//#define LWIP_DEBUG_TIMERNAMES            LWIP_DBG_ON
 
-//#define DHCP_DEBUG                        LWIP_DBG_ON
-//#define HTTPD_DEBUG                       LWIP_DBG_ON
-#define MJPEGD_DEBUG                      LWIP_DBG_ON
-//#define MJPEGD_FRAMEPOOL_DEBUG             LWIP_DBG_ON
-#define HTTPD_DEBUG                       LWIP_DBG_ON
+//#define DHCP_DEBUG                       LWIP_DBG_ON
+//#define HTTPD_DEBUG                      LWIP_DBG_ON
+#define MJPEGD_DEBUG                       LWIP_DBG_ON
+#define HTTPD_DEBUG                        LWIP_DBG_ON
+#define MJPEGD_FRAMEPOOL_DEBUG             LWIP_DBG_ON
 
 #define LWIP_DBG_MIN_LEVEL       LWIP_DBG_LEVEL_ALL//LWIP_DBG_LEVEL_WARNING //LWIP_DBG_LEVEL_SEVERE 
 #define LWIP_DBG_TYPES_ON        (LWIP_DBG_LEVEL_SEVERE|LWIP_DBG_STATE)//|LWIP_DBG_TRACE)

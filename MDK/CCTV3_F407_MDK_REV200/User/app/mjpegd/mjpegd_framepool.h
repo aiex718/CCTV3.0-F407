@@ -19,6 +19,7 @@ typedef struct Mjpegd_FramePool_s
     Mjpegd_Callback_t *FramePool_Callbacks[__NOT_CALLBACK_FRAMEPOOL_MAX];
     //private, dont use
     Mjpegd_Frame_t *_frames;
+    uint16_t _frames_len;
 }Mjpegd_FramePool_t;
 
 void Mjpegd_FramePool_Init(Mjpegd_FramePool_t* self);
@@ -35,5 +36,29 @@ void Mjpegd_FramePool_Release(
 Mjpegd_Frame_t* Mjpegd_FramePool_GetIdle(Mjpegd_FramePool_t* self);
 void Mjpegd_FramePool_ReturnIdle(
     Mjpegd_FramePool_t* self,Mjpegd_Frame_t* frame);
+
+__STATIC_INLINE bool Mjpegd_FramePool_IsClear(Mjpegd_FramePool_t* self)
+{
+    u8_t i;
+    for (i = 0; i < self->_frames_len; i++)
+    {
+        if(!Mjpegd_Frame_IsClear(&self->_frames[i]))
+            return false;
+    }
+    return true;
+}
+
+__STATIC_INLINE bool Mjpegd_FramePool_GetLockedFrameCount(Mjpegd_FramePool_t* self)
+{
+    u16_t i,lock_cnt=0;
+    //check lock
+    for (i = 0; i < self->_frames_len; i++)
+    {
+        if(self->_frames[i]._sem==0)
+            lock_cnt++;
+    }
+
+    return lock_cnt;
+}
 
 #endif

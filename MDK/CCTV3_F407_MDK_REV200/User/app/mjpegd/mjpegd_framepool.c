@@ -1,5 +1,6 @@
 #include "app/mjpegd/mjpegd_framepool.h"
 #include "app/mjpegd/mjpegd_memutils.h"
+#include "app/mjpegd/trycatch.h"
 #include "app/mjpegd/mjpegd_debug.h"
 
 
@@ -10,7 +11,7 @@
 // #define LINKLIST_GET_LAST(p,list) LINKLIST_GET_UNTIL(p,list,NULL)
 
 //Private functions
-static void Mjpegd_FramePool_Sort(
+static bool Mjpegd_FramePool_Sort(
     Mjpegd_FramePool_t* self,u8_t* order_out,MJPEGD_SYSTIME_T time);
 
 void Mjpegd_FramePool_Init(Mjpegd_FramePool_t* self)
@@ -20,16 +21,16 @@ void Mjpegd_FramePool_Init(Mjpegd_FramePool_t* self)
     for (i = 0; i < __NOT_CALLBACK_FRAMEPOOL_MAX; i++)
         self->FramePool_Callbacks[i] = NULL;
 
-    for (i = 0; i < MJPEGD_FRAMEPOOL_LEN; i++)
+    for (i = 0; i < self->_frames_len; i++)
         Mjpegd_Frame_Init(&self->_frames[i]);
 }
 
-//try to clear framepool, return faile if any frame acquired by other
+//try to clear framepool, return false if any frame locked or acquired by others
 bool Mjpegd_FramePool_TryClear(Mjpegd_FramePool_t* self)
 {
     u8_t i;
     Mjpegd_Frame_t *frame;
-    for (i = 0; i < MJPEGD_FRAMEPOOL_LEN; i++)
+    for (i = 0; i < self->_frames_len; i++)
     {
         frame = &self->_frames[i];
 
@@ -57,46 +58,63 @@ void Mjpegd_FramePool_SetCallback(
 }
 
 /**
- * @brief Get the latest frame newer than last_frame_time, 0 to get the newest frame.
+ * @brief Get the latest frame newer than last_frame_time (0 to get the newest frame).
  * @return Mjpegd_Frame_t* 
  */
 Mjpegd_Frame_t* Mjpegd_FramePool_GetLatest(Mjpegd_FramePool_t* self,
     MJPEGD_SYSTIME_T last_frame_time)
 {
-    u8_t i,sorted_idx[MJPEGD_FRAMEPOOL_LEN];
-    MJPEGD_SYSTIME_T now = sys_now();
-    Mjpegd_Frame_t* frame;
-    //how much time has passed since last frame
-    MJPEGD_SYSTIME_T last_frame_diff = now - last_frame_time,new_frame_diff;
+    u8_t i, *sorted_idx=NULL;
+    MJPEGD_SYSTIME_T now = sys_now(),last_frame_diff;
+    Mjpegd_Frame_t *frame_out=NULL, *temp_frame;
 
-    //Try to acquire newest frame.
-    //Newest node should be the first node.
-    Mjpegd_FramePool_Sort(self,sorted_idx,now);
-    for (i = 0; i < BSP_ARR_LEN(sorted_idx); i++)
+    try
     {
-        frame = &self->_frames[sorted_idx[i]];
-        if( Mjpegd_Frame_IsValid(frame) && frame->capture_time!=0 )
-        {   
+        //alloc mem for sorted_idx
+        sorted_idx = BSP_MALLOC(self->_frames_len*sizeof(*sorted_idx));
+        throwif(sorted_idx==NULL,MALLOC_FAILED);
+
+        throwif(Mjpegd_FramePool_Sort(self,sorted_idx,now)==false,SORT_FAILED);
+
+        //how much time has passed since last frame
+        last_frame_diff = now - last_frame_time;
+
+        //Try to acquire newest frame.
+        //Newest frame should be the first frame.
+        for (i = 0; i < self->_frames_len; i++)
+        {
+            temp_frame = &self->_frames[sorted_idx[i]];
+
+            //check if frame is valid
+            if(Mjpegd_Frame_IsValid(temp_frame)==false || temp_frame->capture_time==0 )
+                continue;
+
             //no last frame, just get the newest frame
+            //snap client use this route
             if(last_frame_time==0)
             {
-                if(Mjpegd_Frame_TryAcquire(frame))
+                if(Mjpegd_Frame_TryAcquire(temp_frame))
+                {
+                    frame_out = temp_frame;
                     break;
+                }
             }
             else
             {
-                //how much time has passed since this frame
-                new_frame_diff = now - frame->capture_time;
                 //if this frame is newer than last frame
-                if(last_frame_diff>new_frame_diff)
+                if(last_frame_diff> now - temp_frame->capture_time)
                 {
                     LWIP_DEBUGF(MJPEGD_FRAMEPOOL_DEBUG | LWIP_DBG_TRACE , 
-                        MJPEGD_DBG_ARG("TryAcquire frame %p ,_sem:%d\n",frame,frame->_sem));
+                        MJPEGD_DBG_ARG("TryAcquire frame %p ,_sem:%d\n",
+                            temp_frame,temp_frame->_sem));
 
-                    if(Mjpegd_Frame_TryAcquire(frame))
+                    if(Mjpegd_Frame_TryAcquire(temp_frame))
                     {
                         LWIP_DEBUGF(MJPEGD_FRAMEPOOL_DEBUG | LWIP_DBG_TRACE , 
-                            MJPEGD_DBG_ARG("Acquired frame %p ,_sem:%d\n",frame,frame->_sem));
+                            MJPEGD_DBG_ARG("Acquired frame %p ,_sem:%d\n",
+                                temp_frame,temp_frame->_sem));
+
+                        frame_out = temp_frame;
                         break;
                     }
                 }
@@ -106,14 +124,37 @@ Mjpegd_Frame_t* Mjpegd_FramePool_GetLatest(Mjpegd_FramePool_t* self,
                     //no need to check other frames
                     LWIP_DEBUGF(MJPEGD_FRAMEPOOL_DEBUG | LWIP_DBG_TRACE , 
                         MJPEGD_DBG_ARG("all frame outdated\n"));
-                    frame = NULL;
+                    frame_out = NULL;
                     break;
                 }
             }
         }
-        frame = NULL;
     }
-    return frame;
+    catch(MALLOC_FAILED)
+    {
+        LWIP_DEBUGF(MJPEGD_FRAMEPOOL_DEBUG | LWIP_DBG_LEVEL_SERIOUS , 
+            MJPEGD_DBG_ARG("GetLatest malloc failed for sorted_idx[]\n"));
+        frame_out = NULL;
+    }
+    catch(SORT_FAILED)
+    {
+        LWIP_DEBUGF(MJPEGD_FRAMEPOOL_DEBUG | LWIP_DBG_LEVEL_SERIOUS , 
+            MJPEGD_DBG_ARG("GetLatest sort failed\n"));
+        frame_out = NULL;
+    }
+    finally
+    {
+        if(frame_out==NULL)
+        {
+            LWIP_DEBUGF(MJPEGD_FRAMEPOOL_DEBUG | LWIP_DBG_TRACE , 
+                MJPEGD_DBG_ARG("GetLatest frame failed\n"));
+        }
+
+        if(sorted_idx!=NULL)
+            BSP_FREE(sorted_idx);
+
+        return frame_out;
+    }
 }
 
 void Mjpegd_FramePool_Release(Mjpegd_FramePool_t* self,Mjpegd_Frame_t* frame)
@@ -135,48 +176,72 @@ void Mjpegd_FramePool_Release(Mjpegd_FramePool_t* self,Mjpegd_Frame_t* frame)
 
 Mjpegd_Frame_t* Mjpegd_FramePool_GetIdle(Mjpegd_FramePool_t* self)
 {
-    u8_t i,lock_cnt,sorted_idx[MJPEGD_FRAMEPOOL_LEN];
+    u8_t i,*sorted_idx=NULL;
+    u16_t lock_cnt;
     MJPEGD_SYSTIME_T now = sys_now();
-    Mjpegd_Frame_t* frame;
-
-    //check lock
-    for (i = 0; i < MJPEGD_FRAMEPOOL_LEN; i++)
+    Mjpegd_Frame_t *frame_out=NULL,*frame_temp;
+    try
     {
-        if(self->_frames[i]._sem==0)
-            lock_cnt++;
-    }
+        //frame pool should only have 1 locked pending frame
+        //if more than 1 frame locked, we refuse to get new idle frame
+        lock_cnt = Mjpegd_FramePool_GetLockedFrameCount(self);
+        throwif(lock_cnt>1,MULTI_FRAME_LOCKED);
 
-    if(lock_cnt>1)
-    {
-        //multi cpature device?
-        LWIP_DEBUGF(MJPEGD_FRAMEPOOL_DEBUG | LWIP_DBG_LEVEL_WARNING, 
-            MJPEGD_DBG_ARG("Multi frame locked %d\n",lock_cnt));
-    }
+        //alloc mem for sorted_idx
+        sorted_idx = BSP_MALLOC(self->_frames_len*sizeof(*sorted_idx));
+        throwif(sorted_idx==NULL,MALLOC_FAILED);
 
-    //Try to get and lock oldest idle node.
-    //Oldest node should be the last node.
-    Mjpegd_FramePool_Sort(self,sorted_idx,now);
-    for (i = BSP_ARR_LEN(sorted_idx); i != 0; i--)
-    {
-        frame = &self->_frames[sorted_idx[i-1]];
+        throwif(Mjpegd_FramePool_Sort(self,sorted_idx,now)==false,SORT_FAILED);
 
-        LWIP_DEBUGF(MJPEGD_FRAMEPOOL_DEBUG | LWIP_DBG_TRACE , 
-            MJPEGD_DBG_ARG("trylock frame %p ,_sem:%d\n",frame,frame->_sem));
-
-        if(Mjpegd_Frame_TryLock(frame))
+        //Try to get and lock oldest idle frame.
+        //Oldest frame should be the last frame.
+        for (i = self->_frames_len; i != 0; i--)
         {
+            frame_temp = &self->_frames[sorted_idx[i-1]];
+
             LWIP_DEBUGF(MJPEGD_FRAMEPOOL_DEBUG | LWIP_DBG_TRACE , 
-                MJPEGD_DBG_ARG("locked frame %p ,_sem:%d\n",frame,frame->_sem));
-            return frame;
+                MJPEGD_DBG_ARG("trylock frame %p ,_sem:%d\n",frame_temp,frame_temp->_sem));
+
+            if(Mjpegd_Frame_TryLock(frame_temp))
+            {
+                LWIP_DEBUGF(MJPEGD_FRAMEPOOL_DEBUG | LWIP_DBG_TRACE , 
+                    MJPEGD_DBG_ARG("locked frame %p ,_sem:%d\n",frame_temp,frame_temp->_sem));
+                frame_out = frame_temp;
+                break;
+            }
         }
     }
+    catch(MULTI_FRAME_LOCKED)
+    {
+        LWIP_DEBUGF(MJPEGD_FRAMEPOOL_DEBUG | LWIP_DBG_LEVEL_SEVERE, 
+            MJPEGD_DBG_ARG("Multi frame locked %d\n",lock_cnt));
+        frame_out=NULL;
+    }
+    catch(MALLOC_FAILED)
+    {
+        LWIP_DEBUGF(MJPEGD_FRAMEPOOL_DEBUG | LWIP_DBG_LEVEL_SERIOUS , 
+            MJPEGD_DBG_ARG("GetIdle malloc failed for sorted_idx[]\n"));
+        frame_out = NULL;
+    }
+    catch(SORT_FAILED)
+    {
+        LWIP_DEBUGF(MJPEGD_FRAMEPOOL_DEBUG | LWIP_DBG_LEVEL_SERIOUS , 
+            MJPEGD_DBG_ARG("GetIdle sort failed\n"));
+        frame_out = NULL;
+    }
+    finally
+    {
+        if(frame_out==NULL)
+        {
+            LWIP_DEBUGF(MJPEGD_FRAMEPOOL_DEBUG | LWIP_DBG_LEVEL_SERIOUS, 
+                MJPEGD_DBG_ARG("no idle frame\n"));
+        }
 
-    LWIP_DEBUGF(MJPEGD_FRAMEPOOL_DEBUG | LWIP_DBG_LEVEL_SERIOUS, 
-        MJPEGD_DBG_ARG("no idle frame\n"));
-
-  
-
-    return NULL;
+        if(sorted_idx!=NULL)
+            BSP_FREE(sorted_idx);
+            
+        return frame_out;
+    }
 }
 
 /**
@@ -203,31 +268,42 @@ void Mjpegd_FramePool_ReturnIdle(Mjpegd_FramePool_t* self,Mjpegd_Frame_t* frame)
 }
 
 //sort by frame's time diff (capture_time-now),order from small to big(new to old)
-static void Mjpegd_FramePool_Sort(Mjpegd_FramePool_t* self,u8_t* order_out,
+static bool Mjpegd_FramePool_Sort(Mjpegd_FramePool_t* self,u8_t* order_out,
     MJPEGD_SYSTIME_T time)
 {
-    MJPEGD_SYSTIME_T tmp,time_diffs[MJPEGD_FRAMEPOOL_LEN];
+    MJPEGD_SYSTIME_T tmp,*time_diffs;
+    u16_t time_diffs_len = self->_frames_len;
     u8_t tmp2,i,j;
-    for (i = 0; i < BSP_ARR_LEN(time_diffs); i++)
+
+    //alloc mem for time_diffs
+    time_diffs = BSP_MALLOC(time_diffs_len*sizeof(*time_diffs));
+    if(time_diffs==NULL)
+    {
+        LWIP_DEBUGF(MJPEGD_FRAMEPOOL_DEBUG | LWIP_DBG_LEVEL_SERIOUS , 
+            MJPEGD_DBG_ARG("Malloc failed for time_diffs[]\n"));
+        return false;
+    }
+
+    for (i = 0; i < time_diffs_len; i++)
     {
         time_diffs[i] = time - self->_frames[i].capture_time;
         order_out[i] = i;
     }
 #if MJPEGD_FRAMEPOOL_DEBUG_PRINT_SORT
     MJPEGD_DBG_PRINT("FramePool: [order,capture_time] before sort:");
-    for (i = 0; i < BSP_ARR_LEN(time_diffs); i++)
+    for (i = 0; i < time_diffs_len; i++)
         MJPEGD_DBG_PRINT("[%d,%d] ",order_out[i],self->_frames[i].capture_time);
     MJPEGD_DBG_PRINT(("\n"));
 
     MJPEGD_DBG_PRINT("FramePool: [order,time_diffs] before sort: ");
-    for (i = 0; i < BSP_ARR_LEN(time_diffs); i++)
+    for (i = 0; i < time_diffs_len; i++)
         MJPEGD_DBG_PRINT("[%d,%d] ",order_out[i],time_diffs[i]);
     MJPEGD_DBG_PRINT("\n");
 #endif
     //sort time_diffs and order_out
-    for (i = 0; i < BSP_ARR_LEN(time_diffs); i++)
+    for (i = 0; i < time_diffs_len; i++)
     {
-        for (j = i+1; j < BSP_ARR_LEN(time_diffs); j++)
+        for (j = i+1; j < time_diffs_len; j++)
         {
             if(time_diffs[i] > time_diffs[j])
             {
@@ -243,8 +319,11 @@ static void Mjpegd_FramePool_Sort(Mjpegd_FramePool_t* self,u8_t* order_out,
 
 #if MJPEGD_FRAMEPOOL_DEBUG_PRINT_SORT
     MJPEGD_DBG_PRINT("FramePool: [order,time_diffs] after sort: ");
-    for (i = 0; i < BSP_ARR_LEN(time_diffs); i++)
+    for (i = 0; i < time_diffs_len; i++)
         MJPEGD_DBG_PRINT("[%d,%d] ",order_out[i],time_diffs[i]);
     MJPEGD_DBG_PRINT("\n");
 #endif
+
+    BSP_FREE(time_diffs);
+    return true;
 }

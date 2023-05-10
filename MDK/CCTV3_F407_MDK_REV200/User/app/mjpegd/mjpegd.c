@@ -715,17 +715,15 @@ static void Mjpegd_CheckIdle(Mjpegd_t *mjpegd)
                 MJPEGD_DBG_ARG("Mjpegd idle, stop camera\n"));
             Mjpegd_Camera_Stop(mjpegd->Camera);
            
-            mjpegd->_frame_pool_cleared=0;
         }
         
         //clear frame pool if not cleared yet
-        if(mjpegd->_frame_pool_cleared==0)
+        if(Mjpegd_FramePool_IsClear(mjpegd->FramePool)==false)
         {
-            mjpegd->_frame_pool_cleared=Mjpegd_FramePool_TryClear(mjpegd->FramePool);
-            if(mjpegd->_frame_pool_cleared)
+            if(Mjpegd_FramePool_TryClear(mjpegd->FramePool))
             {
                 LWIP_DEBUGF(MJPEGD_DEBUG | LWIP_DBG_STATE, 
-                MJPEGD_DBG_ARG("FramePool cleared\n"));
+                    MJPEGD_DBG_ARG("FramePool cleared\n"));
             }
         }
     }

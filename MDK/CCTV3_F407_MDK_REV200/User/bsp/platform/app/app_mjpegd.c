@@ -10,6 +10,7 @@ Mjpegd_t App_Mjpegd_Inst={
     .Port = 8080,
     .FramePool = __VAR_CAST_VAR(Mjpegd_FramePool_t){
         ._frames = __mjpegd_frame_pool_hwbuf,
+        ._frames_len = MJPEGD_FRAMEPOOL_LEN,
     },
     .Camera = __VAR_CAST_VAR(Mjpegd_Camera_t){
 		.Ov2640_RecvRawFrame_cb = NULL,
