@@ -10,6 +10,7 @@
       <TargetName>Target 1</TargetName>
       <ToolsetNumber>0x4</ToolsetNumber>
       <ToolsetName>ARM-ADS</ToolsetName>
+      <pArmCC>5060960::V5.06 update 7 (build 960)::.\ARMCC</pArmCC>
       <pCCUsed>5060960::V5.06 update 7 (build 960)::.\ARMCC</pCCUsed>
       <uAC6>0</uAC6>
       <TargetOption>
@@ -313,7 +314,7 @@
           </ArmAdsMisc>
           <Cads>
             <interw>1</interw>
-            <Optim>1</Optim>
+            <Optim>4</Optim>
             <oTime>0</oTime>
             <SplitLS>0</SplitLS>
             <OneElfS>1</OneElfS>
@@ -1466,6 +1467,11 @@
               <FilePath>..\..\User\bsp\platform\device\dev_disk.c</FilePath>
             </File>
             <File>
+              <FileName>dev_ethernetif.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\User\bsp\platform\device\dev_ethernetif.c</FilePath>
+            </File>
+            <File>
               <FileName>dev_led_indicator.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\User\bsp\platform\device\dev_led_indicator.c</FilePath>
@@ -1596,6 +1602,16 @@
           <GroupName>User\device</GroupName>
           <Files>
             <File>
+              <FileName>led_indicator.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\User\device\led_indicator.c</FilePath>
+            </File>
+            <File>
+              <FileName>button.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\User\device\button.c</FilePath>
+            </File>
+            <File>
               <FileName>flash_w25qx.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\User\device\flash_w25qx.c</FilePath>
@@ -1609,16 +1625,6 @@
               <FileName>disk_flash.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\User\device\disk_flash.c</FilePath>
-            </File>
-            <File>
-              <FileName>led_indicator.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\User\device\led_indicator.c</FilePath>
-            </File>
-            <File>
-              <FileName>button.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\User\device\button.c</FilePath>
             </File>
           </Files>
         </Group>

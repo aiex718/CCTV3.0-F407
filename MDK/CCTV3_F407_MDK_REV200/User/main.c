@@ -57,6 +57,7 @@ int main(void)
 
 	//RNG
 	HAL_Rng_Init(Peri_Rng);
+	BSP_SRAND((uint16_t)HAL_Rng_Gen(Peri_Rng));
 
 	//Disk
 	Disk_InitAll(Dev_Disk_list);

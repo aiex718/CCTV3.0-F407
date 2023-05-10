@@ -8,7 +8,7 @@ void Device_Button_Init(Device_Button_t *self)
     self->_button_prev_state = self->Button_IdleState;
     self->_button_callback_done_flags=0;
     SysTimer_Init(&self->_button_scan_tmr,self->Button_Scan_Period);
-    BSP_MEMSET(self->Button_Callbacks,0,sizeof(self->Button_Callbacks));
+    BSP_ARR_CLEAR(self->Button_Callbacks);
 }
 
 void Device_Button_SetCallback(Device_Button_t* self, Device_Button_CallbackIdx_t cb_idx, Callback_t* callback)

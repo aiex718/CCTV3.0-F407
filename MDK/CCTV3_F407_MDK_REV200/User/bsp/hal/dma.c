@@ -44,7 +44,7 @@ void HAL_DMA_Init(HAL_DMA_t *self)
 {
     uint8_t i;
     HAL_RCC_Cmd(self->DMA_RCC_Cmd, true);
-    BSP_MEMSET(self->DMA_Callbacks,0,sizeof(self->DMA_Callbacks));
+    BSP_ARR_CLEAR(self->DMA_Callbacks);
 
     DMA_Init(self->DMA_Streamx, (DMA_InitTypeDef*)self->DMA_InitCfg);
     if(self->DMA_NVIC_InitCfg)
