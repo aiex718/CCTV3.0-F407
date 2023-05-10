@@ -10,16 +10,19 @@ struct Mjpegd_Frame_s
 {
     u8_t* head;
     u8_t* payload;
-    u16_t payload_len;
     u8_t* tail;
     u8_t* eof;
     MJPEGD_SYSTIME_T capture_time;
+    //payload size
+    u16_t payload_len;
+    //captured frame size, if 0, frame is invalid
+    //if equal to payload_len, frame size may be larger than payload_len
+    //and only receive partial frame, when meanning frame is INVALID 
     u16_t frame_len;
 
     //dont modify these private member
-    Mjpegd_Semaphore_t _sem;
-
     u8_t _mem[MJPEGD_FRAME_MEM_SPACE];
+    Mjpegd_Semaphore_t _sem;
 };
 
 #define Mjpegd_Frame_HeaderSize(frame) ((frame)->payload - (frame)->head)
@@ -32,8 +35,10 @@ struct Mjpegd_Frame_s
 #define Mjpegd_Frame_StreamSize(frame) ((frame)->tail - (frame)->head)
 #define Mjpegd_Frame_SnapSize(frame) ((frame)->eof - (frame)->head)
 
-#define Mjpegd_Frame_IsValid(frame) ((frame)!=NULL && (frame)->frame_len!=0)
-
+#define Mjpegd_Frame_IsValid(frame) ((frame)!=NULL && \
+    (frame)->frame_len!=0 && (frame)->frame_len!=(frame)->payload_len)
+#define Mjpegd_Frame_IsClear(frame) ((frame)!=NULL && \
+    (frame)->frame_len==0 && (frame)->capture_time==0)
 
 void Mjpegd_Frame_Init(Mjpegd_Frame_t* self);
 void Mjpegd_Frame_Clear(Mjpegd_Frame_t* self);

@@ -35,12 +35,14 @@ struct ClientState_s
     void* parent_mjpeg;
 
     const struct Mjpegd_RequestHandler_s *request_handler;
-    conn_state_t conn_state;
 
     //file to send
     u8_t *file;
     u8_t *file_wptr;
     u16_t file_len;
+
+    conn_state_t conn_state;
+    u8_t retries;
 
     //callback when eof reached to get next file
     //if NULL, client will be closed
@@ -48,13 +50,12 @@ struct ClientState_s
     
     Mjpegd_Frame_t* frame;
     MJPEGD_SYSTIME_T previous_frame_time;
-    u8_t retries;
 
     //time_period for fps control
     MJPEGD_SYSTIME_T previous_transfer_time;
-    u16_t fps_period;
     //private linklist
     ClientState_t *_next;
+    u16_t fps_period;
 };
 
 ClientState_t* Mjpegd_Client_New(Mjpegd_t *mjpegd, struct tcp_pcb *pcb);

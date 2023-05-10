@@ -36,4 +36,15 @@ Mjpegd_Frame_t* Mjpegd_FramePool_GetIdle(Mjpegd_FramePool_t* self);
 void Mjpegd_FramePool_ReturnIdle(
     Mjpegd_FramePool_t* self,Mjpegd_Frame_t* frame);
 
+__STATIC_INLINE bool Mjpegd_FramePool_IsClear(Mjpegd_FramePool_t* self)
+{
+    u8_t i;
+    for (i = 0; i < MJPEGD_FRAMEPOOL_LEN; i++)
+    {
+        if(!Mjpegd_Frame_IsClear(&self->_frames[i]))
+            return false;
+    }
+    return true;
+}
+
 #endif

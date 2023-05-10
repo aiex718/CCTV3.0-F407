@@ -11,25 +11,25 @@ typedef struct Mjpegd_ConfigFile_s
     uint8_t __padding[2];
 }Mjpegd_ConfigFile_t;
 
-typedef struct Mjpegd_s{
-    u16_t Port;
+typedef struct Mjpegd_s
+{
     struct Mjpegd_FramePool_s *FramePool;
     struct Mjpegd_Camera_s *Camera;
-
+    u16_t Port;
     //private, dont use
-    struct tcp_pcb *_main_pcb;
-    struct ClientState_s *_clients_list;
     u8_t _client_count;
     u8_t _stream_count;
+    struct tcp_pcb *_main_pcb;
+    struct ClientState_s *_clients_list;
     //pending frame and timer for fps,
     //these variables are shared between main thread and camera thread/ISR
     struct Mjpegd_Frame_s *_pending_frame;
+    //timer for idle check
+    MJPEGD_SYSTIME_T _idle_timer;
+    //timer for fps check
     MJPEGD_SYSTIME_T _fps_timer;
     u16_t _fps_counter;
     u16_t _drop_counter;
-    //timer for idle
-    MJPEGD_SYSTIME_T _idle_timer;
-    u8_t _frame_pool_cleared;
     //callback
     Mjpegd_Callback_t RecvNewFrame_cb;
 } Mjpegd_t;
