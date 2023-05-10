@@ -45,10 +45,10 @@ typedef struct DBG_Serial_s
 {
     Concurrent_Queue_uint8_t *tx_con_queue,*rx_con_queue;
     HAL_USART_t *hal_usart;
-    bool safe_mode;
 
     //callbacks attatch to usart, dont modify
     Callback_t _tx_empty_cb, _rx_timeout_cb;
+    bool _dbg_safe_mode;
 }DBG_Serial_t;
 
 void DBG_Serial_Init(DBG_Serial_t *self);
