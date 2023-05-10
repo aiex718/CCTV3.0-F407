@@ -94,32 +94,32 @@ typedef struct Device_CurrentTrig_s
     //Callbacks 
     Callback_t *CurrentTrig_Callbacks[__NOT_CALLBACK_CURRENTTRIG_MAX];
 
+    //Peak detection params
+    CURRENT_TRIG_FLOAT_TYPE CurrentTrig_PeakThreshold;
+    CURRENT_TRIG_FLOAT_TYPE CurrentTrig_PeakInfluence;
     //Thresholds
     //Current lower than this will trigger DISCONNECT callback
     uint8_t CurrentTrig_Disconnect_Thres_mA;
     //ADC raw value higher than this will trigger OVERLOAD callback
     uint8_t CurrentTrig_Overload_Thres_mA;
 
-    //Peak detection params
-    CURRENT_TRIG_FLOAT_TYPE CurrentTrig_PeakThreshold;
-    CURRENT_TRIG_FLOAT_TYPE CurrentTrig_PeakInfluence;
-
     //Peak detection data buffer
-    CURRENT_TRIG_FLOAT_TYPE *CurrentTrig_Val_Buf;
     uint16_t CurrentTrig_Val_Buf_Len;
+    CURRENT_TRIG_FLOAT_TYPE *CurrentTrig_Val_Buf;
 
     //ADC raw scan value buffer for dma recv
     CURRENT_TRIG_ADC_VAL_TYPE *CurrentTrig_ADC_Buf;
     uint16_t CurrentTrig_ADC_Buf_Len;
+    uint8_t __padding[2];
 
     //private fields
     //runtime flags
     CURRENT_TRIG_FLOAT_TYPE *_curr_buf_w_ptr;
     CURRENT_TRIG_FLOAT_TYPE *_curr_buf_r_ptr;
-    BitFlag8_t _curr_pending_event;
     //callback
     Callback_t _curr_dma_ht_cb;
     Callback_t _curr_dma_tc_cb;
+    BitFlag8_t _curr_pending_event;
 }Device_CurrentTrig_t;
 
 
