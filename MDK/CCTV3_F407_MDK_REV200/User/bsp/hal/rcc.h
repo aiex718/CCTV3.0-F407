@@ -23,7 +23,7 @@ typedef enum {
 
 __BSP_STRUCT_ALIGN typedef struct HAL_RCC_MCO_s
 {
-    HAL_RCC_MCO_Idx_t MCO_Idx;
+    uint8_t MCO_Idx;//HAL_RCC_MCO_Idx_t
     struct HAL_GPIO_pin_s *MCO_Pin;
     uint32_t MCO_Source;
     uint32_t MCO_ClkDiv;
@@ -41,8 +41,9 @@ typedef enum {
 
 __BSP_STRUCT_ALIGN typedef struct HAL_RCC_CLK_s
 {
-    HAL_RCC_CLK_Idx_t CLK_Idx;
+    uint8_t CLK_Idx;//HAL_RCC_CLK_Idx_t
     bool CLK_Enable;
+	uint8_t __padding[2];
 }HAL_RCC_CLK_t;
 
 //main rcc setup struct
