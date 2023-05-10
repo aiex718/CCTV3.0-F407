@@ -101,10 +101,10 @@ Device_CurrentTrig_t Dev_CurrentTrig_Inst = {
             .NVIC_IRQChannelCmd = ENABLE, 
         },
     },//CurrentTrig_DMA
-    .CurrentTrig_Val_Buf = __VAR_ARRAY_CAST_VAR(float,200) {0},
-    .CurrentTrig_Val_Buf_Len = 200,
-    .CurrentTrig_ADC_Buf = __VAR_ARRAY_CAST_VAR(uint8_t,100) {0},
-    .CurrentTrig_ADC_Buf_Len = 100,
+    .CurrentTrig_Val_Buf = __VAR_ARRAY_CAST_VAR(float,CURRENT_TRIG_VAL_BUF_SIZE) {0},
+    .CurrentTrig_Val_Buf_Len = CURRENT_TRIG_VAL_BUF_SIZE,
+    .CurrentTrig_ADC_Buf = __VAR_ARRAY_CAST_VAR(uint8_t,CURRENT_TRIG_ADC_BUF_SIZE) {0},
+    .CurrentTrig_ADC_Buf_Len = CURRENT_TRIG_ADC_BUF_SIZE,
     //Peak detection parameters
     .CurrentTrig_PeakThreshold = 1.5F,
     .CurrentTrig_PeakInfluence = 0.2F,
