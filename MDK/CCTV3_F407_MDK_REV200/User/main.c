@@ -5,6 +5,7 @@
 #include "bsp/sys/systime.h"
 #include "bsp/sys/systimer.h"
 #include "bsp/sys/mem_guard.h"
+#include "bsp/sys/sysctrl.h"
 
 void Button_Wkup_ShortPress_Handler(void* sender, void* args,void* owner)
 {
@@ -30,11 +31,19 @@ int main(void)
 		DBG_INFO("Mem_Guard_Init stack size 0x%x\n",stack_size);
 	}
 
+	//Config sotrage
+	Config_Storage_Init(Dev_ConfigStorage);
+	Config_Storage_Load(Dev_ConfigStorage);
+	if(Config_Storage_IsChanged(Dev_ConfigStorage))
+	{
+		bool b =  Config_Storage_Commit(Dev_ConfigStorage);
+		DBG_ERROR("Config_Storage_Commit %s\n",b?"OK":"Failed");
+	}
+
 	//Led Indicator
 	Device_LedIndicator_Init(Dev_Led_Blink);
 	//Button
 	Device_Button_Init(Dev_Button_Wkup);
-
 	//regist button callbacks
 	Device_Button_SetCallback(Dev_Button_Wkup,BUTTON_CALLBACK_SHORT_PRESS,(Callback_t*)&Button_Wkup_ShortPress_CB);
 
@@ -48,6 +57,17 @@ int main(void)
 		{
 			if(strcmp((char*)rxcmd,"hello")==0)
 				DBG_INFO("hello there\n");
+			else if(strcmp((char*)rxcmd,"reset")==0)
+			{
+				if(Config_Storage_Erase(Dev_ConfigStorage))
+				{
+					DBG_INFO("Config_Storage_Erase OK\n");
+					DBG_Serial_Flush(Peri_DBG_Serial);
+					SysCtrl_Reset();
+				}
+				else
+					DBG_ERROR("Config_Storage_Erase Failed\n");
+			}
 		}
 		
 		DBG_Serial_Service(Peri_DBG_Serial);

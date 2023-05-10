@@ -2,16 +2,13 @@
 #define CONFIG_STORAGE_H
 
 #include "bsp/platform/platform_defs.h"
-#ifndef CONFIG_STORAGE_MAX_SIZE
-    #define CONFIG_STORAGE_MAX_SIZE 256
-#endif
 
 #ifndef CONFIG_STORAGE_OBJ_NAME_SIZE
     #define CONFIG_STORAGE_OBJ_NAME_SIZE 24
 #endif
-/* Object which want to use config storage function must implement 3 function
+/* Object which want to use config self function must implement 3 function
 and it's own config data struct. Register to Config_Storage_ObjectConfig_list 
-in dev_config_storage.c
+in dev_config_self.c
 
 Function list:
 1. void (*Obj_ConfigSet_Func)(void* obj,const void* obj_config)
@@ -32,7 +29,7 @@ If not valid, Obj_ConfigExport_Func will be called to overwrite the config.
 
 After all config loaded or exported, config must be commit if changed.
 User code can call Config_Storage_IsChanged() to check if config is changed.
-Then call Config_Storage_Commit() to commit all config to storage.
+Then call Config_Storage_Commit() to commit all config to self.
 
 There are some limitation:
 1. Ths sizeof(config struct) must be multiple of 4.
@@ -50,45 +47,58 @@ typedef struct Config_Storage_ObjConfig_s
     uint16_t Obj_Config_Len;//len must be multiple of 4
 }Config_Storage_ObjConfig_t;
 
+typedef struct Config_Storage_VerifyFile_s
+{
+    uint32_t Config_Storage_CRC32;
+    uint32_t Config_Storage_Magic;
+}Config_Storage_VerifyFile_t;
 
 typedef enum
 {
-    CONFIG_STORAGE_STATUS_ERR_NOTFOUND=0,
-    CONFIG_STORAGE_STATUS_ERROR_CRC,
-    CONFIG_STORAGE_STATUS_ERROR_MAGIC,
-    CONFIG_STORAGE_STATUS_ERROR_SIZE,
+    CONFIG_STORAGE_STATUS_ERR_INIT=0,
+    CONFIG_STORAGE_STATUS_ERR_NOTFOUND,
+    CONFIG_STORAGE_STATUS_ERR_VERIFY_FAIL,
+    CONFIG_STORAGE_STATUS_ERR_ERASED,
+    CONFIG_STORAGE_STATUS_ERR_SIZE,
+    CONFIG_STORAGE_STATUS_ERR_EMPTY,
+    CONFIG_STORAGE_STATUS_ERR_COMMIT,
     CONFIG_STORAGE_STATUS_OK,//Data verified and copied to ram
 }Config_Storage_Status_t;
 
 typedef struct Config_Storage_s
 {
-    uint8_t Config_Storage_Mem[CONFIG_STORAGE_MAX_SIZE];
     Config_Storage_ObjConfig_t **Config_Storage_ObjectConfig_list;
-    const uint32_t Config_Storage_Magic;
+    uint32_t Config_Storage_Magic;
     uint32_t Config_Storage_FlashAddr;
+    uint32_t Config_Storage_FlashSize;
     uint16_t Config_Storage_FlashSector;
     uint8_t Config_Storage_Align;
     
     //private runtime variables
-    bool _config_is_changed;
-    uint32_t _config_storage_crc;
-    Config_Storage_Status_t _config_storage_status;
+    uint8_t _config_status;
+    uint8_t *_config_wbuf;
+    uint16_t _config_size_sum;
 }Config_Storage_t;
 
-__STATIC_INLINE bool Config_Storage_IsChanged(Config_Storage_t *self)
+__STATIC_INLINE bool Config_Storage_IsChanged(const Config_Storage_t *self)
 {
-    return self->_config_is_changed;
+    return self->_config_wbuf!=NULL;
 }
 
-void Config_Storage_Init(Config_Storage_t *storage);
-void Config_Storage_LoadAll(Config_Storage_t *storage);
-bool Config_Storage_EraseAll(Config_Storage_t *storage);
-const void* Config_Storage_Read(Config_Storage_t *storage, void* obj_instance, uint16_t* len_out);
-bool Config_Storage_Write(Config_Storage_t *storage, void* obj_instance,void* obj_config);
-bool Config_Storage_Commit(Config_Storage_t *storage);
+void Config_Storage_Init(Config_Storage_t *self);
+
+void Config_Storage_VerifySet(Config_Storage_t *self ,const Config_Storage_VerifyFile_t *verify);
+void Config_Storage_VerifyExport(const Config_Storage_t *self , Config_Storage_VerifyFile_t *verify);
+bool Config_Storage_IsVerifyValid(Config_Storage_t *self ,const Config_Storage_VerifyFile_t *verify);
+
+
+void Config_Storage_Load(Config_Storage_t *self);
+bool Config_Storage_Erase(Config_Storage_t *self);
+const void* Config_Storage_Read(Config_Storage_t *self, void* obj_instance, uint16_t* len_out);
+bool Config_Storage_Write(Config_Storage_t *self, void* obj_instance,void* obj_config);
+bool Config_Storage_Commit(Config_Storage_t *self);
 
 /*Example Uasge
-
 
 Config_Storage_t Dev_ConfigStorage_Inst={
     .Config_Storage_FlashAddr = 0x08004000,

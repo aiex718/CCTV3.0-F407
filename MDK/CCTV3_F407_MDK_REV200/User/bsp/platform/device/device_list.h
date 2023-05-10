@@ -3,5 +3,6 @@
 
 #include "bsp/platform/device/dev_led_indicator.h"
 #include "bsp/platform/device/dev_button.h"
+#include "bsp/platform/device/dev_config_storage.h"
 
 #endif
