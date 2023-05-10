@@ -5,7 +5,8 @@
 Config_Storage_t Dev_ConfigStorage_Inst={
     .Config_Storage_FlashAddr = 0x08004000,
     .Config_Storage_FlashSector = FLASH_Sector_1,
-    .Config_Storage_Magic = 0X103B5D7F,
+    .Config_Storage_FlashSize = 16*1024,
+    .Config_Storage_Magic = 0X13572468,
     .Config_Storage_Align = 4,
     .Config_Storage_ObjectConfig_list = __CONST_ARRAY_CAST_VAR(Config_Storage_ObjConfig_t*)
     {
@@ -65,7 +66,17 @@ Config_Storage_t Dev_ConfigStorage_Inst={
             .Obj_ConfigExport_Func =  (void(*)(const void*,void*))Device_CurrentTrig_ConfigExport,
             .Obj_IsConfigValid_Func = (bool(*)(void*,const void*))Device_CurrentTrig_IsConfigValid,
         },
-        NULL,
+        //VerifyFile MUST be the last one in the list
+        __CONST_CAST_VAR(Config_Storage_ObjConfig_t)
+        {
+            .Obj_Name = "Config_VerifyFile",
+            .Obj_Instance = &Dev_ConfigStorage_Inst, 
+            .Obj_Config_Len = sizeof(Config_Storage_VerifyFile_t),
+            .Obj_ConfigSet_Func =(void(*)(void*,const void*))Config_Storage_VerifySet,
+            .Obj_ConfigExport_Func =  (void(*)(const void*,void*))Config_Storage_VerifyExport,
+            .Obj_IsConfigValid_Func = (bool(*)(void*,const void*))Config_Storage_IsVerifyValid,
+        },
+        NULL,//must NULL terminated
     },//Config_Storage_ObjectConfig_list
 };
 
