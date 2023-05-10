@@ -11,6 +11,7 @@ Mjpegd_t App_Mjpegd_Inst={
         ._frames = __VAR_ARRAY_CAST_VAR(Mjpegd_Frame_t,MJPEGD_FRAMEPOOL_LEN){
             0
         },
+        ._frames_len = MJPEGD_FRAMEPOOL_LEN,
     },
     .Camera = __VAR_CAST_VAR(Mjpegd_Camera_t){
 		.Ov2640_RecvRawFrame_cb = NULL,
