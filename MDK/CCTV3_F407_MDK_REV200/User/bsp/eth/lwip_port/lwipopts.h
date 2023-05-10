@@ -32,7 +32,6 @@
 
 #include "bsp/sys/systime.h"
 #include "app/nettime/nettime.h" //For sntp callback
-
 #include "bsp/platform/periph/peri_rtc.h" //For MJPEGD_GET_UNIX_TIMESTAMP
 
 /**
@@ -75,16 +74,16 @@ a lot of data that needs to be copied, this should be set high. */
 #define MEMP_NUM_PBUF           36
 /* MEMP_NUM_UDP_PCB: the number of UDP protocol control blocks. One
    per active UDP "connection". */
-#define MEMP_NUM_UDP_PCB        6
+#define MEMP_NUM_UDP_PCB        4
 /* MEMP_NUM_TCP_PCB: the number of simulatenously active TCP
    connections. */
 #define MEMP_NUM_TCP_PCB        16
 /* MEMP_NUM_TCP_PCB_LISTEN: the number of listening TCP
    connections. */
-#define MEMP_NUM_TCP_PCB_LISTEN 6
+#define MEMP_NUM_TCP_PCB_LISTEN 4
 /* MEMP_NUM_TCP_SEG: the number of simultaneously queued TCP
    segments. */
-#define MEMP_NUM_TCP_SEG        12
+#define MEMP_NUM_TCP_SEG        20
 /* MEMP_NUM_SYS_TIMEOUT: the number of simulateously active
    timeouts. */
 #define MEMP_NUM_SYS_TIMEOUT    20
@@ -272,10 +271,9 @@ The STM32F4x7 allows computing and verifying the IP, UDP, TCP and ICMP checksums
 #define MJPEGD_ALLOW_STREAM_CORS 1
 #define MJPEGD_SHOWFPS_PERIOD 3//n^2 seconds
 #define MJPEGD_GET_UNIX_TIMESTAMP (u32_t)HAL_RTC_GetTime(Peri_RTC)
-//#define MJPEGD_STREAM_CLIENT_LIMIT 3
-//#define MJPEGD_FRAMEPOOL_LEN (MJPEGD_STREAM_CLIENT_LIMIT+2)
-#define MJPEGD_STREAM_CLIENT_LIMIT 20//6
-#define MJPEGD_FRAMEPOOL_LEN 5
+#define MJPEGD_STREAM_CLIENT_LIMIT 5
+#define MJPEGD_FRAMEPOOL_LEN (MJPEGD_STREAM_CLIENT_LIMIT+1)
+
 
 //SNTP options
 #define SNTP_SET_SYSTEM_TIME NetTime_Sntp_Poll_Callback

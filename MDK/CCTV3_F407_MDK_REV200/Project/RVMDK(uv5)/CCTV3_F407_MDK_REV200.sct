@@ -48,12 +48,12 @@ LR_IROM1 0x08000000 0x00004000  {    ; load region size_region
     netif.o (+ZI +RW)
 
     ;Other
+    rand.o (+ZI +RW)
     usbd_*.o (+ZI +RW) ; ST USBD
     ff.o (+ZI +RW)     ; FATFS
     systime.o (+ZI +RW)
     mem_guard.o (+ZI +RW)
     usbd_storage.o (+ZI +RW)
-    main.o (+ZI +RW)
     stdout.o (+ZI +RW)
   }
 }
