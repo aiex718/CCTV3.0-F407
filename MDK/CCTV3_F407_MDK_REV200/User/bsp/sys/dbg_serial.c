@@ -54,7 +54,7 @@ void DBG_Serial_Init(DBG_Serial_t *self)
     if(self->rx_con_queue!=NULL)
         Concurrent_Queue_Clear(self->rx_con_queue);
 
-    self->safe_mode = false;
+    self->_dbg_safe_mode = false;
 
     self->_tx_empty_cb.func = DBG_Serial_UsartTxEmptyCallback;
     self->_tx_empty_cb.owner = self;
@@ -128,7 +128,7 @@ void DBG_Serial_SafeMode(DBG_Serial_t *self,bool en)
 {
     if(en)
     {
-        self->safe_mode = true;
+        self->_dbg_safe_mode = true;
         //restart usart to stop any ongoing transfer
         HAL_USART_Cmd(self->hal_usart,false);
         //reset all configure and callbacks
@@ -265,7 +265,7 @@ int fputc(int ch, FILE *f)
     HAL_USART_t *usart = dbg_serial->hal_usart;
     if(usart != NULL && HAL_USART_IsEnabled(usart))
     {
-        if(dbg_serial->safe_mode)
+        if(dbg_serial->_dbg_safe_mode)
             HAL_USART_WriteByte_Polling(usart,(uint8_t)ch);
         else
         {
@@ -289,7 +289,7 @@ int fgetc(FILE *f)
 {
     DBG_Serial_t *dbg_serial = Peri_DBG_Serial;
 	uint8_t ch=0;
-    if(dbg_serial->safe_mode)
+    if(dbg_serial->_dbg_safe_mode)
         HAL_USART_ReadByte_Polling(dbg_serial->hal_usart,&ch);
     else
         while (Concurrent_Queue_TryPop(dbg_serial->rx_con_queue,&ch) == false);

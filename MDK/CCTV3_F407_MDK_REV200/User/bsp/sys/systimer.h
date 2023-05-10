@@ -9,8 +9,8 @@
 #endif
 
 __BSP_STRUCT_ALIGN typedef struct SysTimer_s{
-    SYSTIMER_PERIOD_T period;
     SysTime_t last;
+    SYSTIMER_PERIOD_T period;
 } SysTimer_t;
 
 #define SysTimer_IsElapsed(systmr) ((SysTime_Get() - (systmr)->last) >= (systmr)->period)
