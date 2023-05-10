@@ -29,10 +29,9 @@ extern const char * const request_strreq[__NOT_REQUEST_MAX];
 typedef struct Mjpegd_RequestHandler_s
 {
     request_t req;
+    u16_t     response_len;
     const char      *url;
     const char      *response;
-    u16_t     response_len;
-
     err_t (* get_nextfile_func)(struct ClientState_s *cs);
     err_t (* recv_request_func)(struct ClientState_s *cs);
     err_t (* clsd_request_func)(struct ClientState_s *cs);

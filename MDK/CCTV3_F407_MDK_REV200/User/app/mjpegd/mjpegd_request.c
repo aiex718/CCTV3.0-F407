@@ -6,7 +6,7 @@
 #include "app/mjpegd/trycatch.h"
 
 #if 1 /* Http response strings */
-const char Http_Notfound_Response[]= "\
+const char Http_Notfound_Response[] = "\
 HTTP/1.1 404 Not Found\r\n\
 Content-Type: text/html\r\n\
 Content-Length: 39\r\n\
@@ -16,7 +16,7 @@ Connection: close  \r\n\
 <H1>404 Not Found</H1>\r\n\
 </html>";
 
-const char HTTP_TooMany_Response[]="\
+const char HTTP_TooMany_Response[] = "\
 HTTP/1.1 429 Too Many Requests\r\n\
 Connection: close\r\n\
 Content-Length: 71\r\n\
@@ -28,7 +28,7 @@ Retry-After: 60\r\n\
 <H4>Retry later<H4>\r\n\
 </html>";
 
-const char Http_Handshake_Response[]= "\
+const char Http_Handshake_Response[] = "\
 HTTP/1.1 200 No Content\r\n\
 Content-Length: 26\r\n\
 Content-Type: text/html; charset=UTF-8\r\n\
@@ -36,7 +36,7 @@ Connection: close \r\n\
 \r\n\
 <H1>Hello from mjpegd</H1>";
 
-const char Http_ViewSnap_Response[]= "\
+const char Http_ViewSnap_Response[] = "\
 HTTP/1.1 200 OK\r\n\
 Content-Length: 19\r\n\
 Content-Type: text/html; charset=UTF-8\r\n\
@@ -44,7 +44,7 @@ Connection: close  \r\n\
 \r\n\
 <img src=\"/snap\" />";
 
-const char Http_ViewStream_Response[]= "\
+const char Http_ViewStream_Response[] = "\
 HTTP/1.1 200 OK\r\n\
 Content-Length: 21\r\n\
 Content-Type: text/html; charset=UTF-8\r\n\
@@ -53,7 +53,7 @@ Connection: close\r\n\
 <img src=\"/stream\" />";
 
 #if MJPEGD_ALLOW_STREAM_CORS
-const char Http_MjpegChunked_Response[]= "\
+const char Http_MjpegChunked_Response[] = "\
 HTTP/1.1 200 OK\r\n\
 Access-Control-Allow-Origin: *\r\n\
 Content-Type: multipart/x-mixed-replace;boundary=myboundary\r\n\
@@ -64,7 +64,7 @@ Keep-Alive: timeout=10   \r\n\
 \r\n\
 ";
 #else
-const char Http_MjpegChunked_Response[]= "\
+const char Http_MjpegChunked_Response[] = "\
 HTTP/1.1 200 OK\r\n\
 Content-Type: multipart/x-mixed-replace;boundary=myboundary\r\n\
 Transfer-Encoding: chunked\r\n\
@@ -75,8 +75,8 @@ Keep-Alive: timeout=10   \r\n\
 ";
 #endif
 
-//content-len= total - 101
-const char Http_ViewFps_Response[]= "\
+// content-len= total - 101
+const char Http_ViewFps_Response[] = "\
 HTTP/1.1 200 OK\r\n\
 Content-Length: 5687\r\n\
 Content-Type: text/html; charset=UTF-8\r\n\
@@ -249,7 +249,7 @@ GetStream(url);\r\n\
 #endif
 
 #if MJPEGD_DEBUG
-const char * const request_strreq[__NOT_REQUEST_MAX] = {
+const char *const request_strreq[__NOT_REQUEST_MAX] = {
     "REQUEST_NOTFOUND",
     "REQUEST_TOOMANY",
     "REQUEST_HANDSHAKE",
@@ -261,22 +261,86 @@ const char * const request_strreq[__NOT_REQUEST_MAX] = {
 };
 #endif
 
-/** http request handlers **/
-const Mjpegd_RequestHandler_t mjpegd_request_handlers[__NOT_REQUEST_MAX]=
+#if 1 /** http request handlers **/
+const Mjpegd_RequestHandler_t mjpegd_request_handlers[__NOT_REQUEST_MAX] =
 {
-    {REQUEST_NOTFOUND   ,"/404"         ,Http_Notfound_Response     ,MJPEGD_CHRARR_STRLEN(Http_Notfound_Response)       ,NULL                       ,NULL                           ,NULL                       },
-    {REQUEST_TOOMANY    ,"/429"         ,HTTP_TooMany_Response      ,MJPEGD_CHRARR_STRLEN(HTTP_TooMany_Response)        ,NULL                       ,NULL                           ,NULL                       },
-    {REQUEST_HANDSHAKE  ,"/handshake"   ,Http_Handshake_Response    ,MJPEGD_CHRARR_STRLEN(Http_Handshake_Response)      ,NULL                       ,NULL                           ,NULL                       },
-    {REQUEST_VIEW_SNAP  ,"/view/snap"   ,Http_ViewSnap_Response     ,MJPEGD_CHRARR_STRLEN(Http_ViewSnap_Response)       ,NULL                       ,NULL                           ,NULL                       },
-    {REQUEST_VIEW_STREAM,"/view/stream" ,Http_ViewStream_Response   ,MJPEGD_CHRARR_STRLEN(Http_ViewStream_Response)     ,NULL                       ,NULL                           ,NULL                       },
-    {REQUEST_VIEW_FPS   ,"/view/fps"    ,Http_ViewFps_Response      ,MJPEGD_CHRARR_STRLEN(Http_ViewFps_Response)        ,NULL                       ,NULL                           ,NULL                       },
-    {REQUEST_SNAP       ,"/snap"        ,Http_MjpegChunked_Response ,MJPEGD_CHRARR_STRLEN(Http_MjpegChunked_Response)   ,Mjpegd_Stream_FrameSent    ,NULL                           ,NULL                       },
-    {REQUEST_STREAM     ,"/stream"      ,Http_MjpegChunked_Response ,MJPEGD_CHRARR_STRLEN(Http_MjpegChunked_Response)   ,Mjpegd_Stream_FrameSent    ,Mjpegd_Stream_RecvRequest      ,Mjpegd_Stream_CloseRequest },
+    {
+        .req = REQUEST_NOTFOUND, 
+        .url = "/404",
+        .response = Http_Notfound_Response,
+        .response_len = MJPEGD_CHRARR_STRLEN(Http_Notfound_Response),
+        .get_nextfile_func = NULL,
+        .recv_request_func = NULL,
+        .clsd_request_func = NULL
+    },
+    {
+        .req = REQUEST_TOOMANY,
+        .url = "/429", .response = HTTP_TooMany_Response,
+        .response_len = MJPEGD_CHRARR_STRLEN(HTTP_TooMany_Response),
+        .get_nextfile_func = NULL,
+        .recv_request_func = NULL,
+        .clsd_request_func = NULL
+    },
+    {
+        .req = REQUEST_HANDSHAKE,
+        .url = "/handshake",
+        .response = Http_Handshake_Response,
+        .response_len = MJPEGD_CHRARR_STRLEN(Http_Handshake_Response),
+        .get_nextfile_func = NULL,
+        .recv_request_func = NULL,
+        .clsd_request_func = NULL
+    },
+    {
+        .req = REQUEST_VIEW_SNAP,
+        .url = "/view/snap",
+        .response = Http_ViewSnap_Response,
+        .response_len = MJPEGD_CHRARR_STRLEN(Http_ViewSnap_Response),
+        .get_nextfile_func = NULL,
+        .recv_request_func = NULL,
+        .clsd_request_func = NULL
+    },
+    {
+        .req = REQUEST_VIEW_STREAM,
+        .url = "/view/stream",
+        .response = Http_ViewStream_Response,
+        .response_len = MJPEGD_CHRARR_STRLEN(Http_ViewStream_Response),
+        .get_nextfile_func = NULL,
+        .recv_request_func = NULL,
+        .clsd_request_func = NULL
+    },
+    {
+        .req = REQUEST_VIEW_FPS,
+        .url = "/view/fps",
+        .response = Http_ViewFps_Response,
+        .response_len = MJPEGD_CHRARR_STRLEN(Http_ViewFps_Response),
+        .get_nextfile_func = NULL,
+        .recv_request_func = NULL,
+        .clsd_request_func = NULL
+    },
+    {
+        .req = REQUEST_SNAP,
+        .url = "/snap",
+        .response = Http_MjpegChunked_Response,
+        .response_len = MJPEGD_CHRARR_STRLEN(Http_MjpegChunked_Response),
+        .get_nextfile_func = Mjpegd_Stream_FrameSent,
+        .recv_request_func = NULL,
+        .clsd_request_func = NULL
+    },
+    {
+        .req = REQUEST_STREAM,
+        .url = "/stream",
+        .response = Http_MjpegChunked_Response,
+        .response_len = MJPEGD_CHRARR_STRLEN(Http_MjpegChunked_Response),
+        .get_nextfile_func = Mjpegd_Stream_FrameSent,
+        .recv_request_func = Mjpegd_Stream_RecvRequest,
+        .clsd_request_func = Mjpegd_Stream_CloseRequest
+    },
 };
+#endif
 
-//private functions
+// private functions
 static u8_t Mjpegd_Request_ParseParams(char *url_params,
-    char **params_out, char **param_vals_out, const u8_t params_max_len);
+                                       char **params_out, char **param_vals_out, const u8_t params_max_len);
 
 err_t Mjpegd_Request_Parse(ClientState_t *cs, char *req, u16_t req_len)
 {
@@ -314,20 +378,20 @@ err_t Mjpegd_Request_Parse(ClientState_t *cs, char *req, u16_t req_len)
             {
                 char *params[MJPEGD_MAX_URL_PARAMETERS];
                 char *params_vals[MJPEGD_MAX_URL_PARAMETERS];
-                u8_t i,param_count =
-                    Mjpegd_Request_ParseParams(++param_head, params,
-                                           params_vals, MJPEGD_MAX_URL_PARAMETERS);
+                u8_t i, param_count =
+                            Mjpegd_Request_ParseParams(++param_head, params,
+                                                       params_vals, MJPEGD_MAX_URL_PARAMETERS);
                 for (i = 0; i < param_count; i++)
                 {
-                    //set fps
-                    if(strcmp("fps",params[i])==0)
+                    // set fps
+                    if (strcmp("fps", params[i]) == 0)
                     {
                         uint8_t fps = (uint8_t)MJPEGD_ATOI(params_vals[i]);
-                        if(fps>0)
+                        if (fps > 0)
                         {
-                            cs->fps_period = 1000/fps;
+                            cs->fps_period = 1000 / fps;
                             LWIP_DEBUGF(MJPEGD_DEBUG | LWIP_DBG_TRACE,
-                                MJPEGD_DBG_ARG("cs %p set fps=%d, period=%d\n", cs, fps,cs->fps_period));
+                                        MJPEGD_DBG_ARG("cs %p set fps=%d, period=%d\n", cs, fps, cs->fps_period));
                         }
                     }
                 }
@@ -398,7 +462,7 @@ err_t Mjpegd_Request_BuildResponse(ClientState_t *cs)
 }
 
 static u8_t Mjpegd_Request_ParseParams(char *url_params,
-    char **params_out, char **param_vals_out, const u8_t params_max_len)
+                                       char **params_out, char **param_vals_out, const u8_t params_max_len)
 {
     char *pair;
     char *equals;
@@ -452,4 +516,3 @@ static u8_t Mjpegd_Request_ParseParams(char *url_params,
     }
     return loop;
 }
-
