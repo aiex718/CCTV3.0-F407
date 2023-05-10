@@ -7,6 +7,7 @@
 typedef struct HAL_FlashProg_s
 {
     uint8_t FlashProg_VoltageRange;
+    uint8_t __padding[3];
 }HAL_FlashProg_t;
 
 //This will disable all interrupts

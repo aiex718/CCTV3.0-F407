@@ -42,7 +42,7 @@ There are some limitation:
 */
 typedef struct Config_Storage_ObjConfig_s
 {
-    void* Obj_Instance;
+    void *Obj_Instance;
     void (*Obj_ConfigSet_Func)(void* obj,const void* obj_config);
     void (*Obj_ConfigExport_Func)(const void* obj,void* obj_config);
     bool (*Obj_IsConfigValid_Func)(void* obj,const void* obj_config);
@@ -71,8 +71,8 @@ typedef struct Config_Storage_s
     
     //private runtime variables
     bool _config_is_changed;
-    Config_Storage_Status_t _config_storage_status;
     uint32_t _config_storage_crc;
+    Config_Storage_Status_t _config_storage_status;
 }Config_Storage_t;
 
 __STATIC_INLINE bool Config_Storage_IsChanged(Config_Storage_t *self)
