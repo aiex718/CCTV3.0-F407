@@ -226,6 +226,7 @@ The STM32F4x7 allows computing and verifying the IP, UDP, TCP and ICMP checksums
 #define LWIP_HTTPD_FS_ASYNC_READ       0
 #define LWIP_HTTPD_DYNAMIC_FILE_READ   1
 #define LWIP_HTTPD_CUSTOM_FILES        1
+#define HTTPD_USE_CUSTOM_FSDATA 1
 
 /*
    ----------------------------------------
