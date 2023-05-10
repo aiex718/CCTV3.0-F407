@@ -202,6 +202,8 @@ bool Config_Storage_Commit(Config_Storage_t *self)
 
     if (Config_Storage_IsChanged(self) == false)
         return false; // not changed, no need to save
+    if(self->_config_wbuf == NULL)
+        return false; // no wbuf to save
 
     if (_get_config_addr_offset(self, self, &offset, NULL) == false)
     {
