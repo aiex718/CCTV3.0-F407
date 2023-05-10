@@ -10,7 +10,7 @@
 //functions for lwip call
 int fs_open_custom(struct fs_file *file, const char *name)
 {
-    if(strcmp(name,WEBAPI_ENTRY_POINT)==0)
+    if(strcmp(name,Webapi_Enter_Point)==0)
     {
         char* buf = (char*)mem_calloc(WEBAPI_RESPONSE_BUFFER_LEN,sizeof(char));
         if(buf)
