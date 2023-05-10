@@ -16,7 +16,7 @@ void HAL_ADC_CommonInit(HAL_ADC_CommonCfg_t* self)
 void HAL_ADC_Init(HAL_ADC_t* self)
 {
     HAL_RCC_Cmd(self->ADC_RCC_Cmd,ENABLE);
-    BSP_MEMSET(self->ADC_Callbacks,0,sizeof(self->ADC_Callbacks));
+    BSP_ARR_CLEAR(self->ADC_Callbacks);
 
     ADC_Init(self->ADCx,self->ADC_InitCfg);
 
