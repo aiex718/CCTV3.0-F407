@@ -48,7 +48,7 @@ int main(void)
 
 	//Configs
 	Config_Storage_Init(Dev_ConfigStorage);
-	Config_Storage_LoadAll(Dev_ConfigStorage);
+	Config_Storage_Load(Dev_ConfigStorage);
 	if(Config_Storage_IsChanged(Dev_ConfigStorage))
 	{
 		bool b = Config_Storage_Commit(Dev_ConfigStorage);
@@ -141,7 +141,7 @@ int main(void)
 			}
 			else if(strcmp((char*)rxcmd,"reset")==0)
 			{
-				if(Config_Storage_EraseAll(Dev_ConfigStorage))
+				if(Config_Storage_Erase(Dev_ConfigStorage))
 				{
 					DBG_Serial_SafeMode(Peri_DBG_Serial,true);
 					DBG_INFO("System reset success, rebooting...\n");
