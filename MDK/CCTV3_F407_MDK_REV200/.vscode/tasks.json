@@ -12,12 +12,17 @@
 		},
 		{
 			"type": "shell",
-			"label": "C/C++: clang++ build active file",
-			"command": "/usr/bin/clang",
+			"label": "C/C++: build active file cross platform",
+			"windows": {
+				"command": "C:\\msys64\\mingw64\\bin\\gcc.exe",
+			},
+			"osx": {
+				"command": "/usr/bin/clang",
+			},
+			
 			"args": [
 				"-std=c99",
-				"-fcolor-diagnostics",
-				"-fansi-escape-codes",
+				"-fdiagnostics-color=always",
 				"-g",
 				"${file}",
 				"-o",
@@ -34,15 +39,20 @@
 				"$gcc"
 			],
 			"group": {
-				"kind": "build",
-				"isDefault": true
+				"kind": "build"
 			},
-			"detail": "Compiler: /usr/bin/clang"
+			"detail": "Compiler: clang on MacOS, MinGW on Windows"
 		},
 		{
-			"type": "cppbuild",
-			"label": "C/C++: mingw build active file",
-			"command": "C:\\msys64\\mingw64\\bin\\gcc.exe",
+			"type": "shell",
+			"label": "C/C++: LWIP build active file cross platform",
+			"windows": {
+				"command": "C:\\msys64\\mingw64\\bin\\gcc.exe",
+			},
+			"osx": {
+				"command": "/usr/bin/clang",
+			},
+			
 			"args": [
 				"-fdiagnostics-color=always",
 				"-g",
@@ -52,16 +62,52 @@
 				"-I",
 				"${workspaceFolder}/",
 				"-I",
-				"${workspaceFolder}/User"
+				"${workspaceFolder}/User",
+				"-I",
+				"${workspaceFolder}/User/bsp/eth/lwip_port",
+				"-I",
+				"${workspaceFolder}/Libraries/lwip/src/include",
+				//for makefsdata.c
+				"-I",
+				"${workspaceFolder}/Libraries/miniz/examples",
+				"-D",
+				"MAKEFS_SUPPORT_DEFLATE=1"
 			],
 			"options": {
-				"cwd": "${fileDirname}"
+				"cwd": "${workspaceFolder}/"
 			},
 			"problemMatcher": [
 				"$gcc"
 			],
-			"group": "build",
-			"detail": "compiler: C:\\msys64\\mingw64\\bin\\gcc.exe"
-		}
+			"group": {
+				"kind": "build"
+			},
+			"detail": "Compiler: clang on MacOS, MinGW on Windows"
+		},
+		{
+			"type": "shell",
+			"label": "Makefsdata: Build Web",
+			"windows": {
+				"command": "${workspaceFolder}/Web/makefsdata.exe"
+			},
+			"osx": {
+				"command": "${workspaceFolder}/Web/makefsdata.bin"
+			},
+			"args": [
+				"${workspaceFolder}/Web",//web path
+				"-x:bat,exe,bin,sh",//extensions to ignore
+				"-f:${workspaceFolder}/User/app/httpd/inc/fsdata_custom.c"
+			],
+			"options": {
+				"cwd": "${workspaceFolder}/"
+			},
+			"group": {
+				"kind": "build"
+			},
+			"problemMatcher": [
+				"$gcc"
+			],
+			"detail": "Makefsdata: Build fsdata_custom.c from Web folder"
+		},
 	]
 }
