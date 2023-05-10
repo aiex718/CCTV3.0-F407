@@ -13,8 +13,8 @@ typedef struct NetTime_ConfigFile_s
 
 
 typedef struct NetTime_s{
-    bool NetTime_Enable;
     const char* NetTime_SNTP_Server;
+    bool NetTime_Enable;
 }NetTime_t;
 
 void NetTime_Init(NetTime_t *self);

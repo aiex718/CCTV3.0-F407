@@ -47,9 +47,9 @@ typedef struct Ethernetif_s
     ip4_addr_t Netif_DNS0;
     ip4_addr_t Netif_DNS1;
 #endif
-    bool Netif_DHCP_Enable;
     //function ptr
     bool (*Netif_PHYCheckLink_Func)(struct netif *netif);
+    bool Netif_DHCP_Enable;
     //private
     bool _link_status_prev;
     u8_t _dhcp_state_prev;
