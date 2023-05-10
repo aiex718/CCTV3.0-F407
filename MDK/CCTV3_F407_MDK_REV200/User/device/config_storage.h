@@ -17,13 +17,13 @@ Function list:
 
 How it works:
 Config_Storage_Init must be called before any other function.
-Normally we'll call Config_Storage_LoadAll() to load all stored config.
+Then call Config_Storage_Load() to load all config.
 
 If crc or magic number check failed, Obj_ConfigExport_Func will be called 
 for all object in the list, exported config will overwrite all config that stored.
 
-If crc and magic number check passed, it will load all stored config and call
-Obj_IsConfigValid_Func to check if the config is valid. 
+If crc and magic number check passed, it'll call Obj_IsConfigValid_Func 
+to check if the config is valid.
 If valid, it will call Obj_ConfigSet_Func to set config to object.
 If not valid, Obj_ConfigExport_Func will be called to overwrite the config.
 
@@ -47,11 +47,11 @@ typedef struct Config_Storage_ObjConfig_s
     uint16_t Obj_Config_Len;//len must be multiple of 4
 }Config_Storage_ObjConfig_t;
 
-typedef struct Config_Storage_VerifyFile_s
+typedef struct Config_Storage_CrcFile_s
 {
-    uint32_t Config_Storage_CRC32;
+    uint32_t Config_Storage_Crc32;
     uint32_t Config_Storage_Magic;
-}Config_Storage_VerifyFile_t;
+}Config_Storage_CrcFile_t;
 
 typedef enum
 {
@@ -87,9 +87,8 @@ __STATIC_INLINE bool Config_Storage_IsChanged(const Config_Storage_t *self)
 
 void Config_Storage_Init(Config_Storage_t *self);
 
-void Config_Storage_VerifySet(Config_Storage_t *self ,const Config_Storage_VerifyFile_t *verify);
-void Config_Storage_VerifyExport(const Config_Storage_t *self , Config_Storage_VerifyFile_t *verify);
-bool Config_Storage_IsVerifyValid(Config_Storage_t *self ,const Config_Storage_VerifyFile_t *verify);
+void Config_Storage_CalcCrc32(const Config_Storage_t *self , Config_Storage_CrcFile_t *crc);
+bool Config_Storage_IsCrc32Valid(Config_Storage_t *self ,const Config_Storage_CrcFile_t *crc);
 
 
 void Config_Storage_Load(Config_Storage_t *self);
