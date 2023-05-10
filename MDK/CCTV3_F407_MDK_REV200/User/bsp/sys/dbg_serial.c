@@ -117,6 +117,7 @@ void DBG_Serial_Cmd(DBG_Serial_t *self,bool en)
 void DBG_Serial_Flush(DBG_Serial_t *self)
 {
     while(Concurrent_Queue_IsEmpty(self->tx_con_queue)==false);
+    while(Buffer_Queue_IsEmpty(self->hal_usart->USART_Tx_Buf)==false);
 }
 
 //This is a safemode function, it'll stop any ongoing transfer,
