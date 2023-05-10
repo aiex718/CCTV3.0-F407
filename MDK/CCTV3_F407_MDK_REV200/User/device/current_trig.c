@@ -78,7 +78,7 @@ void Device_CurrentTrig_DmaTC_Callback(void *sender, void *arg, void *owner)
 
 void Device_CurrentTrig_Init(Device_CurrentTrig_t *self)
 {
-    BSP_MEMSET(self->CurrentTrig_Callbacks, 0, sizeof(self->CurrentTrig_Callbacks));
+    BSP_ARR_CLEAR(self->CurrentTrig_Callbacks);
 
     HAL_Timer_Init(self->CurrentTrig_Timer);
     HAL_ADC_Init(self->CurrentTrig_ADC);
