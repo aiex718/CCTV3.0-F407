@@ -1412,6 +1412,16 @@
               <FilePath>..\..\User\bsp\hal\usart.c</FilePath>
             </File>
             <File>
+              <FileName>uniqueid.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\User\bsp\hal\uniqueid.c</FilePath>
+            </File>
+            <File>
+              <FileName>rng.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\User\bsp\hal\rng.c</FilePath>
+            </File>
+            <File>
               <FileName>spi.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\User\bsp\hal\spi.c</FilePath>
@@ -1485,6 +1495,16 @@
               <FileName>peri_gpio.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\User\bsp\platform\periph\peri_gpio.c</FilePath>
+            </File>
+            <File>
+              <FileName>peri_rng.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\User\bsp\platform\periph\peri_rng.c</FilePath>
+            </File>
+            <File>
+              <FileName>peri_uniqueid.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\User\bsp\platform\periph\peri_uniqueid.c</FilePath>
             </File>
           </Files>
         </Group>
