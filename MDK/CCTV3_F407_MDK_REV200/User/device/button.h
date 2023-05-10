@@ -26,11 +26,10 @@ typedef struct Device_Button_s
     Callback_t* Button_Callbacks[__NOT_CALLBACK_BUTTON_MAX];
     uint16_t Button_Scan_Period;
     bool Button_IdleState;
-    uint8_t __padding[1];
     //private
-    SysTimer_t _button_scan_tmr;
-    SysTime_t _button_active_timestamp;
     bool _button_prev_state;
+    SysTime_t _button_active_timestamp;
+    SysTimer_t _button_scan_tmr;
     BitFlag8_t _button_callback_done_flags;//prevent callback invoke more than once
 }Device_Button_t;
 

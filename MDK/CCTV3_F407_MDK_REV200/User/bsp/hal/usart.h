@@ -68,8 +68,8 @@ __BSP_STRUCT_ALIGN typedef struct HAL_USART_s
     void* pExtension;
 
     //private flags, dont use
-    BitFlag8_t _callback_pending_flag;
     SysTime_t _last_rx_time;
+    BitFlag8_t _callback_pending_flag;
 }HAL_USART_t;
 
 //Macro as functions
