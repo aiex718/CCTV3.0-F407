@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+
+	<title>CCTV3.0</title>
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/css/bootstrap.min.css" integrity="sha384-zCbKRCUGaJDkqS1kPbPd7TveP5iyJE0EjAuZQTgFLD2ylzuqKfdKlfG/eSrtxUkn" crossorigin="anonymous">
+	<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300,400">
+	<script src="https://kit.fontawesome.com/edee1be14a.js" crossorigin="anonymous"></script>	<!-- Google web font "Open Sans" -->		
+	
+	<link rel="stylesheet" type="text/css" href="css/magnific_popup.css"/>
+	<link rel="stylesheet" href="css/tooplate_style.css">
+	<link rel="stylesheet" type="text/css" href="css/style.css">
+
+	<script>
+		var renderPage = true;
+
+	if(navigator.userAgent.indexOf('MSIE')!==-1
+		|| navigator.appVersion.indexOf('Trident/') > 0){
+   		/* Microsoft Internet Explorer detected in. */
+   		alert("Please view this in a modern browser such as Chrome or Microsoft Edge.");
+   		renderPage = false;
+	}
+	</script>
+</head>
+
+<body>
+	<!-- Loader -->
+	<div id="loader-wrapper">
+		<div id="loader"></div>
+		<div class="loader-section section-left"></div>
+		<div class="loader-section section-right"></div>
+	</div>
+	
+	<!-- Page Content -->
+	<div class="container-fluid tm-main">
+		<div class="row tm-main-row">
+
+			<!-- Sidebar -->
+			<div id="tmSideBar" class="col-xl-3 col-lg-4 col-md-12 col-sm-12 sidebar">
+
+				<button id="tmMainNavToggle" class="menu-icon">&#9776;</button>
+
+				<div class="inner">
+					<nav id="tmMainNav" class="tm-main-nav">
+						<ul>
+							<li>
+								<a href="#setting" id="tmNavLink1" class="scrolly active" data-bg-img="constructive_bg_01.jpg" data-page="#tm-section-1">
+									<i class="fas  fa-gears tm-nav-fa-icon"></i>
+									<span>Setting</span>
+								</a>
+							</li>
+							<li>
+								<a href="#camera" id="tmNavLink2" class="scrolly" data-bg-img="constructive_bg_02.jpg" data-page="#tm-section-2" data-page-type="carousel">
+									<i class="fas fa-solid fa-camera tm-nav-fa-icon"></i>
+									<span>Camera</span>
+								</a>
+							</li>			
+						</ul>
+					</nav>
+				</div>
+			</div>
+
+			<div class="col-xl-9 col-lg-8 col-md-12 col-sm-12 tm-content">
+
+					<!-- section 1 -->
+					<section id="tm-section-1" class="tm-section">
+						<!-- <div class="ml-auto">
+							<header class="mb-4"><h1 class="tm-text-shadow">Ethernet MSC Login</h1></header>
+							<p class="mb-0 tm-font-big">This system is restricted to authorized users.</p>
+							<p class="mb-0 tm-font-big">Individuals who attempt unauthorized access will be prosecuted.</p>
+							<p class="mb-5 tm-font-big">If you are unauthorized, terminate access now.</p>
+							<input class="mr-3 mb-3 login-text" id ="username_text" autofocus placeholder="Username"></input>
+							<input class="mr-3 mb-3 login-text" id ="password_text" placeholder="Password" type="password"></input>
+							<a href="#" class="btn tm-btn tm-font-big " id ="login_btn">Login</a> 
+							<!-- data-nav-link holds the ID of nav item, which means this link should behave the same as that nav item  -->
+						<!-- </div>  -->
+						<div class="row mb-4">
+							<header class="col-xl-12"><h2 class="tm-text-shadow">Available Controls</h2></header>		
+						</div>
+						<div class="row">
+							<div class="col-sm-12 col-md-6 col-lg-12 col-xl-6 mb-4">
+								<div class="media tm-bg-transparent-black tm-border-white">
+									<i class="fas fa-regular fa-clock mr-4 tm-icon-circled tm-icon-media"></i>	
+									<div class="media-body">
+										<h3>Current Sensor</h3>
+										<input id="peak_threshold_text" class="mr-3 mb-3 ip-text" autofocus placeholder="Peak Threshold"></input>
+										<input id="peak_influence_text" class="mr-3 mb-3 ip-text" autofocus placeholder="Peak Influence"></input>
+										<input id="disconnect_thres_text" class="mr-3 mb-3 ip-text" autofocus placeholder="Disconnect Current"></input>
+										<input id="overload_thres_text" class="mr-3 mb-3 ip-text" autofocus placeholder="Overload Current"></input>
+										<div class="flex-between">
+											<a href="#" class="btn tm-btn tm-font-big " id="current_get_btn">Get</a> 
+											<a href="#" class="btn tm-btn tm-font-big " id="current_set_btn">Set</a> 
+										</div>
+									</div>
+								</div>
+							</div>	
+							<div class="col-sm-12 col-md-6 col-lg-12 col-xl-6 mb-4">
+								<div class="media tm-bg-transparent-black tm-border-white">
+									<i class="fas fa-network-wired mr-4 tm-icon-circled tm-icon-media"></i>	
+									<div class="media-body">
+										<h3>IP Address</h3>
+										<input id="ipaddr_text" class="mr-3 mb-3 ip-text" autofocus placeholder="IP address"></input>
+										<input id="netmask_text" class="mr-3 mb-3 ip-text" autofocus placeholder="Netmask"></input>
+										<input id="gateway_text" class="mr-3 mb-3 ip-text" autofocus placeholder="Gateway"></input>
+										<input id="dns0_text" class="mr-3 mb-3 ip-text" autofocus placeholder="DNS0"></input>
+										<input id="dns1_text" class="mr-3 mb-3 ip-text" autofocus placeholder="DNS1"></input>
+										<div class="flex-around">
+											<a href="#" class="btn tm-btn tm-font-big " id="ip_get_btn">Get</a> 
+											<a href="#" class="btn tm-btn tm-font-big " id="ip_set_btn">Set</a> 
+										</div>
+									</div>
+								</div>
+							</div>	
+							<div class="col-sm-12 col-md-6 col-lg-12 col-xl-6 mb-4">
+								<div class="media tm-bg-transparent-black tm-border-white">
+									<i class="fas fa-passport mr-4 tm-icon-circled tm-icon-media"></i>	
+									<div class="media-body">
+										<h3 id = "DHCP_text" >DHCP</h3>
+										<p> Enable DHPC will override IP configure.</p>	
+										<div class="flex-around">
+											<a href="#" class="btn tm-btn tm-font-big " id="dhcp_on_btn">On</a> 
+											<a href="#" class="btn tm-btn tm-font-big " id="dhcp_off_btn">Off</a> 
+										</div>										
+									</div>
+								</div>
+							</div>
+							<div class="col-sm-12 col-md-6 col-lg-12 col-xl-6 mb-4">
+								<div class="media tm-bg-transparent-black tm-border-white">
+									<i class="fas fa-regular fa-clock mr-4 tm-icon-circled tm-icon-media"></i>	
+									<div class="media-body">
+										<h3>SNTP</h3>
+										<p> Set empty string to disable SNTP polling.</p>
+										<input id="sntp_text" class="mr-3 mb-3 ip-text" autofocus placeholder="SNTP server address"></input>
+										<div class="flex-between">
+											<a href="#" class="btn tm-btn tm-font-big " id="ip_get_btn">Get</a> 
+											<a href="#" class="btn tm-btn tm-font-big " id="ip_set_btn">Set</a> 
+										</div>
+									</div>
+								</div>
+							</div>	
+							<div class="col-sm-12 col-md-6 col-lg-12 col-xl-6 mb-4">
+								<div class="media tm-bg-transparent-black tm-border-white">
+									<i class="fas fa-power-off mr-4 tm-icon-circled tm-icon-media"></i>
+									<div class="media-body">
+										<h3>Reboot</h3>
+										<div class="flex-between">
+											<p class="d-inline-block mb-0" >Tick</p>
+											<p id="nowtime" class="d-inline-block">0</p>
+										</div>
+										<div class="flex-between">
+											<p class="d-inline-block" >Up time</p>
+											<p id="uptime" class="d-inline-block">0</p>
+										</div>
+										<div class="flex-around"> 
+											<a href="#" class="btn tm-btn tm-font-big " id="reboot_btn">Set</a> 
+										</div>									
+									</div>
+								</div>
+							</div>
+							
+							<!-- <div class="col-sm-12 col-md-6 col-lg-12 col-xl-6 mb-4">
+								<div class="media tm-bg-transparent-black tm-border-white">
+									<i class="fas fa-floppy-disk mr-4 tm-icon-circled tm-icon-media"></i>	
+									<div class="media-body">
+										<h3 id = "format_text" >Format Disk</h3>
+										<p> Warning, format disk will permanently delete all files on disk.</p>	
+										<div class="flex-around">
+											<a href="#" class="btn tm-btn tm-font-big " id="format_btn">Set</a> 
+										</div>										
+									</div>
+								</div>
+							</div>							 -->
+						</div>					
+					</section>
+					
+					<!-- section 2 -->
+					<section id="tm-section-2" class="tm-section">	
+						<div class="row mb-4 flex-around">
+							<header class="col-xl-12"><h2 class="tm-text-shadow">Camera Setting</h2></header>		
+							<div><a>ex</a></div>
+						</div>					
+						<div class="row">
+							<div class="col-sm-12 col-md-6 col-lg-12 col-xl-6  mb-4">
+								<div class="media tm-bg-transparent-black tm-border-white">
+									<div class="media-body">
+										<img id="image" class="center-image mb-3 w100" src="http://192.168.1.139:8080/stream">
+										<input id="qs_text" class="mr-3 mb-3 ip-text" autofocus placeholder="Quality (12)"></input>
+										<input id="brightness_text" class="mr-3 mb-3 ip-text" autofocus placeholder="Brightness (1~5)"></input>
+										<input id="contrast_text" class="mr-3 mb-3 ip-text" autofocus placeholder="Contrast (1~5)"></input>
+										<div class="flex-around">
+											<div> 
+												<input type="checkbox" class="mr-2 mb-4 checkbox"/>
+												<label class="checkbox-text">Flip</label>
+											</div>
+											<div>
+												<input type="checkbox" class="mr-2 mb-4 checkbox"/>
+												<label class="checkbox-text">Mirror</label>
+											</div>
+										</div>
+										<div class="flex-around">
+											<a href="#" class="btn tm-btn tm-font-big " id="camera_get_btn">Get</a> 
+											<a href="#" class="btn tm-btn tm-font-big " id="camera_set_btn">Set</a> 
+											<a href="#" class="btn tm-btn tm-font-big " id="camera_fps_btn">FPS</a> 
+										</div>										
+									</div>
+								</div>
+							</div>	
+							<div class="col-sm-12 col-md-6 col-lg-12 col-xl-6 mb-4">
+								<div class="media tm-bg-transparent-black tm-border-white">
+									<i class="fas fa-regular fa-lightbulb mr-4 tm-icon-circled tm-icon-media"></i>	
+									<div class="media-body">
+										<h3>Illumination</h3>
+										<input id="light_top_text" class="mr-3 mb-3 ip-text" autofocus placeholder="Top (0~100)"></input>
+										<input id="light_bottom_text" class="mr-3 mb-3 ip-text" autofocus placeholder="Bottom (0~100)"></input>
+										<div class="flex-around">
+											<a href="#" class="btn tm-btn tm-font-big " id="lignt_get_btn">Get</a> 
+											<a href="#" class="btn tm-btn tm-font-big " id="lignt_set_btn">Set</a> 
+										</div>
+									</div>
+								</div>
+							</div>			
+						</div>					
+					</section>
+
+				</div>	<!-- .tm-content -->							
+				<footer class="footer-link">
+					<p class="tm-copyright-text">A. Chen C.Y.</p>
+				</footer>
+			</div>	<!-- row -->			
+		</div>
+		<div id="preload-01"></div>
+		<div id="preload-02"></div>
+		<!-- <div id="preload-03"></div> -->
+
+		<script src="js/axios.min.js"></script>		
+		<script src="js/jquery.min.js"></script>
+		<script src="js/jquery.magnific-popup.min.js"></script>
+		<script src="js/jquery.backstretch.min.js"></script>
+		<script src="js/script.js"></script>
+		
+		<script>
+
+		var sidebarVisible = false;
+		var currentPageID = "#tm-section-1";
+  		// Setup Nav
+  		function setupNav() {
+  			// Add Event Listener to each Nav item
+	     	$(".tm-main-nav a").click(function(e){
+	     		e.preventDefault();
+		    	
+		    	var currentNavItem = $(this);
+		    	changePage(currentNavItem);
+		    	
+		    	setupFooter();
+
+		    	// Hide the nav on mobile
+		    	$("#tmSideBar").removeClass("show");
+		    });	    
+  		}
+
+  		function changePage(currentNavItem) {
+  			// Update Nav items
+  			$(".tm-main-nav a").removeClass("active");
+     		currentNavItem.addClass("active");
+
+	    	$(currentPageID).hide();
+
+	    	// Show current page
+	    	currentPageID = currentNavItem.data("page");
+	    	$(currentPageID).fadeIn(1000);
+
+	    	// Change background image
+	    	var bgImg = currentNavItem.data("bgImg");
+	    	$.backstretch("img/" + bgImg);		    	
+  		}
+
+  		// Setup Nav Toggle Button
+  		function setupNavToggle() {
+
+			$("#tmMainNavToggle").on("click", function(){
+				$(".sidebar").toggleClass("show");
+			});
+  		}
+
+  		// If there is enough room, stick the footer at the bottom of page content.
+  		// If not, place it after the page content
+  		function setupFooter() {
+  			
+  			var padding = 100;
+  			var footerPadding = 40;
+  			var mainContent = $("section"+currentPageID);
+  			var mainContentHeight = mainContent.outerHeight(true);
+  			var footer = $(".footer-link");
+  			var footerHeight = footer.outerHeight(true);
+  			var totalPageHeight = mainContentHeight + footerHeight + footerPadding + padding;
+  			var windowHeight = $(window).height();		
+
+  			if(totalPageHeight > windowHeight){
+  				$(".tm-content").css("margin-bottom", footerHeight + footerPadding + "px");
+  				footer.css("bottom", footerHeight + "px");  			
+  			}
+  			else {
+  				$(".tm-content").css("margin-bottom", "0");
+  				footer.css("bottom", "20px");  				
+  			}  			
+  		}
+
+  		// Everything is loaded including images.
+      	$(window).on("load", function(){
+
+      		// Render the page on modern browser only.
+      		if(renderPage) {
+				// Remove loader
+		      	$('body').addClass('loaded');
+
+		      	// Page transition
+		      	var allPages = $(".tm-section");
+		      	
+		      	// Hide all pages
+		      	allPages.hide();
+
+		      	$("#tm-section-1").fadeIn();
+
+		     	// Set up background first page
+		     	var bgImg = $("#tmNavLink1").data("bgImg");
+		     	
+		     	$.backstretch("img/" + bgImg, {fade: 500});
+
+		     	// Setup Carousel, Nav, and Nav Toggle
+			    
+			    setupNav();
+			    setupNavToggle();
+			    setupFooter();
+
+			    // Resize Carousel upon window resize
+			    $(window).resize(function() {
+			    	
+			    	setupFooter();
+			    });
+      		}	      	
+		});
+
+		</script>
+	</body>
+</html>
