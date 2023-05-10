@@ -71,10 +71,10 @@ Config_Storage_t Dev_ConfigStorage_Inst={
         {
             .Obj_Name = "Config_VerifyFile",
             .Obj_Instance = &Dev_ConfigStorage_Inst, 
-            .Obj_Config_Len = sizeof(Config_Storage_VerifyFile_t),
-            .Obj_ConfigSet_Func =(void(*)(void*,const void*))Config_Storage_VerifySet,
-            .Obj_ConfigExport_Func =  (void(*)(const void*,void*))Config_Storage_VerifyExport,
-            .Obj_IsConfigValid_Func = (bool(*)(void*,const void*))Config_Storage_IsVerifyValid,
+            .Obj_Config_Len = sizeof(Config_Storage_CrcFile_t),
+            .Obj_ConfigSet_Func = NULL,
+            .Obj_ConfigExport_Func =  (void(*)(const void*,void*))Config_Storage_CalcCrc32,
+            .Obj_IsConfigValid_Func = (bool(*)(void*,const void*))Config_Storage_IsCrc32Valid,
         },
         NULL,//must NULL terminated
     },//Config_Storage_ObjectConfig_list

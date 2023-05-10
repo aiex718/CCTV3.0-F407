@@ -48,14 +48,14 @@ void Config_Storage_Init(Config_Storage_t *self)
 
     {
         // check if magic and crc matched
-        Config_Storage_VerifyFile_t *cfg = (Config_Storage_VerifyFile_t *)Config_Storage_Read(self, self, NULL);
+        Config_Storage_CrcFile_t *cfg = (Config_Storage_CrcFile_t *)Config_Storage_Read(self, self, NULL);
         if (cfg == NULL)
         {
             DBG_ERROR("Verify not fount, drop all config\n");
             self->_config_status = CONFIG_STORAGE_STATUS_ERR_NOTFOUND;
             return;
         }
-        else if (Config_Storage_IsVerifyValid(self, cfg) == false)
+        else if (Config_Storage_IsCrc32Valid(self, cfg) == false)
         {
             DBG_ERROR("Verify failed, drop all config\n");
             self->_config_status = CONFIG_STORAGE_STATUS_ERR_VERIFY_FAIL;
@@ -66,13 +66,8 @@ void Config_Storage_Init(Config_Storage_t *self)
     self->_config_status = CONFIG_STORAGE_STATUS_OK;
 }
 
-void Config_Storage_VerifySet(Config_Storage_t *self, const Config_Storage_VerifyFile_t *verify)
-{
-    ; // we dont set any attribute
-}
-
 // calculate crc and write magic to storage
-void Config_Storage_VerifyExport(const Config_Storage_t *self, Config_Storage_VerifyFile_t *verify)
+void Config_Storage_CalcCrc32(const Config_Storage_t *self, Config_Storage_CrcFile_t *crc)
 {
     if (Config_Storage_IsChanged(self) == false)
     {
@@ -80,17 +75,17 @@ void Config_Storage_VerifyExport(const Config_Storage_t *self, Config_Storage_Ve
         return;
     }
 
-    verify->Config_Storage_Magic = self->Config_Storage_Magic;
+    crc->Config_Storage_Magic = self->Config_Storage_Magic;
     // crc calculate exclude magic and crc
-    verify->Config_Storage_CRC32 = _calc_crc32(self->_config_wbuf, self->_config_size_sum - sizeof(*verify));
+    crc->Config_Storage_Crc32 = _calc_crc32(self->_config_wbuf, self->_config_size_sum - sizeof(*crc));
 }
 
 // check if crc and magic valid
-bool Config_Storage_IsVerifyValid(Config_Storage_t *self, const Config_Storage_VerifyFile_t *verify)
+bool Config_Storage_IsCrc32Valid(Config_Storage_t *self, const Config_Storage_CrcFile_t *crc)
 {
-    return verify != NULL && verify->Config_Storage_Magic == self->Config_Storage_Magic &&
-           verify->Config_Storage_CRC32 == _calc_crc32((const uint8_t *)self->Config_Storage_FlashAddr,
-                                                       self->_config_size_sum - sizeof(*verify));
+    return crc != NULL && crc->Config_Storage_Magic == self->Config_Storage_Magic &&
+           crc->Config_Storage_Crc32 == _calc_crc32((const uint8_t *)self->Config_Storage_FlashAddr,
+                                                       self->_config_size_sum - sizeof(*crc));
 }
 
 // load all config from storage, if config is not valid, copy default config from
@@ -99,15 +94,38 @@ void Config_Storage_Load(Config_Storage_t *self)
 {
     Config_Storage_ObjConfig_t **list = self->Config_Storage_ObjectConfig_list;
     Config_Storage_ObjConfig_t *objcfg;
-
+    bool skip;
     const uint8_t *config_r_ptr = (const uint8_t *)self->Config_Storage_FlashAddr;
 
     while (*list)
     {
         objcfg = *list++;
+        skip = false;
 
         if (objcfg->Obj_Instance == self)
-            return; // skip self
+            return;// skip self, crc will calculate inside commit
+
+        //check func exist
+        if (objcfg->Obj_IsConfigValid_Func == NULL)
+        {
+            DBG_WARNING("%s 0x%p config has no valid check func\n", objcfg->Obj_Name, objcfg->Obj_Instance);
+            skip = true;
+        }
+        if (objcfg->Obj_ConfigExport_Func == NULL)
+        {
+            DBG_WARNING("%s 0x%p config has no export func\n", objcfg->Obj_Name, objcfg->Obj_Instance);
+            skip = true;
+        }
+        if (objcfg->Obj_ConfigSet_Func == NULL)
+        {
+            DBG_WARNING("%s 0x%p config has no set func\n", objcfg->Obj_Name, objcfg->Obj_Instance);
+            skip = true;
+        }
+        if (skip)
+        {
+            DBG_WARNING("%s 0x%p config load skipped\n", objcfg->Obj_Name, objcfg->Obj_Instance);
+            continue;
+        }
 
         // check if config is valid
         if (self->_config_status != CONFIG_STORAGE_STATUS_OK ||
@@ -116,23 +134,21 @@ void Config_Storage_Load(Config_Storage_t *self)
             void *buf = BSP_MALLOC(objcfg->Obj_Config_Len);
             if (buf == false)
             {
-                DBG_ERROR("malloc failed for export default config %s, len %d\n", objcfg->Obj_Name, objcfg->Obj_Config_Len);
+                DBG_ERROR("malloc failed for export config %s, len %d\n", objcfg->Obj_Name, objcfg->Obj_Config_Len);
                 continue;
             }
+
+            DBG_ERROR("%s 0x%p bad config, load default\n", objcfg->Obj_Name, objcfg->Obj_Instance);
 
             // export to buf
             objcfg->Obj_ConfigExport_Func(objcfg->Obj_Instance, buf);
             Config_Storage_Write(self, objcfg->Obj_Instance, buf);
             BSP_FREE(buf);
-
-            DBG_ERROR("%s 0x%p bad config, load default\n", objcfg->Obj_Name, objcfg->Obj_Instance);
         }
         else // config is valid, apply to object
-        {
             objcfg->Obj_ConfigSet_Func(objcfg->Obj_Instance, config_r_ptr);
-        }
 
-        // move forward to next config
+        //move r_ptr to next config
         config_r_ptr += objcfg->Obj_Config_Len;
     }
 }
@@ -202,7 +218,7 @@ bool Config_Storage_Commit(Config_Storage_t *self)
 
     if (Config_Storage_IsChanged(self) == false)
         return false; // not changed, no need to save
-    if(self->_config_wbuf == NULL)
+    if (self->_config_wbuf == NULL)
         return false; // no wbuf to save
 
     if (_get_config_addr_offset(self, self, &offset, NULL) == false)
@@ -213,8 +229,8 @@ bool Config_Storage_Commit(Config_Storage_t *self)
 
     self->_config_status = CONFIG_STORAGE_STATUS_ERR_COMMIT;
 
-    Config_Storage_VerifyExport(self,
-                                (Config_Storage_VerifyFile_t *)(self->_config_wbuf + offset));
+    Config_Storage_CalcCrc32(self,
+                                (Config_Storage_CrcFile_t *)(self->_config_wbuf + offset));
 
     HAL_FlashProg_Unlock(Peri_FlashProg);
     do
