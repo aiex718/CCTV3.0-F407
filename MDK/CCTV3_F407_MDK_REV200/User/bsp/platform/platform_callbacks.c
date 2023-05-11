@@ -6,7 +6,7 @@
 static void HardwareCtrl_WkupButton_ShortPress_Handler(void *sender, void *args, void *owner)
 {
     Device_Buzzer_ShortBeep(Dev_Buzzer);
-    // TODO:Print ip
+    Ethernetif_PrintIP(Dev_Ethernetif_Default);
 }
 
 static void HardwareCtrl_WkupButton_LongPress_Handler(void *sender, void *args, void *owner)
@@ -16,7 +16,7 @@ static void HardwareCtrl_WkupButton_LongPress_Handler(void *sender, void *args, 
         Device_Buzzer_LongBeep(Dev_Buzzer);
         DBG_INFO("Button reset success, rebooting...\n");
         DBG_Serial_Flush(Peri_DBG_Serial);
-        // TODO:DelayReset SysCtrl_DelayReset(3000);
+        SysCtrl_ResetAfter(3000);
     }
     else
         DBG_ERROR("Button reset failed\n");

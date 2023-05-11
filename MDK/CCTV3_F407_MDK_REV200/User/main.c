@@ -155,7 +155,7 @@ int main(void)
 			}
 			else if(strcmp((char*)rxcmd,"ip")==0)
 			{
-				//TODO: print ip
+				Ethernetif_PrintIP(Dev_Ethernetif_Default);
 			}
 			else if(strcmp((char*)rxcmd,"dhcp")==0)
 			{
