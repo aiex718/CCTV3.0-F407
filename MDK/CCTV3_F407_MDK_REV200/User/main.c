@@ -1,7 +1,9 @@
 #include "bsp/platform/platform_defs.h"
 #include "bsp/platform/platform_inst.h"
+#include "bsp/platform/platform_callbacks.h"
 
 #include "bsp/sys/dbg_serial.h"
+
 #include "bsp/sys/systime.h"
 #include "bsp/sys/systimer.h"
 #include "bsp/sys/sysctrl.h"
@@ -22,15 +24,6 @@
 //apps
 #include "lwip/apps/httpd.h"
 
-void Button_Wkup_ShortPress_Handler(void* sender, void* args,void* owner)
-{
-	DBG_INFO("Button_Wkup_ShortPress_Handler\n");
-}
-
-const Callback_t Button_Wkup_ShortPress_CB = 
-{
-	.func = Button_Wkup_ShortPress_Handler,
-};
 
 int main(void)
 {
@@ -67,8 +60,6 @@ int main(void)
 	Device_LedIndicator_Init(Dev_Led_Blink);
 	//Button
 	Device_Button_Init(Dev_Button_Wkup);
-	//regist button callbacks
-	Device_Button_SetCallback(Dev_Button_Wkup,BUTTON_CALLBACK_SHORT_PRESS,(Callback_t*)&Button_Wkup_ShortPress_CB);
 
 	HAL_GPIO_InitPin(Peri_LED_STAT_pin);
 	HAL_GPIO_WritePin(Peri_LED_STAT_pin,0);
@@ -113,10 +104,12 @@ int main(void)
 	HAL_ADC_CommonInit(Peri_ADC_CommonCfg);
 
 	//Current trig
-	//TODO:Regist triggered callback and webhook
 	Device_CurrentTrig_Init(Dev_CurrentTrig);
 	Device_CurrentTrig_Cmd(Dev_CurrentTrig,true);
-	
+
+	//Link callbacks handler to object
+	Platform_RegistCallbacks();
+
 	while(1)
 	{
 		uint8_t rxcmd[DEBUG_SERIAL_RX_BUFFER_SIZE]={0};
@@ -160,6 +153,10 @@ int main(void)
 			{
 				Device_Buzzer_ShortBeep(Dev_Buzzer);
 			}
+			else if(strcmp((char*)rxcmd,"ip")==0)
+			{
+				Ethernetif_PrintIP(Dev_Ethernetif_Default);
+			}
 			else if(strcmp((char*)rxcmd,"dhcp")==0)
 			{
 				const Ethernetif_ConfigFile_t *eth_conf = (const Ethernetif_ConfigFile_t *)
@@ -185,14 +182,11 @@ int main(void)
 				}
 			}
 		}
-
-		//Buzzer
-		Device_Buzzer_Service(Dev_Buzzer);
 		
 		DBG_Serial_Service(Peri_DBG_Serial);
-		Device_LedIndicator_Service(Dev_Led_Blink);
-		Device_Button_Service(Dev_Button_Wkup);
-
+		Device_Buzzer_Service(Dev_Buzzer);
+    	Device_LedIndicator_Service(Dev_Led_Blink);
+    	Device_Button_Service(Dev_Button_Wkup);
 		Device_CurrentTrig_Service(Dev_CurrentTrig);
 
 		if(Mem_Guard_CheckOVF())
@@ -206,5 +200,6 @@ int main(void)
 			LwIP_Pkt_Handle();
 		/* handle periodic timers for LwIP */
 		sys_check_timeouts();
+		SysCtrl_Service();
 	}
 }

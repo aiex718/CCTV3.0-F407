@@ -18,7 +18,7 @@ Device_Button_t Dev_Button_Wkup_Inst =
         .GPIO_AF_PinSource = 0,
         .GPIO_AF_Mapping = 0,
     },
-    .Button_LongPress_Period = 2000,
+    .Button_LongPress_Period = 3000,
     .Button_ShortPress_Period = 100,
     .Button_Scan_Period = 50,
     .Button_IdleState = false,//Idle low, active high
