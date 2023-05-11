@@ -46,6 +46,12 @@
 #ifndef BSP_STRNCPY 
     #define BSP_STRNCPY strncpy
 #endif
+#ifndef BSP_STRCMP
+    #define BSP_STRCMP strcmp
+#endif
+#ifndef BSP_STRLEN
+    #define BSP_STRLEN strlen
+#endif
 
 #ifndef BSP_MALLOC
     #define BSP_MALLOC malloc
@@ -82,6 +88,10 @@
 #endif
 #ifndef BSP_ARR_CLEAR
     #define BSP_ARR_CLEAR(arr) BSP_MEMSET((arr),0,sizeof(arr))
+#endif
+
+#ifndef BSP_ARR_STREND
+    #define BSP_ARR_STREND(x) (x)[sizeof(x)-1] = '\0'
 #endif
 
 #ifndef NULL 

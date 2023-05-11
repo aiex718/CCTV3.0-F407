@@ -2,12 +2,13 @@
 // require micro.lib 
 
 //Normally we don't check heap, it's managed by malloc.
+//If CHECK_HEAP is enabled, heal will task ram space even malloc is not used.
 #ifndef MEM_GUARD_CHECK_HEAP
     #define MEM_GUARD_CHECK_HEAP 0
 #endif
 
 #ifndef MEM_GUARD_INT_COUNT
-    #define MEM_GUARD_INT_COUNT 16 //16*int 
+    #define MEM_GUARD_INT_COUNT 16 //16*int=64byte
 #endif
 
 #ifndef MEM_GUARD_PRINT_INFO
@@ -19,7 +20,6 @@ A example of microlib stack and heap mem layout:
 ----------------------------------------------------------------------------------
     Symbol Name      Value     Ov Type        Size  Object(Section)
 ----------------------------------------------------------------------------------
-    Heap_Mem         0x20000630   Data         512  startup_stm32f40_41xxx.o(HEAP)
     __heap_base      0x20000630   Data           0  startup_stm32f40_41xxx.o(HEAP)
     Stack_Mem        0x20000830   Data        4096  startup_stm32f40_41xxx.o(STACK)
     __heap_limit     0x20000830   Data           0  startup_stm32f40_41xxx.o(HEAP)
@@ -28,10 +28,10 @@ A example of microlib stack and heap mem layout:
 Stack and heap are allocated in the same memory region, and placed back to back,
 grow towards each other.
 
-Heap alloc from __heap_base to __heap_limit(which equals to Stack_Mem)
-Stack alloc from __initial_sp to __heap_limit.
+Heap alloc from __heap_base to __heap_limit(equals to Stack_Mem).
+Stack alloc from __initial_sp to Stack_Mem(equals to __heap_limit).
 
-If you're not using malloc, heap will be optimized out by ARMCC.
+If malloc is unused, heap should be optimized out by ARMCC linker.
 
 A example of microlib stack only mem layout:
 ----------------------------------------------------------------------------------
@@ -48,7 +48,6 @@ A example of microlib stack only mem layout:
 //Put EXPORT __heap_base in startup.s if not exist
 extern const unsigned int __heap_base;
 //heap_start_addr is the start address of heap
-//If heap not used, the value will be 0?
 const unsigned int *heap_start_addr = &__heap_base;
 #endif
 
