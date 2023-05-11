@@ -1,6 +1,8 @@
 #include "bsp/platform/platform_callbacks.h"
 #include "bsp/platform/platform_inst.h"
 #include "bsp/sys/callback.h"
+#include "bsp/sys/sysctrl.h"
+
 
 //Handlers
 static void HardwareCtrl_WkupButton_ShortPress_Handler(void *sender, void *args, void *owner)
@@ -14,9 +16,9 @@ static void HardwareCtrl_WkupButton_LongPress_Handler(void *sender, void *args, 
     if (Config_Storage_Erase(Dev_ConfigStorage))
     {
         Device_Buzzer_LongBeep(Dev_Buzzer);
+        DBG_Serial_SafeMode(Peri_DBG_Serial, true);
         DBG_INFO("Button reset success, rebooting...\n");
-        DBG_Serial_Flush(Peri_DBG_Serial);
-        SysCtrl_ResetAfter(3000);
+        SysCtrl_ResetAfter(LONGPRESS_RESET_DELAY);
     }
     else
         DBG_ERROR("Button reset failed\n");
