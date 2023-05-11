@@ -60,31 +60,40 @@ void httpd_cgi_handler(struct fs_file *file, const char* uri, int iNumParams,cha
     {   
         char* cmd=ReadParam(CMD_STR,iNumParams,pcParam,pcValue);
             
-            if(cmd==NULL || strlen(cmd)<=0)
+        if(cmd==NULL || strlen(cmd)<=0)
+        {
+            HttpBuilder_BuildResponse(file,HTTP_RESPONSE_400_BAD_REQUEST);
+        }
+        else
+        {
+            WebApi_Result_t result = WEBAPI_ERR_NOTFOUND;
+            for (i = 0; i < BSP_ARR_LEN(Webapi_cmds); i++)
             {
-                HttpBuilder_BuildResponse(file,HTTP_RESPONSE_400_BAD_REQUEST);
-            }
-            else
-            {
-                WebApi_Result_t result = WEBAPI_ERR_NOTFOUND;
-                for (i = 0; i < BSP_ARR_LEN(Webapi_cmds); i++)
+                Webapi_Cmd_FuncPtr_Map_t cmf_func = Webapi_cmds[i];
+                if(strcmp(cmd , cmf_func.cmd_str)==0)
                 {
-                    Webapi_Cmd_FuncPtr_Map_t cmf_func = Webapi_cmds[i];
-                    if(strcmp(cmd , cmf_func.cmd_str)==0)
-                    {
-                        result = cmf_func.FuncPtr(file,uri,iNumParams,pcParam,pcValue);
-                        break;
-                    }
+                    result = cmf_func.FuncPtr(file,uri,iNumParams,pcParam,pcValue);
+                    break;
                 }
-                //cmd not found
-                if(result == WEBAPI_ERR_NOTFOUND)
-                    HttpBuilder_BuildResponse(file,HTTP_RESPONSE_501_NOT_IMPLEMENTED);
             }
-            DBG_INFO("api request cmd:%s\r\n",cmd);
+            //cmd not found
+            if(result == WEBAPI_ERR_NOTFOUND)
+                HttpBuilder_BuildResponse(file,HTTP_RESPONSE_501_NOT_IMPLEMENTED);
+        }
+        DBG_INFO("api request cmd:%s\r\n",cmd);
         HttpBuilder_FinishFile(file);
     }
     else
     {
+        /* There are 2 conditions we'll get here:
+        1. File uri not match Webapi_Enter_Point
+        2. File uri match Webapi_Enter_Point, but file->is_custom_file is false 
+           caused my mem_malloc fail in fs_open_custom.
+        
+        Either way, mem_malloc is not success,
+        we'll just open and return 404.html to client.
+        DO NOT use fs_open to return dynamic webapi content,
+        it will make alloced mem not free and memory leak.  */
         fs_open(file,"/404.html");
     }
 }
