@@ -2,6 +2,7 @@
 #include "bsp/platform/platform_inst.h"
 
 #include "bsp/sys/dbg_serial.h"
+
 #include "bsp/sys/systime.h"
 #include "bsp/sys/systimer.h"
 #include "bsp/sys/sysctrl.h"
@@ -101,5 +102,6 @@ int main(void)
 			LwIP_Pkt_Handle();
 		/* handle periodic timers for LwIP */
 		sys_check_timeouts();
+		SysCtrl_Service();
 	}
 }
