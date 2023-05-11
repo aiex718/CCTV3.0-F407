@@ -1,11 +1,17 @@
 #include "app/httpd/webapi.h"
-#include "bsp/platform/platform_inst.h"
 #include "app/httpd/http_builder.h"
-#include "bsp/sys/systime.h"
+#include "bsp/platform/platform_inst.h"
 #include "bsp/sys/dbg_serial.h"
+
+#include "lwip/apps/fs.h"
 #include "lwip/ip4_addr.h"
 
 const char* const Webapi_Enter_Point="/api";
+
+typedef enum {
+    WEBAPI_OK = 0,
+    WEBAPI_ERR_NOTFOUND,
+} WebApi_Result_t;
 
 typedef struct 
 {
@@ -16,7 +22,7 @@ typedef struct
 
 static const Webapi_Cmd_FuncPtr_Map_t Webapi_cmds[]=
 {
-    {"uptime",httpd_api_uptime},
+    {"uptime",webapi_get_uptime},
 };
 
 const char CMD_STR[]="cmd", GET_STR[]="get", SET_STR[]="set";
