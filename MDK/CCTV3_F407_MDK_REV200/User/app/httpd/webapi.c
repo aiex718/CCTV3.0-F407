@@ -83,7 +83,7 @@ __STATIC_INLINE WebApi_Result_t Act_Fail_Response(struct fs_file *file)
 }
 
 
-static char *ReadParam(const char *name, int iNumParams, char **pcParam, char **pcValue)
+__STATIC_INLINE *ReadParam(const char *name, int iNumParams, char **pcParam, char **pcValue)
 {
     while (--iNumParams >= 0)
     {
