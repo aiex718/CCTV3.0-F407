@@ -1,6 +1,6 @@
 #include "bsp/platform/app/app_webhook.h"
 
-Webhook_t Current_Trig_Webhook_Inst = {
+Webhook_t App_Webhook_Triggered_Inst = {
     .Webhook_Enable = true,
     .Webhook_ConnSetting = NULL, //use default setting
     .Webhook_Host = "server.com",
@@ -10,4 +10,4 @@ Webhook_t Current_Trig_Webhook_Inst = {
     .Webhook_Retry_Delay = 3000,
 };
 
-Webhook_t* Current_Trig_Webhook = &Current_Trig_Webhook_Inst;
+Webhook_t* App_Webhook_Triggered = &App_Webhook_Triggered_Inst;

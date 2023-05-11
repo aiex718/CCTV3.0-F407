@@ -26,10 +26,10 @@ static void HardwareCtrl_WkupButton_LongPress_Handler(void *sender, void *args, 
 
 static void HardwareCtrl_CurrentTrig_Triggered_Handler(void *sender, void *args, void *owner)
 {
-    if( Webhook_IsEnabled(Current_Trig_Webhook) &&
-        Webhook_IsBusy(Current_Trig_Webhook)==false)
+    if( Webhook_IsEnabled(App_Webhook_Triggered) &&
+        Webhook_IsBusy(App_Webhook_Triggered)==false)
     {
-        Webhook_Send(Current_Trig_Webhook);
+        Webhook_Send(App_Webhook_Triggered);
     }
 }
 
