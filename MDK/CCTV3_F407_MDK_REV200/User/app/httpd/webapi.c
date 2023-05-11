@@ -1,6 +1,5 @@
 #include "app/httpd/webapi.h"
 #include "app/httpd/http_builder.h"
-#include "bsp/platform/platform_inst.h"
 #include "bsp/sys/dbg_serial.h"
 
 #include "lwip/apps/fs.h"
@@ -20,9 +19,11 @@ typedef struct
         const char* uri, int iNumParams,char **pcParam, char **pcValue);
 }Webapi_Cmd_FuncPtr_Map_t;
 
+static WebApi_Result_t Webapi_Get_Uptime(struct fs_file *file, const char* uri, int iNumParams,char **pcParam, char **pcValue);
+
 static const Webapi_Cmd_FuncPtr_Map_t Webapi_cmds[]=
 {
-    {"uptime",webapi_get_uptime},
+    {"uptime",Webapi_Get_Uptime},
 };
 
 const char CMD_STR[]="cmd", GET_STR[]="get", SET_STR[]="set";
@@ -41,7 +42,7 @@ static char* ReadParam(const char *name,int iNumParams,char **pcParam, char **pc
     return NULL;
 }
 
-WebApi_Result_t httpd_api_uptime(struct fs_file *file, const char* uri, int iNumParams,char **pcParam, char **pcValue)
+static WebApi_Result_t Webapi_Get_Uptime(struct fs_file *file, const char* uri, int iNumParams,char **pcParam, char **pcValue)
 {
     HttpBuilder_BuildResponse(file,HTTP_RESPONSE_200_OK);
     HttpBuilder_printf(file,"{\"uptime\":%u,",sys_now());
