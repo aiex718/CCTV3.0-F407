@@ -763,7 +763,8 @@ static void Mjpegd_CheckIdle(Mjpegd_t *mjpegd)
 static void Mjpegd_ShowFps(Mjpegd_t *mjpegd)
 {
     MJPEGD_SYSTIME_T now = sys_now();
-    if(now - mjpegd->_fps_timer > (1000<<MJPEGD_SHOWFPS_PERIOD))
+    if( Mjpegd_Camera_IsEnabled(mjpegd->Camera) &&
+        now - mjpegd->_fps_timer > (1000<<MJPEGD_SHOWFPS_PERIOD))
     {
         MJPEGD_ATOMIC_XCHG(&mjpegd->_fps_timer,now);
 
