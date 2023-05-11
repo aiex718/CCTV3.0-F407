@@ -59,11 +59,10 @@ typedef struct Ethernetif_s
 
 err_t Ethernetif_Init(struct netif *netif);
 err_t Ethernetif_Input(struct netif *netif);
-
 void Ethernetif_ConfigSet(Ethernetif_t *self,const Ethernetif_ConfigFile_t *config);
 void Ethernetif_ConfigExport(const Ethernetif_t *self,Ethernetif_ConfigFile_t *config);
 bool Ethernetif_IsConfigValid(Ethernetif_t *self,const Ethernetif_ConfigFile_t *config);
-
+void Ethernetif_PrintIP(Ethernetif_t *self);
 void Ethernetif_Service(void* netif);
 
 
