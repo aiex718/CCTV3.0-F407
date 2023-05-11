@@ -12,25 +12,20 @@ static const char* const http_response_header[__NOT_RESPONSE_CODE_MAX]=
     (const char*)"HTTP/1.0 200 OK \r\n",
     (const char*)"HTTP/1.0 400 Bad Request\r\n",
     (const char*)"HTTP/1.0 401 Unauthorized\r\n",
+    (const char*)"HTTP/1.0 404 Not Found\r\n",
     (const char*)"HTTP/1.0 501 Not Implemented\r\n",
+    (const char*)"HTTP/1.0 503 Service Unavailable\r\n",
 };
 
 static const char* const http_response_default_msg[__NOT_RESPONSE_CODE_MAX]=
 {
     NULL,
-    (const char*)"Bad Command",
-    (const char*)"Unauthorized User",
-    (const char*)"Command not implemented",
+    NULL,
+    (const char*)"Api Unauthorized user",
+    (const char*)"Api not found",
+    (const char*)"Api command not implemented",
+    (const char*)"Api service unavailable",
 };
-
-// static const char header_http_200[]="HTTP/1.0 200 OK \r\n";
-// static const char header_http_400[]="HTTP/1.0 400 Bad Request\r\n";
-// static const char header_http_401[]="HTTP/1.0 401 Unauthorized\r\n";
-// static const char header_http_501[]="HTTP/1.0 501 Not Implemented\r\n";
-
-// static const char http_400_Message[]="Bad Command";
-// static const char http_401_Message[]="Unauthorized User";
-// static const char http_501_Message[]="Command not impl";
 
 static const char header_http_server[]="Server: lwIP 2.1.3(Alex.C)\r\n";
 static const char header_http_content_type_json[]="Content-type: application/json\r\n";
