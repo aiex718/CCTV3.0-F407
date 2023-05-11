@@ -28,7 +28,7 @@ int fs_open_custom(struct fs_file *file, const char *name)
         return 0;
     }
 
-    LWIP_DEBUGF(HTTPD_DEBUG | LWIP_DBG_STATE,("fs_open_custom %s at %x->%x\n",name,file,fil));
+    LWIP_DEBUGF(HTTPD_DEBUG | LWIP_DBG_TRACE,("fs_open_custom %s at %x->%x\n",name,file,fil));
 
     file->data=NULL;
     file->index=0;
