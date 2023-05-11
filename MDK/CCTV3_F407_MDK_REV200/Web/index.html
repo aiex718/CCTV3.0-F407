@@ -6,13 +6,13 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 
 	<title>CCTV3.0</title>
-	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/css/bootstrap.min.css" integrity="sha384-zCbKRCUGaJDkqS1kPbPd7TveP5iyJE0EjAuZQTgFLD2ylzuqKfdKlfG/eSrtxUkn" crossorigin="anonymous">
 	<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300,400">
 	<script src="https://kit.fontawesome.com/edee1be14a.js" crossorigin="anonymous"></script>	<!-- Google web font "Open Sans" -->		
 	
-	<link rel="stylesheet" type="text/css" href="css/magnific_popup.css"/>
+	<link rel="stylesheet" href="css/bootstrap.min.css">
+	<link rel="stylesheet" href="css/magnific_popup.css"/>
 	<link rel="stylesheet" href="css/tooplate_style.css">
-	<link rel="stylesheet" type="text/css" href="css/style.css">
+	<link rel="stylesheet" href="css/style.css">
 
 	<script>
 		var renderPage = true;
@@ -179,12 +179,13 @@
 					<!-- section 2 -->
 					<section id="tm-section-2" class="tm-section">	
 						<div class="row mb-4 flex-around">
-							<header class="col-xl-12"><h2 class="tm-text-shadow">Camera Setting</h2></header>
+							<header class="col-xl-12"><h2 class="tm-text-shadow">Camera Configuration</h2></header>
 						</div>					
 						<div class="row">
 							<div class="col-sm-12 col-md-6 col-lg-12 col-xl-6  mb-4">
 								<div class="media tm-bg-transparent-black tm-border-white">
 									<div class="media-body">
+										<h3 class="text-center">Live Preview</h3>
 										<img id="mjpeg_img" class="center-image mb-3">
 										<input id="qs_text" class="mr-3 mb-3 ip-text" autofocus placeholder="Quality (12)"></input>
 										<input id="brightness_text" class="mr-3 mb-3 ip-text" autofocus placeholder="Brightness (1~5)"></input>
@@ -211,7 +212,7 @@
 								<div class="media tm-bg-transparent-black tm-border-white">
 									<i class="fas fa-regular fa-lightbulb mr-4 tm-icon-circled tm-icon-media"></i>	
 									<div class="media-body">
-										<h3>Illumination</h3>
+										<h3 class="text-center">Lighting</h3>
 										<input id="light_top_text" class="mr-3 mb-3 ip-text" autofocus placeholder="Top (0~100)"></input>
 										<input id="light_bottom_text" class="mr-3 mb-3 ip-text" autofocus placeholder="Bottom (0~100)"></input>
 										<div class="flex-around">

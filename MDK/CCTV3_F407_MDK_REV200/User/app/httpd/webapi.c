@@ -1,4 +1,5 @@
 #include "app/httpd/webapi.h"
+#include "bsp/platform/platform_inst.h"
 #include "app/httpd/http_builder.h"
 #include "bsp/sys/dbg_serial.h"
 
@@ -60,27 +61,34 @@ void httpd_cgi_handler(struct fs_file *file, const char* uri, int iNumParams,cha
     {   
         char* cmd=ReadParam(CMD_STR,iNumParams,pcParam,pcValue);
             
-            if(cmd==NULL || strlen(cmd)<=0)
+        if(cmd==NULL || strlen(cmd)<=0)
+        {
+            //HttpBuilder_BuildResponse(file,HTTP_RESPONSE_400_BAD_REQUEST);
+            fs_open(file,"/400.html");
+            return;
+        }
+        else
+        {
+            WebApi_Result_t result = WEBAPI_ERR_NOTFOUND;
+            for (i = 0; i < BSP_ARR_LEN(Webapi_cmds); i++)
             {
-                HttpBuilder_BuildResponse(file,HTTP_RESPONSE_400_BAD_REQUEST);
-            }
-            else
-            {
-                WebApi_Result_t result = WEBAPI_ERR_NOTFOUND;
-                for (i = 0; i < BSP_ARR_LEN(Webapi_cmds); i++)
+                Webapi_Cmd_FuncPtr_Map_t cmf_func = Webapi_cmds[i];
+                if(strcmp(cmd , cmf_func.cmd_str)==0)
                 {
-                    Webapi_Cmd_FuncPtr_Map_t cmf_func = Webapi_cmds[i];
-                    if(strcmp(cmd , cmf_func.cmd_str)==0)
-                    {
-                        result = cmf_func.FuncPtr(file,uri,iNumParams,pcParam,pcValue);
-                        break;
-                    }
+                    result = cmf_func.FuncPtr(file,uri,iNumParams,pcParam,pcValue);
+                    break;
                 }
-                //cmd not found
-                if(result == WEBAPI_ERR_NOTFOUND)
-                    HttpBuilder_BuildResponse(file,HTTP_RESPONSE_501_NOT_IMPLEMENTED);
             }
-            DBG_INFO("api request cmd:%s\r\n",cmd);
+            //cmd not found
+            if(result == WEBAPI_ERR_NOTFOUND)
+            {
+                fs_open(file,"/501.html");
+                //HttpBuilder_BuildResponse(file,HTTP_RESPONSE_501_NOT_IMPLEMENTED);
+                return;
+            }
+                
+        }
+        DBG_INFO("api request cmd:%s\r\n",cmd);
         HttpBuilder_FinishFile(file);
     }
     else

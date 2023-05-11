@@ -45,6 +45,10 @@
 	height: 15px;
 }
 
+.text-center{
+	text-align: center;
+}
+
 .checkbox-text{
 	color: white;
 	font-size: 1.3rem;
