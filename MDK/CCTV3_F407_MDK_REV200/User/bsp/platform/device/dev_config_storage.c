@@ -68,7 +68,7 @@ Config_Storage_t Dev_ConfigStorage_Inst={
         },
         __CONST_CAST_VAR(Config_Storage_ObjConfig_t){
             .Obj_Name = "Webhook_Triggered",
-            .Obj_Instance = &App_Webhook_Triggered, 
+            .Obj_Instance = &App_Webhook_Triggered_Inst, 
             .Obj_Config_Len = sizeof(Webhook_ConfigFile_t),
             .Obj_ConfigSet_Func =(void(*)(void*,const void*))Webhook_ConfigSet,
             .Obj_ConfigExport_Func =  (void(*)(const void*,void*))Webhook_ConfigExport,
