@@ -41,11 +41,11 @@ static char* ReadParam(const char *name,int iNumParams,char **pcParam, char **pc
     return NULL;
 }
 
-WebApi_Result_t httpd_api_uptime(struct fs_file *file, const char* uri, int iNumParams,char **pcParam, char **pcValue)
+WebApi_Result_t webapi_get_uptime(struct fs_file *file, const char* uri, int iNumParams,char **pcParam, char **pcValue)
 {
     HttpBuilder_BuildResponse(file,HTTP_RESPONSE_200_OK);
     HttpBuilder_printf(file,"{\"uptime\":%u,",sys_now());
-    HttpBuilder_printf(file,"\"nowtime\":%u}",0);
+    HttpBuilder_printf(file,"\"nowtime\":%u}",(uint32_t)HAL_RTC_GetTime(Peri_RTC));
     return WEBAPI_OK;
 }
 
