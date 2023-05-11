@@ -566,7 +566,7 @@ static void Ethernetif_CheckLink(Ethernetif_t *self)
     }
 }
 
-static void Ethernetif_PrintIP(Ethernetif_t *self)
+void Ethernetif_PrintIP(Ethernetif_t *self)
 {
     DBG_INFO("IP  : %s\n", ip4addr_ntoa(&(self->_netif.ip_addr)));
     DBG_INFO("MASK: %s\n", ip4addr_ntoa(&(self->_netif.netmask)));
