@@ -478,7 +478,15 @@ void httpd_cgi_handler(struct fs_file *file, const char *uri, int iNumParams, ch
     }
     else
     {
-        HttpBuilder_BuildResponse(file, HTTP_RESPONSE_404_NOTFOUNT);
-        HttpBuilder_FinishFile(file);
+        /* There are 2 conditions we'll get here:
+        1. File uri not match Webapi_Enter_Point
+        2. File uri match Webapi_Enter_Point, but file->is_custom_file is false 
+           caused my mem_malloc fail in fs_open_custom.
+        
+        Either way, mem_malloc is not success,
+        we'll just open and return 404.html to client.
+        DO NOT use fs_open to return dynamic webapi content,
+        it will make alloced mem not free and memory leak.  */
+        fs_open(file,"/404.html");
     }
 }

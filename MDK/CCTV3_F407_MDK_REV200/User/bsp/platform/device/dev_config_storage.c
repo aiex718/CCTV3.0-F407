@@ -66,6 +66,14 @@ Config_Storage_t Dev_ConfigStorage_Inst={
             .Obj_ConfigExport_Func =  (void(*)(const void*,void*))Device_CurrentTrig_ConfigExport,
             .Obj_IsConfigValid_Func = (bool(*)(void*,const void*))Device_CurrentTrig_IsConfigValid,
         },
+        __CONST_CAST_VAR(Config_Storage_ObjConfig_t){
+            .Obj_Name = "Webhook_Triggered",
+            .Obj_Instance = &App_Webhook_Triggered, 
+            .Obj_Config_Len = sizeof(Webhook_ConfigFile_t),
+            .Obj_ConfigSet_Func =(void(*)(void*,const void*))Webhook_ConfigSet,
+            .Obj_ConfigExport_Func =  (void(*)(const void*,void*))Webhook_ConfigExport,
+            .Obj_IsConfigValid_Func = (bool(*)(void*,const void*))Webhook_IsConfigValid,
+        },
         //VerifyFile MUST be the last one in the list
         __CONST_CAST_VAR(Config_Storage_ObjConfig_t)
         {
