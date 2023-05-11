@@ -485,7 +485,7 @@ void httpd_cgi_handler(struct fs_file *file, const char *uri, int iNumParams, ch
         
         Either way, mem_malloc is not success,
         we'll just open and return 404.html to client.
-        DO NOT use fs_open to return dynamic webapi content,
+        DO NOT use fs_open to return dynamic webapi content other place,
         it will make alloced mem not free and memory leak.  */
         fs_open(file,"/404.html");
     }
