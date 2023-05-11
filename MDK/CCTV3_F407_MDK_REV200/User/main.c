@@ -117,6 +117,10 @@ int main(void)
 	Device_CurrentTrig_Init(Dev_CurrentTrig);
 	Device_CurrentTrig_Cmd(Dev_CurrentTrig,true);
 	
+	//first send should fail because dhcp not success yet
+	//should success in retry 
+	Webhook_Send(Test_Webhook);
+
 	while(1)
 	{
 		uint8_t rxcmd[DEBUG_SERIAL_RX_BUFFER_SIZE]={0};

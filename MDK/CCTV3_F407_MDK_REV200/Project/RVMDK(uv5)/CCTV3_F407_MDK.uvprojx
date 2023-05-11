@@ -1565,6 +1565,11 @@
               <FileName>app_filesys.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\User\bsp\platform\app\app_filesys.c</FilePath>
+            </File> 
+            <File>
+              <FileName>app_webhook.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\User\bsp\platform\app\app_webhook.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -1760,6 +1765,16 @@
               <FileName>ethernetif.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\User\bsp\eth\lwip_port\Standalone\ethernetif.c</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>User\app\webhook</GroupName>
+          <Files>
+            <File>
+              <FileName>webhook.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\User\app\webhook\webhook.c</FilePath>
             </File>
           </Files>
         </Group>
