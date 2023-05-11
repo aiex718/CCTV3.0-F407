@@ -57,7 +57,7 @@ bool FileSys_Open(FileSys_t *self,FileSys_File_t* file,const char* path,FileMode
     FRESULT fs_result;
     fs_result = f_open(&file->fp, path, mode);
     if(fs_result!=FR_OK)
-        DBG_ERROR("Open failed %d,path:%s\n",fs_result,path);
+        DBG_WARNING("Open failed %d,path:%s\n",fs_result,path);
     return fs_result==FR_OK;
 }
 
