@@ -1469,6 +1469,16 @@
           </Files>
         </Group>
         <Group>
+          <GroupName>User\app\uartcmd</GroupName>
+          <Files>
+            <File>
+              <FileName>uartcmd.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\User\app\uartcmd\uartcmd.c</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
           <GroupName>User\bsp\hal</GroupName>
           <Files>
             <File>
@@ -1585,6 +1595,11 @@
               <FileName>app_webhook.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\User\bsp\platform\app\app_webhook.c</FilePath>
+            </File>
+            <File>
+              <FileName>app_uartcmd.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\User\bsp\platform\app\app_uartcmd.c</FilePath>
             </File>
           </Files>
         </Group>
