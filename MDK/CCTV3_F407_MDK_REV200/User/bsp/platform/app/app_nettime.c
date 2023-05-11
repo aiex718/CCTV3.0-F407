@@ -1,4 +1,4 @@
-#include "app_nettime.h"
+#include "bsp/platform/app/app_nettime.h"
 
 NetTime_t App_NetTime_Inst = {
 	.NetTime_Enable = true,

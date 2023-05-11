@@ -42,7 +42,7 @@ void Webhook_ConfigExport(const Webhook_t *self,Webhook_ConfigFile_t *config)
 
 bool Webhook_IsConfigValid(Webhook_t *self,const Webhook_ConfigFile_t *config)
 {
-    if(config==NULL)
+    if(config==NULL || config->Webhook_Enable>1)
         return false;
     
     if(config->Webhook_Enable == false)

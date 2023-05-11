@@ -5,5 +5,6 @@
 #include "bsp/platform/app/app_nettime.h"
 #include "bsp/platform/app/app_filesys.h"
 #include "bsp/platform/app/app_webhook.h"
+#include "bsp/platform/app/app_uartcmd.h"
 
 #endif
