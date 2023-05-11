@@ -28,6 +28,7 @@ typedef struct
                                const char *uri, int iNumParams, char **pcParam, char **pcValue);
 } Webapi_Cmd_FuncPtr_Map_t;
 
+//Webapi handlers decl
 static WebApi_Result_t Webapi_Uptime_Handler(struct fs_file *file, const char *uri, int iNumParams, char **pcParam, char **pcValue);
 static WebApi_Result_t Webapi_IP_Handler(struct fs_file *file, const char *uri, int iNumParams, char **pcParam, char **pcValue);
 static WebApi_Result_t Webapi_DHCP_Handler(struct fs_file *file, const char *uri, int iNumParams, char **pcParam, char **pcValue);
@@ -36,6 +37,7 @@ static WebApi_Result_t Webapi_Current_Handler(struct fs_file *file, const char *
 static WebApi_Result_t Webapi_Light_Handler(struct fs_file *file, const char *uri, int iNumParams, char **pcParam, char **pcValue);
 static WebApi_Result_t Webapi_Camera_Handler(struct fs_file *file, const char *uri, int iNumParams, char **pcParam, char **pcValue);
 static WebApi_Result_t Webapi_Reboot_Handler(struct fs_file *file, const char *uri, int iNumParams, char **pcParam, char **pcValue);
+static WebApi_Result_t Webapi_Webhook_Handler(struct fs_file *file, const char *uri, int iNumParams, char **pcParam, char **pcValue);
 
 static const Webapi_Cmd_FuncPtr_Map_t Webapi_cmds[] =
 {
@@ -47,6 +49,7 @@ static const Webapi_Cmd_FuncPtr_Map_t Webapi_cmds[] =
     {"light", Webapi_Light_Handler},
     {"camera", Webapi_Camera_Handler},
     {"reboot", Webapi_Reboot_Handler},
+    {"webhook", Webapi_Webhook_Handler},
 };
 
 const char ACT_STR[] = "act", CMD_STR[] = "cmd", GET_STR[] = "get", SET_STR[] = "set";
@@ -56,6 +59,8 @@ const char VALUE_STR[] = "value", TRUE_STR[] = "true", FALSE_STR[] = "false";
 const char RESULT_TRUE_JSON[] = "{\"result\":\"true\"}";
 const char RESULT_FALSE_JSON[] = "{\"result\":\"false\"}";
 
+
+//Default responses
 __STATIC_INLINE WebApi_Result_t Default_Success_Response(struct fs_file *file)
 {
     HttpBuilder_BuildResponse(file, HTTP_RESPONSE_200_OK);
@@ -76,6 +81,7 @@ __STATIC_INLINE WebApi_Result_t Act_Fail_Response(struct fs_file *file)
     HttpBuilder_Insert(file, BAD_ACT_MESSAGE);
     return WEBAPI_ERR_BAD_ACT;
 }
+
 
 static char *ReadParam(const char *name, int iNumParams, char **pcParam, char **pcValue)
 {
@@ -424,14 +430,13 @@ static WebApi_Result_t Webapi_Camera_Handler(struct fs_file *file, const char *u
     return Act_Fail_Response(file);
 }
 
-static void __Reboot_Callback(void* arg){ SysCtrl_Reset(); }
 static WebApi_Result_t Webapi_Reboot_Handler(struct fs_file *file, const char *uri, int iNumParams, char **pcParam, char **pcValue)
 {
     char *pw = ReadParam("pw", iNumParams, pcParam, pcValue);
     if (BSP_STRCMP((const char *)pw, REBOOT_PW) == 0)
     {
         DBG_INFO("System reboot in %d second...\n",WEBAPI_REBOOT_DELAY);
-        sys_timeout(WEBAPI_REBOOT_DELAY,__Reboot_Callback,NULL);
+        SysCtrl_ResetAfter(WEBAPI_REBOOT_DELAY);
         return Default_Success_Response(file);
     }
     else
@@ -439,6 +444,75 @@ static WebApi_Result_t Webapi_Reboot_Handler(struct fs_file *file, const char *u
         HttpBuilder_BuildResponse(file, HTTP_RESPONSE_401_UNAUTHORIZED);
         return WEBAPI_ERR_FAILED;
     }
+}
+
+static WebApi_Result_t Webapi_Webhook_Handler(struct fs_file *file, const char *uri, int iNumParams, char **pcParam, char **pcValue)
+{
+    char *act = ReadParam(ACT_STR, iNumParams, pcParam, pcValue);
+    void *obj = App_Webhook_Triggered;
+    const Webhook_ConfigFile_t *config = (Webhook_ConfigFile_t *)
+        Config_Storage_Read(Dev_ConfigStorage, obj, NULL);
+
+    if (config == NULL)
+    {
+        HttpBuilder_BuildResponse(file, HTTP_RESPONSE_503_UNAVAILABLE);
+        return WEBAPI_ERR_FAILED;
+    }
+    else if (BSP_STRCMP((const char *)act, GET_STR) == 0)
+    {
+        HttpBuilder_BuildResponse(file, HTTP_RESPONSE_200_OK);
+        HttpBuilder_printf(file, "{\"enable\":\"%s\",", config->Webhook_Enable? TRUE_STR : FALSE_STR);
+        HttpBuilder_printf(file, "\"retrys\":%d,", config->Webhook_Retrys);
+        HttpBuilder_printf(file, "\"retry_delay\":%d,", config->Webhook_Retry_Delay);
+        HttpBuilder_printf(file, "\"port\":%d,", config->Webhook_Port);
+        HttpBuilder_printf(file, "\"host\":\"%s\",", config->Webhook_Host);
+        HttpBuilder_printf(file, "\"uri\":\"%s\"}", config->Webhook_Uri);
+        return WEBAPI_OK;
+    }
+    else if (BSP_STRCMP((const char *)act, SET_STR) == 0)
+    {
+        Webhook_ConfigFile_t new_config = *config; //copy original config
+        char *enable = ReadParam("enable", iNumParams, pcParam, pcValue);
+        char *retrys = ReadParam("retrys", iNumParams, pcParam, pcValue);
+        char *retry_delay = ReadParam("retry_delay", iNumParams, pcParam, pcValue);
+        char *port = ReadParam("port", iNumParams, pcParam, pcValue);
+        char *host = ReadParam("host", iNumParams, pcParam, pcValue);
+        char *uri = ReadParam("uri", iNumParams, pcParam, pcValue);
+
+        if (BSP_STRCMP(enable, TRUE_STR) == 0)
+            new_config.Webhook_Enable = true;
+        else if (BSP_STRCMP(enable, FALSE_STR) == 0)
+            new_config.Webhook_Enable = false;
+
+        if(retrys)
+            new_config.Webhook_Retrys = atoi(retrys);
+        if(retry_delay)
+            new_config.Webhook_Retry_Delay = atoi(retry_delay);
+        if(port)
+            new_config.Webhook_Port = atoi(port);
+
+        if (host && BSP_STRLEN(host))
+        {
+            BSP_STRNCPY(new_config.Webhook_Host, host,
+                        sizeof(new_config.Webhook_Host));
+            BSP_ARR_STREND(new_config.Webhook_Host);
+        }
+        if (uri && BSP_STRLEN(uri))
+        {
+            BSP_STRNCPY(new_config.Webhook_Uri, uri,
+                        sizeof(new_config.Webhook_Uri));
+            BSP_ARR_STREND(new_config.Webhook_Uri);
+        }
+        
+        if (Webhook_IsConfigValid(obj, &new_config) &&
+            Config_Storage_Write(Dev_ConfigStorage, obj, &new_config) &&
+            Config_Storage_Commit(Dev_ConfigStorage))
+            return Default_Success_Response(file);
+        else
+            return Default_Fail_Response(file);
+    }
+
+    return Act_Fail_Response(file);
 }
 #endif
 // extern function definition, called by lwip
