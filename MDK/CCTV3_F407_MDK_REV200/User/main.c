@@ -60,6 +60,10 @@ int main(void)
 	ETH_BSP_Config();	
 	LwIP_Init();
 	
+	//first send should fail because dhcp not success yet
+	//should success in retry 
+	Webhook_Send(Test_Webhook);
+
 	while(1)
 	{
 		uint8_t rxcmd[DEBUG_SERIAL_RX_BUFFER_SIZE]={0};

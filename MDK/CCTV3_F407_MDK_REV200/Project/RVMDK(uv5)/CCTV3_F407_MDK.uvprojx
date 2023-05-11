@@ -908,6 +908,16 @@
           </Files>
         </Group>
         <Group>
+          <GroupName>Libraris\lwip\src\apps\http</GroupName>
+          <Files>
+            <File>
+              <FileName>http_client.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Libraries\lwip\src\apps\http\http_client.c</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
           <GroupName>User\bsp\hal</GroupName>
           <Files>
             <File>
@@ -959,6 +969,16 @@
               <FileName>platform_its.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\User\bsp\platform\platform_its.c</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>User\bsp\platform\app</GroupName>
+          <Files>
+            <File>
+              <FileName>app_webhook.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\User\bsp\platform\app\app_webhook.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -1069,6 +1089,16 @@
               <FileName>ethernetif.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\User\bsp\eth\lwip_port\Standalone\ethernetif.c</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>User\app\webhook</GroupName>
+          <Files>
+            <File>
+              <FileName>webhook.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\User\app\webhook\webhook.c</FilePath>
             </File>
           </Files>
         </Group>
