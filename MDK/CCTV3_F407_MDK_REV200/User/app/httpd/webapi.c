@@ -32,11 +32,11 @@ const char VALUE_STR[]="value",TRUE_STR[]="true",FALSE_STR[]="false";
 const char RESULT_TRUE_JSON[]="{\"result\":\"true\"}";
 const char RESULT_FALSE_JSON[]="{\"result\":\"false\"}";
 
-static char* ReadParam(const char *name,int iNumParams,char **pcParam, char **pcValue)
+__STATIC_INLINE char* ReadParam(const char *name,int iNumParams,char **pcParam, char **pcValue)
 {
     while (--iNumParams>=0)
     {
-        if (strcmp(pcParam[iNumParams] , name)==0)   
+        if (BSP_STRCMP(pcParam[iNumParams] , name)==0)   
             return pcValue[iNumParams];     
     }
     return NULL;
