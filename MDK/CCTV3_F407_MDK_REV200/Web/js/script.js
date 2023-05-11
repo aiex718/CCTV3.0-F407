@@ -1,4 +1,5 @@
 
+
 $( "#ip_get_btn" ).bind("click", function(){IP_Get(true);});
 
 $( "#ip_set_btn" ).bind("click", function() {
@@ -166,7 +167,6 @@ function DHCP_Set(val)
 	});
 }
 
-
 var UpTime_UpdateTimeout;
 function UpdateUptimeLoop()
 {
@@ -175,7 +175,7 @@ function UpdateUptimeLoop()
 		var UpTime_Dom = $('#uptime')[0];
 		var NowTime_Dom = $('#nowtime')[0];
 		
-		UpTime_Dom.innerText=convertMS(response.data.uptime);
+		UpTime_Dom.innerText=convertTick(response.data.uptime);
 		NowTime_Dom.innerText=convertDate(response.data.nowtime);
 		setTimeout(UpdateUptimeLoop,1000);
 	})
@@ -215,7 +215,7 @@ function ValidateIPaddress(ipaddress)
 	return (false)
 }
 
-function convertMS(ms) {
+function convertTick(ms) {
     var d, h, m, s;
     s = Math.floor(ms / 1000);
     m = Math.floor(s / 60);
@@ -229,14 +229,15 @@ function convertMS(ms) {
 }
 
 function convertDate(unix_timestamp) {
-    var date = new Date(unix_timestamp);
+    var date = new Date(unix_timestamp*1000);
+	//date.setHours(date.getHours()-((new Date()).getTimezoneOffset()/60));
 	var y, M, d, h , m , s ;
 	
     y=date.getFullYear();
-	M=date.getMonth()+1;
+	M='0'+(date.getMonth()+1);
 	d='0'+date.getDate();
 	
-	h='0'+date.getHours()-(new Date()).getTimezoneOffset()/60;
+	h='0'+date.getHours();
 	m='0'+date.getMinutes();
 	s='0'+date.getSeconds();
 	
@@ -244,6 +245,8 @@ function convertDate(unix_timestamp) {
 }
 
 $(function() {
-	UpTime_UpdateTimer = setInterval(UpdateUptimeLoop,800);
+	UpdateUptimeLoop();
+	var mjpeg_img = $("#mjpeg_img")[0];
+	mjpeg_img.src = "http://"+window.location.host+":8080/stream";
 });
 

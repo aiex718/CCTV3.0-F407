@@ -340,7 +340,7 @@
               <MiscControls></MiscControls>
               <Define>USE_STDPERIPH_DRIVER,STM32F40_41xxx,</Define>
               <Undefine></Undefine>
-              <IncludePath>..\..\Libraries\CMSIS\Include;..\..\Libraries\CMSIS\Device\ST\STM32F4xx\Include;..\..\Libraries\STM32F4xx_StdPeriph_Driver\inc;..\..\Libraries\STM32_USB_Device_Library\Class\msc\inc;..\..\Libraries\STM32_USB_Device_Library\Core\inc;..\..\Libraries\STM32_USB_OTG_Driver\inc;..\..\Libraries\fat_fs\source;..\..\Libraries\lwip\src\include;..\..\User\app\filesys\fatfs_port;..\..\User\bsp\eth\lwip_port;..\..\User\bsp\usb;..\..\User</IncludePath>
+              <IncludePath>..\..\Libraries\CMSIS\Include;..\..\Libraries\CMSIS\Device\ST\STM32F4xx\Include;..\..\Libraries\STM32F4xx_StdPeriph_Driver\inc;..\..\Libraries\STM32_USB_Device_Library\Class\msc\inc;..\..\Libraries\STM32_USB_Device_Library\Core\inc;..\..\Libraries\STM32_USB_OTG_Driver\inc;..\..\Libraries\fat_fs\source;..\..\Libraries\lwip\src\include;..\..\User\app\filesys\fatfs_port;..\..\User\bsp\eth\lwip_port;..\..\User\app\httpd\inc;..\..\User\bsp\usb;..\..\User</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>

@@ -83,14 +83,14 @@
 						<div class="row">
 							<div class="col-sm-12 col-md-6 col-lg-12 col-xl-6 mb-4">
 								<div class="media tm-bg-transparent-black tm-border-white">
-									<i class="fas fa-regular fa-clock mr-4 tm-icon-circled tm-icon-media"></i>	
+									<i class="fas fa-solid fa-bolt mr-4 tm-icon-circled tm-icon-media"></i>	
 									<div class="media-body">
 										<h3>Current Sensor</h3>
 										<input id="peak_threshold_text" class="mr-3 mb-3 ip-text" autofocus placeholder="Peak Threshold"></input>
 										<input id="peak_influence_text" class="mr-3 mb-3 ip-text" autofocus placeholder="Peak Influence"></input>
 										<input id="disconnect_thres_text" class="mr-3 mb-3 ip-text" autofocus placeholder="Disconnect Current"></input>
 										<input id="overload_thres_text" class="mr-3 mb-3 ip-text" autofocus placeholder="Overload Current"></input>
-										<div class="flex-between">
+										<div class="flex-around">
 											<a href="#" class="btn tm-btn tm-font-big " id="current_get_btn">Get</a> 
 											<a href="#" class="btn tm-btn tm-font-big " id="current_set_btn">Set</a> 
 										</div>
@@ -132,9 +132,9 @@
 									<i class="fas fa-regular fa-clock mr-4 tm-icon-circled tm-icon-media"></i>	
 									<div class="media-body">
 										<h3>SNTP</h3>
-										<p> Set empty string to disable SNTP polling.</p>
+										<p> Set empty server to disable SNTP polling.</p>
 										<input id="sntp_text" class="mr-3 mb-3 ip-text" autofocus placeholder="SNTP server address"></input>
-										<div class="flex-between">
+										<div class="flex-around">
 											<a href="#" class="btn tm-btn tm-font-big " id="ip_get_btn">Get</a> 
 											<a href="#" class="btn tm-btn tm-font-big " id="ip_set_btn">Set</a> 
 										</div>
@@ -147,7 +147,7 @@
 									<div class="media-body">
 										<h3>Reboot</h3>
 										<div class="flex-between">
-											<p class="d-inline-block mb-0" >Tick</p>
+											<p class="d-inline-block mb-0" >Now</p>
 											<p id="nowtime" class="d-inline-block">0</p>
 										</div>
 										<div class="flex-between">
@@ -179,14 +179,13 @@
 					<!-- section 2 -->
 					<section id="tm-section-2" class="tm-section">	
 						<div class="row mb-4 flex-around">
-							<header class="col-xl-12"><h2 class="tm-text-shadow">Camera Setting</h2></header>		
-							<div><a>ex</a></div>
+							<header class="col-xl-12"><h2 class="tm-text-shadow">Camera Setting</h2></header>
 						</div>					
 						<div class="row">
 							<div class="col-sm-12 col-md-6 col-lg-12 col-xl-6  mb-4">
 								<div class="media tm-bg-transparent-black tm-border-white">
 									<div class="media-body">
-										<img id="image" class="center-image mb-3 w100" src="http://192.168.1.139:8080/stream">
+										<img id="mjpeg_img" class="center-image mb-3">
 										<input id="qs_text" class="mr-3 mb-3 ip-text" autofocus placeholder="Quality (12)"></input>
 										<input id="brightness_text" class="mr-3 mb-3 ip-text" autofocus placeholder="Brightness (1~5)"></input>
 										<input id="contrast_text" class="mr-3 mb-3 ip-text" autofocus placeholder="Contrast (1~5)"></input>
