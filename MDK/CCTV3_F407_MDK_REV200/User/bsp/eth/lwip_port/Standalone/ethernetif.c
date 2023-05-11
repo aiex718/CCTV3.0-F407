@@ -77,7 +77,6 @@ static void Ethernetif_SetFallbackIpAddr(Ethernetif_t *self);
 static void Ethernetif_CheckIPChanged(Ethernetif_t *self);
 static void Ethernetif_CheckDHCPChanged(Ethernetif_t *self);
 static void Ethernetif_CheckLink(Ethernetif_t *self);
-static void print_netif_addr(struct netif *netif);
 
 /**
  * In this function, the hardware should be initialized.
@@ -525,7 +524,7 @@ static void Ethernetif_CheckIPChanged(Ethernetif_t *self)
         self->_gw_prev.addr = _netif->gw.addr;
 
         DBG_INFO("Netif 0x%p IP address changed\n", _netif);
-        print_netif_addr(_netif);
+        Ethernetif_PrintIP(self);
     }
 }
 
@@ -567,11 +566,11 @@ static void Ethernetif_CheckLink(Ethernetif_t *self)
     }
 }
 
-static void print_netif_addr(struct netif *netif)
+static void Ethernetif_PrintIP(Ethernetif_t *self)
 {
-    DBG_INFO("IP  : %s\n", ip4addr_ntoa(&(netif->ip_addr)));
-    DBG_INFO("MASK: %s\n", ip4addr_ntoa(&(netif->netmask)));
-    DBG_INFO("GW  : %s\n", ip4addr_ntoa(&(netif->gw)));
+    DBG_INFO("IP  : %s\n", ip4addr_ntoa(&(self->_netif.ip_addr)));
+    DBG_INFO("MASK: %s\n", ip4addr_ntoa(&(self->_netif.netmask)));
+    DBG_INFO("GW  : %s\n", ip4addr_ntoa(&(self->_netif.gw)));
 #if LWIP_DNS
     DBG_INFO("DNS0: %s\n", ip4addr_ntoa((const ip_addr_t *)dns_getserver(0)));
     DBG_INFO("DNS1: %s\n", ip4addr_ntoa((const ip_addr_t *)dns_getserver(1)));
