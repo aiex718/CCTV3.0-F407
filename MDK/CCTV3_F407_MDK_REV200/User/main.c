@@ -107,5 +107,6 @@ int main(void)
 			LwIP_Pkt_Handle();
 		/* handle periodic timers for LwIP */
 		sys_check_timeouts();
+		SysCtrl_Service();
 	}
 }
