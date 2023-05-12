@@ -1,6 +1,7 @@
 #include "bsp/platform/device/dev_current_trig.h"
 
 Device_CurrentTrig_t Dev_CurrentTrig_Inst = {
+    .CurrentTrig_Enable = true,
     .CurrentTrig_Timer = __CONST_CAST_VAR(HAL_Timer_t){
         .TIMx = TIM2,
         .Timer_RCC_Cmd = __CONST_CAST_VAR(HAL_RCC_Cmd_t){
