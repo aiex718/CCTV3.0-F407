@@ -66,7 +66,7 @@
 
 /* MEM_SIZE: the size of the heap memory. If the application will send
 a lot of data that needs to be copied, this should be set high. */
-#define MEM_SIZE                (10*1024)
+#define MEM_SIZE                (20*1024)
 
 /* MEMP_NUM_PBUF: the number of memp struct pbufs. If the application
    sends a lot of data out of ROM (or other static memory), this
@@ -77,23 +77,23 @@ a lot of data that needs to be copied, this should be set high. */
 #define MEMP_NUM_UDP_PCB        4
 /* MEMP_NUM_TCP_PCB: the number of simulatenously active TCP
    connections. */
-#define MEMP_NUM_TCP_PCB        16
+#define MEMP_NUM_TCP_PCB        24
 /* MEMP_NUM_TCP_PCB_LISTEN: the number of listening TCP
    connections. */
-#define MEMP_NUM_TCP_PCB_LISTEN 4
+#define MEMP_NUM_TCP_PCB_LISTEN 6
 /* MEMP_NUM_TCP_SEG: the number of simultaneously queued TCP
    segments. */
-#define MEMP_NUM_TCP_SEG        20
+#define MEMP_NUM_TCP_SEG        36
 /* MEMP_NUM_SYS_TIMEOUT: the number of simulateously active
    timeouts. */
-#define MEMP_NUM_SYS_TIMEOUT    20
+#define MEMP_NUM_SYS_TIMEOUT    24
 
 
 /* ---------- Pbuf options ---------- */
 /* PBUF_POOL_SIZE: the number of buffers in the pbuf pool. */
 //PBUF_POOL mainly for rx
 //since mjpegd rarely use rx, we can reduce the size of Pbuf_Pool
-#define PBUF_POOL_SIZE          8
+#define PBUF_POOL_SIZE          12
 
 /* PBUF_POOL_BUFSIZE: the size of each pbuf in the pbuf pool. */
 #define PBUF_POOL_BUFSIZE       500
@@ -273,6 +273,7 @@ The STM32F4x7 allows computing and verifying the IP, UDP, TCP and ICMP checksums
 #define MJPEGD_ALLOW_STREAM_CORS 1
 #define MJPEGD_SHOWFPS_PERIOD 3//n^2 seconds
 #define MJPEGD_GET_UNIX_TIMESTAMP (u32_t)HAL_RTC_GetTime(Peri_RTC)
+#define MJPEGD_FRAME_MEM_SPACE 16*1024 //16KB
 #define MJPEGD_STREAM_CLIENT_LIMIT 5
 #define MJPEGD_FRAMEPOOL_LEN (MJPEGD_STREAM_CLIENT_LIMIT+1)
 

@@ -64,13 +64,13 @@
 */ 
 
 #if defined   (__CC_ARM) /*!< ARM Compiler */
-__align(4) 
+__align(4) __attribute__((section("ETH_RX_BUF")))
 ETH_DMADESCTypeDef  DMARxDscrTab[ETH_RXBUFNB];/* Ethernet Rx MA Descriptor */
-__align(4) 
+__align(4) __attribute__((section("ETH_TX_BUF")))
 ETH_DMADESCTypeDef  DMATxDscrTab[ETH_TXBUFNB];/* Ethernet Tx DMA Descriptor */
-__align(4) 
+__align(4) __attribute__((section("ETH_RX_BUF")))
 uint8_t Rx_Buff[ETH_RXBUFNB][ETH_RX_BUF_SIZE]; /* Ethernet Receive Buffer */
-__align(4) 
+__align(4) __attribute__((section("ETH_TX_BUF")))
 uint8_t Tx_Buff[ETH_TXBUFNB][ETH_TX_BUF_SIZE]; /* Ethernet Transmit Buffer */
 
 #elif defined ( __ICCARM__ ) /*!< IAR Compiler */
@@ -84,10 +84,10 @@ uint8_t Rx_Buff[ETH_RXBUFNB][ETH_RX_BUF_SIZE]; /* Ethernet Receive Buffer */
 uint8_t Tx_Buff[ETH_TXBUFNB][ETH_TX_BUF_SIZE]; /* Ethernet Transmit Buffer */
 
 #elif defined (__GNUC__) /*!< GNU Compiler */
-ETH_DMADESCTypeDef  DMARxDscrTab[ETH_RXBUFNB] __attribute__ ((aligned (4))); /* Ethernet Rx DMA Descriptor */
-ETH_DMADESCTypeDef  DMATxDscrTab[ETH_TXBUFNB] __attribute__ ((aligned (4))); /* Ethernet Tx DMA Descriptor */
-uint8_t Rx_Buff[ETH_RXBUFNB][ETH_RX_BUF_SIZE] __attribute__ ((aligned (4))); /* Ethernet Receive Buffer */
-uint8_t Tx_Buff[ETH_TXBUFNB][ETH_TX_BUF_SIZE] __attribute__ ((aligned (4))); /* Ethernet Transmit Buffer */
+__attribute__((section("ETH_RX_BUF"))) ETH_DMADESCTypeDef  DMARxDscrTab[ETH_RXBUFNB] __attribute__ ((aligned (4))); /* Ethernet Rx DMA Descriptor */
+__attribute__((section("ETH_TX_BUF"))) ETH_DMADESCTypeDef  DMATxDscrTab[ETH_TXBUFNB] __attribute__ ((aligned (4))); /* Ethernet Tx DMA Descriptor */
+__attribute__((section("ETH_RX_BUF"))) uint8_t Rx_Buff[ETH_RXBUFNB][ETH_RX_BUF_SIZE] __attribute__ ((aligned (4))); /* Ethernet Receive Buffer */
+__attribute__((section("ETH_TX_BUF"))) uint8_t Tx_Buff[ETH_TXBUFNB][ETH_TX_BUF_SIZE] __attribute__ ((aligned (4))); /* Ethernet Transmit Buffer */
 
 #elif defined  (__TASKING__) /*!< TASKING Compiler */
 __align(4) 

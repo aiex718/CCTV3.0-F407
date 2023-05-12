@@ -12,9 +12,10 @@ LR_IROM1 0x08000000 0x00004000  {    ; load region size_region
     dev_*.o (HW_BUF)
     app_*.o (HW_BUF)
     usbd_msc_bot.o (+ZI +RW)
+    stm32f4x7_eth.o (ETH_RX_BUF)
   }
   RW_ETHRAM 0x2001C000 0x00004000  {  ; 16KB Dedicate ram for ETH buffer
-    stm32f4x7_eth.o (+RW +ZI)
+    stm32f4x7_eth.o (ETH_TX_BUF)
   }
   RW_CCMRAM 0x10000000 0x00010000  { ; 64KB CCMRAM for stack and some object instance
     ;ST Library

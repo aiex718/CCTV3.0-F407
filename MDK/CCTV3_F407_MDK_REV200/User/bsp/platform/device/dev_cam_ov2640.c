@@ -278,7 +278,7 @@ Device_CamOV2640_t Dev_Cam_OV2640_Inst  = {
 	},//PWDN_Pin
 	.CamOV2640_Config = __VAR_CAST_VAR(Device_CamOV2640_ConfigFile_t){
 		.CamOV2640_JpegFormat = JPEG_320x240,
-		.CamOV2640_Qs = 0x0C,
+		.CamOV2640_Qs = 0x0C-2,
 		.CamOV2640_Brightness = BRIGHTNESS_NORMAL,
 		.CamOV2640_Contrast = CONTRAST_NORMAL,
 		.CamOV2640_LightMode = LIGHTMODE_OFFICE,
