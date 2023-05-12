@@ -122,7 +122,7 @@ void Mjpegd_ConfigExport(const Mjpegd_t *mjpegd,Mjpegd_ConfigFile_t *config)
 
 bool Mjpegd_IsConfigValid(Mjpegd_t *mjpegd,const Mjpegd_ConfigFile_t *config)
 {
-    if(config==NULL || config->Mjpegd_Port == 0 || config->Mjpegd_Port > 65535)
+    if(config==NULL || config->Mjpegd_Port == 0 || config->Mjpegd_Port == (uint16_t)-1)
         return false;
 
     return true;
