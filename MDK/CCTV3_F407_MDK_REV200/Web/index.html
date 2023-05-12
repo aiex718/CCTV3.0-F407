@@ -48,7 +48,7 @@
 						<ul>
 							<li>
 								<a href="#setting" id="tmNavLink1" class="scrolly active" data-bg-img="constructive_bg_01.jpg" data-page="#tm-section-1">
-									<i class="fas  fa-gears tm-nav-fa-icon"></i>
+									<i class="fas fa-gears tm-nav-fa-icon"></i>
 									<span>Setting</span>
 								</a>
 							</li>
@@ -56,6 +56,12 @@
 								<a href="#camera" id="tmNavLink2" class="scrolly" data-bg-img="constructive_bg_02.jpg" data-page="#tm-section-2" data-page-type="carousel">
 									<i class="fas fa-solid fa-camera tm-nav-fa-icon"></i>
 									<span>Camera</span>
+								</a>
+							</li>	
+							<li>
+								<a href="#reboot" id="tmNavLink3" class="scrolly" data-bg-img="constructive_bg_03.jpg" data-page="#tm-section-3" data-page-type="carousel">
+									<i class="fas fa-solid fa-rotate-left tm-nav-fa-icon"></i>
+									<span>Reboot</span>
 								</a>
 							</li>			
 						</ul>
@@ -85,14 +91,33 @@
 								<div class="media tm-bg-transparent-black tm-border-white">
 									<i class="fas fa-solid fa-bolt mr-4 tm-icon-circled tm-icon-media"></i>	
 									<div class="media-body">
-										<h3>Current Sensor</h3>
-										<input id="peak_threshold_text" class="mr-3 mb-3 ip-text" autofocus placeholder="Peak Threshold"></input>
-										<input id="peak_influence_text" class="mr-3 mb-3 ip-text" autofocus placeholder="Peak Influence"></input>
-										<input id="disconnect_thres_text" class="mr-3 mb-3 ip-text" autofocus placeholder="Disconnect Current"></input>
-										<input id="overload_thres_text" class="mr-3 mb-3 ip-text" autofocus placeholder="Overload Current"></input>
+										<h3 id="current_text">Current Sensor</h3>
+										<input id="peak_threshold_text" class="mr-3 mb-3 input-text" autofocus placeholder="Peak Threshold"></input>
+										<input id="peak_influence_text" class="mr-3 mb-3 input-text" autofocus placeholder="Peak Influence"></input>
+										<input id="disconnect_thres_text" class="mr-3 mb-3 input-text" autofocus placeholder="Disconnect Current"></input>
+										<input id="overload_thres_text" class="mr-3 mb-3 input-text" autofocus placeholder="Overload Current"></input>
 										<div class="flex-around">
-											<a href="#" class="btn tm-btn tm-font-big " id="current_get_btn">Get</a> 
-											<a href="#" class="btn tm-btn tm-font-big " id="current_set_btn">Set</a> 
+											<a class="btn tm-btn tm-font-big " id="current_get_btn">Get</a> 
+											<a class="btn tm-btn tm-font-big " id="current_on_btn">On</a> 
+											<a class="btn tm-btn tm-font-big " id="current_off_btn">Off</a> 
+										</div>
+									</div>
+								</div>
+							</div>	
+							<div class="col-sm-12 col-md-6 col-lg-12 col-xl-6 mb-4">
+								<div class="media tm-bg-transparent-black tm-border-white">
+									<i class="fas fa-regular fa-bell mr-4 tm-icon-circled tm-icon-media"></i>	
+									<div class="media-body">
+										<h3>WebHook</h3>
+										<input id="webhook_host_text" class="mr-3 mb-3 input-text" autofocus placeholder="Host"></input>
+										<input id="webhook_uri_text" class="mr-3 mb-3 input-text" autofocus placeholder="Uri"></input>
+										<input id="webhook_port_text" class="mr-3 mb-3 input-text" autofocus placeholder="Port"></input>
+										<input id="webhook_retry_text" class="mr-3 mb-3 input-text" autofocus placeholder="Retry"></input>
+										<input id="webhook_delay_text" class="mr-3 mb-3 input-text" autofocus placeholder="Delay"></input>
+										<div class="flex-around">
+											<a class="btn tm-btn tm-font-big " id="webhook_get_btn">Get</a> 
+											<a class="btn tm-btn tm-font-big " id="webhook_on_btn">On</a> 
+											<a class="btn tm-btn tm-font-big " id="webhook_off_btn">Off</a> 
 										</div>
 									</div>
 								</div>
@@ -102,14 +127,14 @@
 									<i class="fas fa-network-wired mr-4 tm-icon-circled tm-icon-media"></i>	
 									<div class="media-body">
 										<h3>IP Address</h3>
-										<input id="ipaddr_text" class="mr-3 mb-3 ip-text" autofocus placeholder="IP address"></input>
-										<input id="netmask_text" class="mr-3 mb-3 ip-text" autofocus placeholder="Netmask"></input>
-										<input id="gateway_text" class="mr-3 mb-3 ip-text" autofocus placeholder="Gateway"></input>
-										<input id="dns0_text" class="mr-3 mb-3 ip-text" autofocus placeholder="DNS0"></input>
-										<input id="dns1_text" class="mr-3 mb-3 ip-text" autofocus placeholder="DNS1"></input>
+										<input id="ipaddr_text" class="mr-3 mb-3 input-text" autofocus placeholder="IP address"></input>
+										<input id="netmask_text" class="mr-3 mb-3 input-text" autofocus placeholder="Netmask"></input>
+										<input id="gateway_text" class="mr-3 mb-3 input-text" autofocus placeholder="Gateway"></input>
+										<input id="dns0_text" class="mr-3 mb-3 input-text" autofocus placeholder="DNS0"></input>
+										<input id="dns1_text" class="mr-3 mb-3 input-text" autofocus placeholder="DNS1"></input>
 										<div class="flex-around">
-											<a href="#" class="btn tm-btn tm-font-big " id="ip_get_btn">Get</a> 
-											<a href="#" class="btn tm-btn tm-font-big " id="ip_set_btn">Set</a> 
+											<a class="btn tm-btn tm-font-big " id="ip_get_btn">Get</a> 
+											<a class="btn tm-btn tm-font-big " id="ip_set_btn">Set</a> 
 										</div>
 									</div>
 								</div>
@@ -121,8 +146,9 @@
 										<h3 id = "DHCP_text" >DHCP</h3>
 										<p> Enable DHPC will override IP configure.</p>	
 										<div class="flex-around">
-											<a href="#" class="btn tm-btn tm-font-big " id="dhcp_on_btn">On</a> 
-											<a href="#" class="btn tm-btn tm-font-big " id="dhcp_off_btn">Off</a> 
+											<a class="btn tm-btn tm-font-big " id="dhcp_get_btn">Get</a> 
+											<a class="btn tm-btn tm-font-big " id="dhcp_on_btn">On</a> 
+											<a class="btn tm-btn tm-font-big " id="dhcp_off_btn">Off</a> 
 										</div>										
 									</div>
 								</div>
@@ -132,47 +158,16 @@
 									<i class="fas fa-regular fa-clock mr-4 tm-icon-circled tm-icon-media"></i>	
 									<div class="media-body">
 										<h3>SNTP</h3>
-										<p> Set empty server to disable SNTP polling.</p>
-										<input id="sntp_text" class="mr-3 mb-3 ip-text" autofocus placeholder="SNTP server address"></input>
+										<p> SNTP server poll time to on board RTC.</p>
+										<input id="sntp_text" class="mr-3 mb-3 input-text" autofocus placeholder="SNTP server address"></input>
 										<div class="flex-around">
-											<a href="#" class="btn tm-btn tm-font-big " id="ip_get_btn">Get</a> 
-											<a href="#" class="btn tm-btn tm-font-big " id="ip_set_btn">Set</a> 
+											<a class="btn tm-btn tm-font-big " id="sntp_get_btn">Get</a> 
+											<a class="btn tm-btn tm-font-big " id="sntp_on_btn">On</a> 
+											<a class="btn tm-btn tm-font-big " id="sntp_off_btn">Off</a> 
 										</div>
-									</div>
-								</div>
-							</div>	
-							<div class="col-sm-12 col-md-6 col-lg-12 col-xl-6 mb-4">
-								<div class="media tm-bg-transparent-black tm-border-white">
-									<i class="fas fa-power-off mr-4 tm-icon-circled tm-icon-media"></i>
-									<div class="media-body">
-										<h3>Reboot</h3>
-										<div class="flex-between">
-											<p class="d-inline-block mb-0" >Now</p>
-											<p id="nowtime" class="d-inline-block">0</p>
-										</div>
-										<div class="flex-between">
-											<p class="d-inline-block" >Up time</p>
-											<p id="uptime" class="d-inline-block">0</p>
-										</div>
-										<div class="flex-around"> 
-											<a href="#" class="btn tm-btn tm-font-big " id="reboot_btn">Set</a> 
-										</div>									
 									</div>
 								</div>
 							</div>
-							
-							<!-- <div class="col-sm-12 col-md-6 col-lg-12 col-xl-6 mb-4">
-								<div class="media tm-bg-transparent-black tm-border-white">
-									<i class="fas fa-floppy-disk mr-4 tm-icon-circled tm-icon-media"></i>	
-									<div class="media-body">
-										<h3 id = "format_text" >Format Disk</h3>
-										<p> Warning, format disk will permanently delete all files on disk.</p>	
-										<div class="flex-around">
-											<a href="#" class="btn tm-btn tm-font-big " id="format_btn">Set</a> 
-										</div>										
-									</div>
-								</div>
-							</div>							 -->
 						</div>					
 					</section>
 					
@@ -187,23 +182,23 @@
 									<div class="media-body">
 										<h3 class="text-center">Live Preview</h3>
 										<img id="mjpeg_img" class="center-image mb-3">
-										<input id="qs_text" class="mr-3 mb-3 ip-text" autofocus placeholder="Quality (12)"></input>
-										<input id="brightness_text" class="mr-3 mb-3 ip-text" autofocus placeholder="Brightness (1~5)"></input>
-										<input id="contrast_text" class="mr-3 mb-3 ip-text" autofocus placeholder="Contrast (1~5)"></input>
+										<input id="qs_text" class="mr-3 mb-3 input-text" autofocus placeholder="Quality (12)"></input>
+										<input id="brightness_text" class="mr-3 mb-3 input-text" autofocus placeholder="Brightness (1~5)"></input>
+										<input id="contrast_text" class="mr-3 mb-3 input-text" autofocus placeholder="Contrast (1~5)"></input>
 										<div class="flex-around">
 											<div> 
-												<input type="checkbox" class="mr-2 mb-4 checkbox"/>
+												<input id="flip_checkbox" type="checkbox" class="mr-2 mb-4 checkbox"/>
 												<label class="checkbox-text">Flip</label>
 											</div>
 											<div>
-												<input type="checkbox" class="mr-2 mb-4 checkbox"/>
+												<input id="mirror_checkbox" type="checkbox" class="mr-2 mb-4 checkbox"/>
 												<label class="checkbox-text">Mirror</label>
 											</div>
 										</div>
 										<div class="flex-around">
-											<a href="#" class="btn tm-btn tm-font-big " id="camera_get_btn">Get</a> 
-											<a href="#" class="btn tm-btn tm-font-big " id="camera_set_btn">Set</a> 
-											<a href="#" class="btn tm-btn tm-font-big " id="camera_fps_btn">FPS</a> 
+											<a class="btn tm-btn tm-font-big " id="camera_get_btn">Get</a> 
+											<a class="btn tm-btn tm-font-big " id="camera_set_btn">Set</a> 
+											<a class="btn tm-btn tm-font-big " id="camera_fps_btn">FPS</a> 
 										</div>										
 									</div>
 								</div>
@@ -213,16 +208,55 @@
 									<i class="fas fa-regular fa-lightbulb mr-4 tm-icon-circled tm-icon-media"></i>	
 									<div class="media-body">
 										<h3 class="text-center">Lighting</h3>
-										<input id="light_top_text" class="mr-3 mb-3 ip-text" autofocus placeholder="Top (0~100)"></input>
-										<input id="light_bottom_text" class="mr-3 mb-3 ip-text" autofocus placeholder="Bottom (0~100)"></input>
+										<input id="light_top_text" class="mr-3 mb-3 input-text" autofocus placeholder="Top (0~50)"></input>
+										<input id="light_bottom_text" class="mr-3 mb-3 input-text" autofocus placeholder="Bottom (0~50)"></input>
 										<div class="flex-around">
-											<a href="#" class="btn tm-btn tm-font-big " id="lignt_get_btn">Get</a> 
-											<a href="#" class="btn tm-btn tm-font-big " id="lignt_set_btn">Set</a> 
+											<a class="btn tm-btn tm-font-big " id="light_get_btn">Get</a> 
+											<a class="btn tm-btn tm-font-big " id="light_set_btn">Set</a> 
 										</div>
 									</div>
 								</div>
 							</div>			
 						</div>					
+					</section>
+
+					<section id="tm-section-3" class="tm-section">	
+						<div class="row mb-4">
+							<header class="col-xl-12"><h2 class="tm-text-shadow">Reset & Reboot</h2></header>
+						</div>		
+						<div class="row">
+							<div class="col-sm-12 col-md-6 col-lg-12 col-xl-6 mb-4">
+								<div class="media tm-bg-transparent-black tm-border-white">
+									<i class="fas fa-power-off mr-4 tm-icon-circled tm-icon-media"></i>
+									<div id="reboot_block" class="media-body nowrap">
+										<h3>Reboot</h3>
+										<div class="flex-between">
+											<p class="d-inline-block mb-1 mr-2" >Now</p>
+											<p id="nowtime" class="d-inline-block">0</p>
+										</div>
+										<div class="flex-between">
+											<p class="d-inline-block mr-2" >Up time</p>
+											<p id="uptime" class="d-inline-block">0</p>
+										</div>
+										<div class="flex-around"> 
+											<a class="btn tm-btn tm-font-big " id="reboot_btn">Set</a> 
+										</div>									
+									</div>
+								</div>
+							</div>				
+							<div class="col-sm-12 col-md-6 col-lg-12 col-xl-6 mb-4">
+								<div class="media tm-bg-transparent-black tm-border-white">
+									<i class="fas fa-power-off mr-4 tm-icon-circled tm-icon-media"></i>
+									<div class="media-body nowrap">
+										<h3>Reset</h3>
+										<p> Reset to factory settings </p>
+										<div class="flex-around"> 
+											<a class="btn tm-btn tm-font-big " id="reset_btn">Set</a> 
+										</div>									
+									</div>
+								</div>
+							</div>	
+						</div>
 					</section>
 
 				</div>	<!-- .tm-content -->							
@@ -233,7 +267,7 @@
 		</div>
 		<div id="preload-01"></div>
 		<div id="preload-02"></div>
-		<!-- <div id="preload-03"></div> -->
+		<div id="preload-03"></div>
 
 		<script src="js/axios.min.js"></script>		
 		<script src="js/jquery.min.js"></script>
@@ -274,7 +308,9 @@
 
 	    	// Change background image
 	    	var bgImg = currentNavItem.data("bgImg");
-	    	$.backstretch("img/" + bgImg);		    	
+	    	$.backstretch("img/" + bgImg);
+
+			PageChanged();
   		}
 
   		// Setup Nav Toggle Button

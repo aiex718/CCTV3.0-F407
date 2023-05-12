@@ -213,7 +213,7 @@ p:last-child { margin-bottom: 0; }
 
 .tm-section {
     max-width: 100%;
-    width: auto;
+    width: 100%;
     background: transparent;    
 }
 
