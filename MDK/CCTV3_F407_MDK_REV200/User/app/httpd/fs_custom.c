@@ -43,7 +43,7 @@ int fs_open_custom(struct fs_file *file, const char *name)
         
         if(FileSys_Open(App_FileSys ,fil , name, FILEMODE_READ) == false)
         {
-            LWIP_DEBUGF(HTTPD_DEBUG | LWIP_DBG_LEVEL_WARNING,("fs_open_custom fail %s\n",name));
+            LWIP_DEBUGF(HTTPD_DEBUG | LWIP_DBG_TRACE,("fs_open_custom fail %s\n",name));
             mem_free(fil);
             fil=NULL;
             return 0;
