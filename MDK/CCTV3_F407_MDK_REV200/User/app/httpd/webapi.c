@@ -36,8 +36,9 @@ static WebApi_Result_t Webapi_SNTP_Handler(struct fs_file *file, const char *uri
 static WebApi_Result_t Webapi_Current_Handler(struct fs_file *file, const char *uri, int iNumParams, char **pcParam, char **pcValue);
 static WebApi_Result_t Webapi_Light_Handler(struct fs_file *file, const char *uri, int iNumParams, char **pcParam, char **pcValue);
 static WebApi_Result_t Webapi_Camera_Handler(struct fs_file *file, const char *uri, int iNumParams, char **pcParam, char **pcValue);
-static WebApi_Result_t Webapi_Reboot_Handler(struct fs_file *file, const char *uri, int iNumParams, char **pcParam, char **pcValue);
 static WebApi_Result_t Webapi_Webhook_Handler(struct fs_file *file, const char *uri, int iNumParams, char **pcParam, char **pcValue);
+static WebApi_Result_t Webapi_Reboot_Handler(struct fs_file *file, const char *uri, int iNumParams, char **pcParam, char **pcValue);
+static WebApi_Result_t Webapi_Reset_Handler(struct fs_file *file, const char *uri, int iNumParams, char **pcParam, char **pcValue);
 
 static const Webapi_Cmd_FuncPtr_Map_t Webapi_cmds[] =
 {
@@ -48,12 +49,14 @@ static const Webapi_Cmd_FuncPtr_Map_t Webapi_cmds[] =
     {"current", Webapi_Current_Handler},
     {"light", Webapi_Light_Handler},
     {"camera", Webapi_Camera_Handler},
-    {"reboot", Webapi_Reboot_Handler},
     {"webhook", Webapi_Webhook_Handler},
+    {"reboot", Webapi_Reboot_Handler},
+    {"reset", Webapi_Reset_Handler},
+    
 };
 
 const char ACT_STR[] = "act", CMD_STR[] = "cmd", GET_STR[] = "get", SET_STR[] = "set";
-const char REBOOT_PW[] = "uuddlrlrab";
+const char SECRET_PW[] = "uuddlrlrab";
 const char BAD_ACT_MESSAGE[] = "Act not match.";
 const char VALUE_STR[] = "value", TRUE_STR[] = "true", FALSE_STR[] = "false";
 const char RESULT_TRUE_JSON[] = "{\"result\":\"true\"}";
@@ -82,7 +85,7 @@ __STATIC_INLINE WebApi_Result_t Act_Fail_Response(struct fs_file *file)
     return WEBAPI_ERR_BAD_ACT;
 }
 
-
+//Some helper function
 __STATIC_INLINE char* ReadParam(const char *name, int iNumParams, char **pcParam, char **pcValue)
 {
     while (--iNumParams >= 0)
@@ -92,6 +95,40 @@ __STATIC_INLINE char* ReadParam(const char *name, int iNumParams, char **pcParam
     }
     return NULL;
 }
+
+__STATIC_INLINE bool SaveConfig(void* obj, void* config)
+{
+    return  Config_Storage_Write(Dev_ConfigStorage, obj, config) &&
+            Config_Storage_Commit(Dev_ConfigStorage);
+}
+
+__STATIC_INLINE void SetIP_IfValid(char *dst,char *ip, uint16_t dst_len)
+{
+    ip4_addr_t temp;
+    if (ip && ip4addr_aton(ip, &temp))
+    {
+        BSP_STRNCPY(dst, ip, dst_len);
+        dst[dst_len - 1] = '\0';
+    }
+}
+
+__STATIC_INLINE void SetStr_IfValid(char *dst,char *src, uint16_t dst_len)
+{
+    if (src && BSP_STRLEN(src))
+    {
+        BSP_STRNCPY(dst, src,dst_len);
+        dst[dst_len - 1] = '\0';
+    }
+}
+
+__STATIC_INLINE void SetBool_IfValid(bool *dst,char *str)
+{
+    if (BSP_STRCMP(str, TRUE_STR) == 0)
+        *dst = true;
+    else if (BSP_STRCMP(str, FALSE_STR) == 0)
+        *dst = false;
+}
+
 
 #if 1 /* WebApi Handlers */
 static WebApi_Result_t Webapi_Uptime_Handler(struct fs_file *file, const char *uri, int iNumParams, char **pcParam, char **pcValue)
@@ -134,7 +171,6 @@ static WebApi_Result_t Webapi_IP_Handler(struct fs_file *file, const char *uri, 
     {
         Ethernetif_ConfigFile_t new_config = *config; // copy original config
 
-        ip4_addr_t temp;
         char *ip = ReadParam("ip", iNumParams, pcParam, pcValue);
         char *mask = ReadParam("mask", iNumParams, pcParam, pcValue);
         char *gw = ReadParam("gw", iNumParams, pcParam, pcValue);
@@ -142,42 +178,22 @@ static WebApi_Result_t Webapi_IP_Handler(struct fs_file *file, const char *uri, 
         char *dns1 = ReadParam("dns1", iNumParams, pcParam, pcValue);
 
         // write to new config
-        if (ip && ip4addr_aton(ip, &temp))
-        {
-            BSP_STRNCPY(new_config.Netif_Config_IP, ip, sizeof(new_config.Netif_Config_IP));
-            BSP_ARR_STREND(new_config.Netif_Config_IP);
-            new_config.Netif_Config_DHCP_Enable = false;
-        }
-        if (mask && ip4addr_aton(mask, &temp))
-        {
-            BSP_STRNCPY(new_config.Netif_Config_Mask, mask, sizeof(new_config.Netif_Config_Mask));
-            BSP_ARR_STREND(new_config.Netif_Config_Mask);
-        }
-        if (gw && ip4addr_aton(gw, &temp))
-        {
-            BSP_STRNCPY(new_config.Netif_Config_Gateway, gw, sizeof(new_config.Netif_Config_Gateway));
-            BSP_ARR_STREND(new_config.Netif_Config_Gateway);
-        }
+        SetIP_IfValid(new_config.Netif_Config_IP, ip, sizeof(new_config.Netif_Config_IP));
+        SetIP_IfValid(new_config.Netif_Config_Mask, mask, sizeof(new_config.Netif_Config_Mask));
+        SetIP_IfValid(new_config.Netif_Config_Gateway, gw, sizeof(new_config.Netif_Config_Gateway));
 #if LWIP_DNS
-        if (dns0 && ip4addr_aton(dns0, &temp))
-        {
-            BSP_STRNCPY(new_config.Netif_Config_DNS0, dns0, sizeof(new_config.Netif_Config_DNS0));
-            BSP_ARR_STREND(new_config.Netif_Config_DNS0);
-        }
-        if (dns1 && ip4addr_aton(dns1, &temp))
-        {
-            BSP_STRNCPY(new_config.Netif_Config_DNS1, dns1, sizeof(new_config.Netif_Config_DNS1));
-            BSP_ARR_STREND(new_config.Netif_Config_DNS1);
-        }
+        SetIP_IfValid(new_config.Netif_Config_DNS0, dns0, sizeof(new_config.Netif_Config_DNS0));
+        SetIP_IfValid(new_config.Netif_Config_DNS1, dns1, sizeof(new_config.Netif_Config_DNS1));
 #endif
-
         // check new config valid ,then write and commit
-        if (Ethernetif_IsConfigValid(obj, &new_config) &&
-            Config_Storage_Write(Dev_ConfigStorage, obj, &new_config) &&
-            Config_Storage_Commit(Dev_ConfigStorage))
-            return Default_Success_Response(file);
-        else
-            return Default_Fail_Response(file);
+        if(Ethernetif_IsConfigValid(obj, &new_config))
+        {
+            new_config.Netif_Config_DHCP_Enable = false;
+
+            if (SaveConfig(obj, &new_config))
+                return Default_Success_Response(file);
+        }
+        return Default_Fail_Response(file);
     }
 
     return Act_Fail_Response(file);
@@ -206,15 +222,10 @@ static WebApi_Result_t Webapi_DHCP_Handler(struct fs_file *file, const char *uri
         Ethernetif_ConfigFile_t new_config = *config; // copy original config
         char *value = ReadParam(VALUE_STR, iNumParams, pcParam, pcValue);
 
-        if (BSP_STRCMP(value, TRUE_STR) == 0)
-            new_config.Netif_Config_DHCP_Enable = true;
-        else if (BSP_STRCMP(value, FALSE_STR) == 0)
-            new_config.Netif_Config_DHCP_Enable = false;
+        SetBool_IfValid(&new_config.Netif_Config_DHCP_Enable, value);
 
-        if (config->Netif_Config_DHCP_Enable != new_config.Netif_Config_DHCP_Enable &&
-            Ethernetif_IsConfigValid(obj, &new_config) &&
-            Config_Storage_Write(Dev_ConfigStorage, obj, &new_config) &&
-            Config_Storage_Commit(Dev_ConfigStorage))
+        if (Ethernetif_IsConfigValid(obj, &new_config) &&
+                SaveConfig(obj, &new_config))
             return Default_Success_Response(file);
         else
             return Default_Fail_Response(file);
@@ -248,17 +259,8 @@ static WebApi_Result_t Webapi_SNTP_Handler(struct fs_file *file, const char *uri
         char *enable = ReadParam("enable", iNumParams, pcParam, pcValue);
         char *server = ReadParam("server", iNumParams, pcParam, pcValue);
 
-        if (server && BSP_STRLEN(server))
-        {
-            BSP_STRNCPY(new_config.NetTime_SNTP_Server, server,
-                        sizeof(new_config.NetTime_SNTP_Server));
-            BSP_ARR_STREND(new_config.NetTime_SNTP_Server);
-        }
-
-        if(enable && BSP_STRCMP(enable, TRUE_STR) == 0)
-            new_config.NetTime_Enable = true;
-        else if(enable && BSP_STRCMP(enable, FALSE_STR) == 0)
-            new_config.NetTime_Enable = false;
+        SetStr_IfValid(new_config.NetTime_SNTP_Server, server, sizeof(new_config.NetTime_SNTP_Server));
+        SetBool_IfValid(&new_config.NetTime_Enable, enable);
         
         if (NetTime_IsConfigValid(obj, &new_config) &&
             Config_Storage_Write(Dev_ConfigStorage, obj, &new_config) &&
@@ -353,9 +355,8 @@ static WebApi_Result_t Webapi_Light_Handler(struct fs_file *file, const char *ur
         char *value = ReadParam(VALUE_STR, iNumParams, pcParam, pcValue);
 
         if (value)
-        {
             new_config.FlashLight_Brightness = atoi(value);
-        }
+
         if (Device_FlashLight_IsConfigValid(obj, &new_config) &&
             Config_Storage_Write(Dev_ConfigStorage, obj, &new_config) &&
             Config_Storage_Commit(Dev_ConfigStorage))
@@ -404,20 +405,9 @@ static WebApi_Result_t Webapi_Camera_Handler(struct fs_file *file, const char *u
             new_config.CamOV2640_Brightness = atoi(brightness);
         if (contrast)
             new_config.CamOV2640_Contrast = atoi(contrast);
-        if (flip)
-        {
-            if (BSP_STRCMP(flip, TRUE_STR) == 0)
-                new_config.CamOV2640_Flip = true;
-            else if (BSP_STRCMP(flip, FALSE_STR) == 0)
-                new_config.CamOV2640_Flip = false;
-        }
-        if (mirror)
-        {
-            if (BSP_STRCMP(mirror, TRUE_STR) == 0)
-                new_config.CamOV2640_Mirror = true;
-            else if (BSP_STRCMP(mirror, FALSE_STR) == 0)
-                new_config.CamOV2640_Mirror = false;
-        }
+        
+        SetBool_IfValid(&new_config.CamOV2640_Flip,flip);
+        SetBool_IfValid(&new_config.CamOV2640_Mirror,mirror);
 
         if (Device_CamOV2640_IsConfigValid(obj, &new_config) &&
             Config_Storage_Write(Dev_ConfigStorage, obj, &new_config) &&
@@ -428,22 +418,6 @@ static WebApi_Result_t Webapi_Camera_Handler(struct fs_file *file, const char *u
     }
 
     return Act_Fail_Response(file);
-}
-
-static WebApi_Result_t Webapi_Reboot_Handler(struct fs_file *file, const char *uri, int iNumParams, char **pcParam, char **pcValue)
-{
-    char *pw = ReadParam("pw", iNumParams, pcParam, pcValue);
-    if (BSP_STRCMP((const char *)pw, REBOOT_PW) == 0)
-    {
-        DBG_INFO("System reboot in %d second...\n",WEBAPI_REBOOT_DELAY);
-        SysCtrl_ResetAfter(WEBAPI_REBOOT_DELAY);
-        return Default_Success_Response(file);
-    }
-    else
-    {
-        HttpBuilder_BuildResponse(file, HTTP_RESPONSE_401_UNAUTHORIZED);
-        return WEBAPI_ERR_FAILED;
-    }
 }
 
 static WebApi_Result_t Webapi_Webhook_Handler(struct fs_file *file, const char *uri, int iNumParams, char **pcParam, char **pcValue)
@@ -479,11 +453,8 @@ static WebApi_Result_t Webapi_Webhook_Handler(struct fs_file *file, const char *
         char *host = ReadParam("host", iNumParams, pcParam, pcValue);
         char *uri = ReadParam("uri", iNumParams, pcParam, pcValue);
 
-        if (BSP_STRCMP(enable, TRUE_STR) == 0)
-            new_config.Webhook_Enable = true;
-        else if (BSP_STRCMP(enable, FALSE_STR) == 0)
-            new_config.Webhook_Enable = false;
 
+        SetBool_IfValid(&new_config.Webhook_Enable,enable);
         if(retrys)
             new_config.Webhook_Retrys = atoi(retrys);
         if(retry_delay)
@@ -491,19 +462,9 @@ static WebApi_Result_t Webapi_Webhook_Handler(struct fs_file *file, const char *
         if(port)
             new_config.Webhook_Port = atoi(port);
 
-        if (host && BSP_STRLEN(host))
-        {
-            BSP_STRNCPY(new_config.Webhook_Host, host,
-                        sizeof(new_config.Webhook_Host));
-            BSP_ARR_STREND(new_config.Webhook_Host);
-        }
-        if (uri && BSP_STRLEN(uri))
-        {
-            BSP_STRNCPY(new_config.Webhook_Uri, uri,
-                        sizeof(new_config.Webhook_Uri));
-            BSP_ARR_STREND(new_config.Webhook_Uri);
-        }
-        
+        SetStr_IfValid(new_config.Webhook_Host,host,sizeof(new_config.Webhook_Host));
+        SetStr_IfValid(new_config.Webhook_Uri,uri,sizeof(new_config.Webhook_Uri));
+
         if (Webhook_IsConfigValid(obj, &new_config) &&
             Config_Storage_Write(Dev_ConfigStorage, obj, &new_config) &&
             Config_Storage_Commit(Dev_ConfigStorage))
@@ -513,6 +474,39 @@ static WebApi_Result_t Webapi_Webhook_Handler(struct fs_file *file, const char *
     }
 
     return Act_Fail_Response(file);
+}
+
+static WebApi_Result_t Webapi_Reboot_Handler(struct fs_file *file, const char *uri, int iNumParams, char **pcParam, char **pcValue)
+{
+    char *pw = ReadParam("pw", iNumParams, pcParam, pcValue);
+    if (BSP_STRCMP((const char *)pw, SECRET_PW) == 0)
+    {
+        DBG_INFO("System reboot in %d second...\n",WEBAPI_REBOOT_DELAY);
+        SysCtrl_ResetAfter(WEBAPI_REBOOT_DELAY);
+        return Default_Success_Response(file);
+    }
+    else
+    {
+        HttpBuilder_BuildResponse(file, HTTP_RESPONSE_401_UNAUTHORIZED);
+        return WEBAPI_ERR_FAILED;
+    }
+}
+
+static WebApi_Result_t Webapi_Reset_Handler(struct fs_file *file, const char *uri, int iNumParams, char **pcParam, char **pcValue)
+{
+    char *pw = ReadParam("pw", iNumParams, pcParam, pcValue);
+    if (BSP_STRCMP((const char *)pw, SECRET_PW) == 0)
+    {
+        if(Config_Storage_Erase(Dev_ConfigStorage))
+            return Default_Success_Response(file);
+        else
+            return Default_Fail_Response(file);
+    }
+    else
+    {
+        HttpBuilder_BuildResponse(file, HTTP_RESPONSE_401_UNAUTHORIZED);
+        return WEBAPI_ERR_FAILED;
+    }
 }
 #endif
 // extern function definition, called by lwip
