@@ -2,8 +2,11 @@
 #define FILESYS_H
 
 #include "bsp/platform/platform_defs.h"
-
 #include "ff.h"
+
+#ifndef FILESYS_OPEN_PRINT_ERROR
+    #define FILESYS_OPEN_PRINT_ERROR 0
+#endif
 
 typedef enum {
     FILEMODE_READ			=FA_READ			,
