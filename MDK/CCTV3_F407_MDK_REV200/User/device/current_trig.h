@@ -67,9 +67,10 @@
 
 typedef struct Device_CurrentTrig_ConfigFile_s
 {
+    bool CurrentTrig_Enable;
     uint8_t CurrentTrig_Disconnect_Thres_mA;//0~20
     uint8_t CurrentTrig_Overload_Thres_mA;//0~20
-    uint8_t __padding[2];
+    uint8_t __padding[1];
     uint16_t CurrentTrig_PeakThreshold_1000x;//this value is 1000x of the real value
     uint16_t CurrentTrig_PeakInfluence_1000x;//this value is 1000x of the real value
 }Device_CurrentTrig_ConfigFile_t;
@@ -110,7 +111,9 @@ typedef struct Device_CurrentTrig_s
     //ADC raw scan value buffer for dma recv
     CURRENT_TRIG_ADC_VAL_TYPE *CurrentTrig_ADC_Buf;
     uint16_t CurrentTrig_ADC_Buf_Len;
-    uint8_t __padding[2];
+
+    bool CurrentTrig_Enable;
+    uint8_t __padding[1];
 
     //private fields
     //runtime flags

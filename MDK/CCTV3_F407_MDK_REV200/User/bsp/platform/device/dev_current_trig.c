@@ -4,6 +4,7 @@
 uint8_t _dev_current_trig_adc_hwbuf[CURRENT_TRIG_ADC_BUF_SIZE] __HW_BUF_SECTION;
 
 Device_CurrentTrig_t Dev_CurrentTrig_Inst = {
+    .CurrentTrig_Enable = true,
     .CurrentTrig_Timer = __CONST_CAST_VAR(HAL_Timer_t){
         .TIMx = TIM2,
         .Timer_RCC_Cmd = __CONST_CAST_VAR(HAL_RCC_Cmd_t){
