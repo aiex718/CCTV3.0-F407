@@ -1,5 +1,6 @@
 
 const pw = "uuddlrlrba";
+const btn_busy_attr = "btn_busy";
 
 $("#current_get_btn").bind("click", function () { Current_Get(this); });
 $("#current_on_btn").bind("click", function () { Current_Set(this, true); });
@@ -24,6 +25,7 @@ $("#reboot_btn").bind("click", function () { Reboot(this); });
 $("#reset_btn").bind("click", function () { Reset(this); });
 
 function Current_Get(sender) {
+	if(CheckAndSet_BusyFlag(sender)) return;
 	var on_btn = $("#current_on_btn");
 	var off_btn = $("#current_off_btn");
 	var peak_threshold_text = $("#peak_threshold_text")[0];
@@ -45,10 +47,12 @@ function Current_Get(sender) {
 			console.log(error);
 		}).finally(function () {
 			sender.blur();
+			RemoveBusy(sender);
 		});
 }
 
 function Current_Set(sender, en) {
+	if(CheckAndSet_BusyFlag(sender)) return;
 	var on_btn = $("#current_on_btn");
 	var off_btn = $("#current_off_btn");
 	var peak_threshold_text = $("#peak_threshold_text");
@@ -72,10 +76,12 @@ function Current_Set(sender, en) {
 			Shake_jQuery(sender, 500);
 		}).finally(function () {
 			sender.blur();
+			RemoveBusy(sender);
 		});
 }
 
 function Webhook_Get(sender) {
+	if(CheckAndSet_BusyFlag(sender)) return;
 	var on_btn = $("#webhook_on_btn");
 	var off_btn = $("#webhook_off_btn");
 	var webhook_host_text = $("#webhook_host_text")[0];
@@ -99,10 +105,12 @@ function Webhook_Get(sender) {
 			console.log(error);
 		}).finally(function () {
 			sender.blur();
+			RemoveBusy(sender);
 		});
 }
 
 function Webhook_Set(sender, en) {
+	if(CheckAndSet_BusyFlag(sender)) return;
 	var on_btn = $("#webhook_on_btn");
 	var off_btn = $("#webhook_off_btn");
 	var webhook_host_text = $("#webhook_host_text");
@@ -128,10 +136,12 @@ function Webhook_Set(sender, en) {
 			Shake_jQuery(sender, 500);
 		}).finally(function () {
 			sender.blur();
+			RemoveBusy(sender);
 		});
 }
 
 function IP_Get(sender) {
+	if(CheckAndSet_BusyFlag(sender)) return;
 	var ipaddr = $("#ipaddr_text")[0];
 	var netmask = $("#netmask_text")[0];
 	var gateway = $("#gateway_text")[0];
@@ -152,6 +162,7 @@ function IP_Get(sender) {
 			console.log(error);
 		}).finally(function () {
 			sender.blur();
+			RemoveBusy(sender);
 		});
 }
 
@@ -183,6 +194,7 @@ function IP_Set(sender) {
 		Highlight_jQuery(dns1, 500);
 	}
 	else {
+		if(CheckAndSet_BusyFlag(sender)) return;
 		axios.get('/api?cmd=ip&act=set&ip=' + ipaddr.val() +
 			'&mask=' + netmask.val() +
 			'&gw=' + gateway.val() +
@@ -198,11 +210,13 @@ function IP_Set(sender) {
 				Shake_jQuery(sender, 500);
 			}).finally(function () {
 				sender.blur();
+				RemoveBusy(sender);
 			});
 	}
 }
 
 function DHCP_Get(sender) {
+	if(CheckAndSet_BusyFlag(sender)) return;
 	const on_btn = $("#dhcp_on_btn");
 	const off_btn = $("#dhcp_off_btn");
 
@@ -215,11 +229,12 @@ function DHCP_Get(sender) {
 			Shake_jQuery(sender, 500);
 		}).finally(function () {
 			sender.blur();
+			RemoveBusy(sender);
 		});
 }
 
-function DHCP_Set(sender, en)
-{
+function DHCP_Set(sender, en) {
+	if(CheckAndSet_BusyFlag(sender)) return;
 	const on_btn = $("#dhcp_on_btn");
 	const off_btn = $("#dhcp_off_btn");
 	var enable = en ? 'true' : 'false';
@@ -238,10 +253,12 @@ function DHCP_Set(sender, en)
 			Shake_jQuery(sender, 500);
 		}).finally(function () {
 			sender.blur();
+			RemoveBusy(sender);
 		});
 }
 
 function SNTP_Get(sender) {
+	if(CheckAndSet_BusyFlag(sender)) return;
 	const on_btn = $("#sntp_on_btn");
 	const off_btn = $("#sntp_off_btn");
 
@@ -258,18 +275,19 @@ function SNTP_Get(sender) {
 			Shake_jQuery(sender, 500);
 		}).finally(function () {
 			sender.blur();
+			RemoveBusy(sender);
 		});
 }
 
 function SNTP_Set(sender, en) {
+	if(CheckAndSet_BusyFlag(sender)) return;
 	var on_btn = $("#sntp_on_btn");
 	var off_btn = $("#sntp_off_btn");
 	var sntp_text = $("#sntp_text");
 	var enable = en ? 'true' : 'false';
 
 	axios.get('/api?cmd=sntp&act=set&enable=' + enable +
-		'&server=' + sntp_text.val()
-	)
+		'&server=' + sntp_text.val())
 		.then(function (response) {
 			ShowOnOff_Button(on_btn, off_btn, en);
 			ShowOk_jQuery(sender, 2000);
@@ -279,10 +297,12 @@ function SNTP_Set(sender, en) {
 			Shake_jQuery(sender, 500);
 		}).finally(function () {
 			sender.blur();
+			RemoveBusy(sender);
 		});
 }
 
 function Camera_Get(sender) {
+	if(CheckAndSet_BusyFlag(sender)) return;
 	var qs_text = $("#qs_text")[0];
 	var brightness_text = $("#brightness_text")[0];
 	var contrast_text = $("#contrast_text")[0];
@@ -303,10 +323,12 @@ function Camera_Get(sender) {
 			Shake_jQuery(sender, 500);
 		}).finally(function () {
 			sender.blur();
+			RemoveBusy(sender);
 		});
 }
 
 function Camera_Set(sender) {
+	if(CheckAndSet_BusyFlag(sender)) return;
 	var qs_text = $("#qs_text");
 	var brightness_text = $("#brightness_text");
 	var contrast_text = $("#contrast_text");
@@ -331,6 +353,7 @@ function Camera_Set(sender) {
 			Shake_jQuery(sender, 500);
 		}).finally(function () {
 			sender.blur();
+			RemoveBusy(sender);
 		});
 }
 
@@ -339,6 +362,7 @@ function Camera_ShowFps(sender) {
 }
 
 function Light_Get(sender) {
+	if(CheckAndSet_BusyFlag(sender)) return;
 	var light_top_text = $("#light_top_text")[0];
 	var light_bottom_text = $("#light_bottom_text")[0];
 
@@ -346,40 +370,43 @@ function Light_Get(sender) {
 		axios.get('/api?cmd=light&act=get&pos=top'),
 		axios.get('/api?cmd=light&act=get&pos=bottom')
 	])
-	.then(axios.spread((response1, response2) => {
-		light_top_text.value = response1.data.value;
-		light_bottom_text.value = response2.data.value;
-		ShowOk_jQuery(sender, 2000);
-	}))
-	.catch(function (error) {
-		console.log(error);
-		Shake_jQuery(sender, 500);
-	}).finally(function () {
-		sender.blur();
-	});
+		.then(axios.spread((response1, response2) => {
+			light_top_text.value = response1.data.value;
+			light_bottom_text.value = response2.data.value;
+			ShowOk_jQuery(sender, 2000);
+		}))
+		.catch(function (error) {
+			console.log(error);
+			Shake_jQuery(sender, 500);
+		}).finally(function () {
+			sender.blur();
+			RemoveBusy(sender);
+		});
 }
 
 function Light_Set(sender) {
-
+	if(CheckAndSet_BusyFlag(sender)) return;
 	var light_top_text = $("#light_top_text");
 	var light_bottom_text = $("#light_bottom_text");
 
 	axios.all([
-		axios.get('/api?cmd=light&act=set&pos=top&value='+light_top_text.val()),
-		axios.get('/api?cmd=light&act=set&pos=bottom&value='+light_bottom_text.val())
+		axios.get('/api?cmd=light&act=set&pos=top&value=' + light_top_text.val()),
+		axios.get('/api?cmd=light&act=set&pos=bottom&value=' + light_bottom_text.val())
 	])
-	.then(axios.spread((response1, response2) => {
-		if(response1.data.result && response2.data.result)
-			ShowOk_jQuery(sender, 2000);
-	})).catch(function (error) {
-		console.log(error);
-		Shake_jQuery(sender, 500);
-	}).finally(function () {
-		sender.blur();
-	});
+		.then(axios.spread((response1, response2) => {
+			if (response1.data.result && response2.data.result)
+				ShowOk_jQuery(sender, 2000);
+		})).catch(function (error) {
+			console.log(error);
+			Shake_jQuery(sender, 500);
+		}).finally(function () {
+			sender.blur();
+			RemoveBusy(sender);
+		});
 }
 
 function Reboot(sender) {
+	if(CheckAndSet_BusyFlag(sender)) return;
 	const ipaddr_text = $("#ipaddr_text");
 
 	axios.get('/api?pw=' + pw + '&cmd=reboot')
@@ -397,10 +424,12 @@ function Reboot(sender) {
 			console.log(error);
 		}).finally(function () {
 			sender.blur();
+			RemoveBusy(sender);
 		});
 }
 
 function Reset(sender) {
+	if(CheckAndSet_BusyFlag(sender)) return;
 	axios.get('/api?pw=' + pw + '&cmd=reset')
 		.then(function (response) {
 			ShowOk_jQuery(sender, 2000);
@@ -410,6 +439,7 @@ function Reset(sender) {
 			console.log(error);
 		}).finally(function () {
 			sender.blur();
+			RemoveBusy(sender);
 		});
 }
 
@@ -429,20 +459,26 @@ function UpdateUptimeLoop() {
 }
 
 function ShowOk_jQuery(obj, time) {
+
+	const class_name = 'ok_active_color';
+	const showok_busy_attr = 'showok_busy';
+
 	var dom = obj;
 	if (obj instanceof jQuery)
 		dom = obj[0];
 
-	const class_name = 'ok_active_color';
-	var text = dom.innerText;
-	var remove = !dom.classList.contains(class_name);
+	if (dom.getAttribute(showok_busy_attr))
+		return;
 
+	dom.setAttribute(showok_busy_attr, true);
+
+	var orig_text = dom.innerText;
 	dom.innerText = "OK";
 	dom.classList.add(class_name);
 	setTimeout(function () {
-		dom.innerText = text;
-		if (remove)
-			dom.classList.remove(class_name);
+		dom.innerText = orig_text;
+		dom.classList.remove(class_name);
+		dom.removeAttribute(showok_busy_attr);
 	}, time);
 }
 
@@ -512,8 +548,21 @@ function convertDate(unix_timestamp) {
 	return y + ' - ' + M + ' - ' + d.slice(-2) + ' ' + h.slice(-2) + ' : ' + m.slice(-2) + ' : ' + s.slice(-2);
 }
 
-var Systime_Update_Timer;
+function CheckAndSet_BusyFlag(sender)
+{
+	if (sender.getAttribute(btn_busy_attr)) 
+		return true;
+	else
+	 	sender.setAttribute(btn_busy_attr, true);
+	return false;
+}
 
+function RemoveBusy(sender)
+{
+	sender.removeAttribute(btn_busy_attr);
+}
+
+var Systime_Update_Timer;
 function PageChanged() {
 	var mjpeg_img = $("#mjpeg_img");
 	if (mjpeg_img.is(":visible"))

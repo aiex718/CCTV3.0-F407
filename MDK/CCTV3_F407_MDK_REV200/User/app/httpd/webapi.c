@@ -288,8 +288,7 @@ static WebApi_Result_t Webapi_SNTP_Handler(struct fs_file *file, const char *uri
             check = SetBool_IfValid(&new_config.NetTime_Enable, enable);
         
         if (check && NetTime_IsConfigValid(obj, &new_config) &&
-            Config_Storage_Write(Dev_ConfigStorage, obj, &new_config) &&
-            Config_Storage_Commit(Dev_ConfigStorage))
+            SaveConfig(obj, &new_config))
             return Default_Success_Response(file);
         else
             return Default_Fail_Response(file);
@@ -342,8 +341,7 @@ static WebApi_Result_t Webapi_Current_Handler(struct fs_file *file, const char *
             new_config.CurrentTrig_PeakInfluence_1000x=atoi(influence);
         
         if (check && Device_CurrentTrig_IsConfigValid(obj, &new_config) &&
-            Config_Storage_Write(Dev_ConfigStorage, obj, &new_config) &&
-            Config_Storage_Commit(Dev_ConfigStorage))
+            SaveConfig(obj, &new_config))
             return Default_Success_Response(file);
         else
             return Default_Fail_Response(file);
@@ -388,8 +386,7 @@ static WebApi_Result_t Webapi_Light_Handler(struct fs_file *file, const char *ur
             new_config.FlashLight_Brightness = atoi(value);
 
         if (Device_FlashLight_IsConfigValid(obj, &new_config) &&
-            Config_Storage_Write(Dev_ConfigStorage, obj, &new_config) &&
-            Config_Storage_Commit(Dev_ConfigStorage))
+            SaveConfig(obj, &new_config))
             return Default_Success_Response(file);
         else
             return Default_Fail_Response(file);
@@ -443,8 +440,7 @@ static WebApi_Result_t Webapi_Camera_Handler(struct fs_file *file, const char *u
             check = SetBool_IfValid(&new_config.CamOV2640_Mirror,mirror);
 
         if (check && Device_CamOV2640_IsConfigValid(obj, &new_config) &&
-            Config_Storage_Write(Dev_ConfigStorage, obj, &new_config) &&
-            Config_Storage_Commit(Dev_ConfigStorage))
+            SaveConfig(obj, &new_config))
             return Default_Success_Response(file);
         else
             return Default_Fail_Response(file);
@@ -502,8 +498,7 @@ static WebApi_Result_t Webapi_Webhook_Handler(struct fs_file *file, const char *
             check = SetStr_IfValid(new_config.Webhook_Uri,uri,sizeof(new_config.Webhook_Uri));
 
         if (check && Webhook_IsConfigValid(obj, &new_config) &&
-            Config_Storage_Write(Dev_ConfigStorage, obj, &new_config) &&
-            Config_Storage_Commit(Dev_ConfigStorage))
+            SaveConfig(obj, &new_config))
             return Default_Success_Response(file);
         else
             return Default_Fail_Response(file);
