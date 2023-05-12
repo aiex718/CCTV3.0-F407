@@ -6,7 +6,7 @@
 
 typedef struct NetTime_ConfigFile_s
 {
-    uint8_t NetTime_Enable;
+    bool NetTime_Enable;
     uint8_t __padding[3];
     char NetTime_SNTP_Server[64];
 }NetTime_ConfigFile_t;
