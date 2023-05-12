@@ -97,6 +97,7 @@ void Device_CurrentTrig_Init(Device_CurrentTrig_t *self)
 
 void Device_CurrentTrig_ConfigSet(Device_CurrentTrig_t *self,const Device_CurrentTrig_ConfigFile_t *config)
 {
+    self->CurrentTrig_Enable = config->CurrentTrig_Enable;
     self->CurrentTrig_Disconnect_Thres_mA = config->CurrentTrig_Disconnect_Thres_mA;
     self->CurrentTrig_Overload_Thres_mA = config->CurrentTrig_Overload_Thres_mA;
     self->CurrentTrig_PeakThreshold = config->CurrentTrig_PeakThreshold_1000x/1000.0F;
@@ -105,6 +106,7 @@ void Device_CurrentTrig_ConfigSet(Device_CurrentTrig_t *self,const Device_Curren
 
 void Device_CurrentTrig_ConfigExport(const Device_CurrentTrig_t *self,Device_CurrentTrig_ConfigFile_t *config)
 {
+    config->CurrentTrig_Enable = self->CurrentTrig_Enable;
     config->CurrentTrig_Disconnect_Thres_mA = self->CurrentTrig_Disconnect_Thres_mA;
     config->CurrentTrig_Overload_Thres_mA = self->CurrentTrig_Overload_Thres_mA;
     config->CurrentTrig_PeakThreshold_1000x = self->CurrentTrig_PeakThreshold*1000;
@@ -113,11 +115,15 @@ void Device_CurrentTrig_ConfigExport(const Device_CurrentTrig_t *self,Device_Cur
 
 bool Device_CurrentTrig_IsConfigValid(Device_CurrentTrig_t *self,const Device_CurrentTrig_ConfigFile_t *config)
 {
-    return (config != NULL && 
-            config->CurrentTrig_Disconnect_Thres_mA <= 8 &&
-            config->CurrentTrig_Overload_Thres_mA >= 16 && config->CurrentTrig_Overload_Thres_mA <= 24 &&
-            config->CurrentTrig_PeakThreshold_1000x > 0 && config->CurrentTrig_PeakThreshold_1000x < (uint16_t) -1 &&
-            config->CurrentTrig_PeakInfluence_1000x <=1000);
+    if(config == NULL || config->CurrentTrig_Enable > 1)
+        return false;
+    else if (config->CurrentTrig_Enable == false)
+        return true;
+    else
+        return ( config->CurrentTrig_Disconnect_Thres_mA <= 8 &&
+        config->CurrentTrig_Overload_Thres_mA >= 16 && config->CurrentTrig_Overload_Thres_mA <= 24 &&
+        config->CurrentTrig_PeakThreshold_1000x > 0 && config->CurrentTrig_PeakThreshold_1000x < (uint16_t) -1 &&
+        config->CurrentTrig_PeakInfluence_1000x <=1000);
 }
 
 

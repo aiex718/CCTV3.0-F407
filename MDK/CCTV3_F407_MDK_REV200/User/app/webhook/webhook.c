@@ -47,12 +47,12 @@ bool Webhook_IsConfigValid(Webhook_t *self,const Webhook_ConfigFile_t *config)
     
     if(config->Webhook_Enable == false)
         return true;
-    else if(config->Webhook_Retry_Delay == 0 || 
-            config->Webhook_Host[0] == 0 || config->Webhook_Host[0]==0xff ||
-            config->Webhook_Uri[0] == 0 || config->Webhook_Uri[0]==0xff)
-        return false;
-    else
-        return true;
+    else 
+        return  config->Webhook_Retry_Delay != 0 && config->Webhook_Retry_Delay < (u16_t)-1 &&
+                config->Webhook_Host[0] != 0 && config->Webhook_Host[0] != 0xff &&
+                BSP_STRLEN(config->Webhook_Host) < sizeof(config->Webhook_Host) &&
+                config->Webhook_Uri[0] != 0 && config->Webhook_Uri[0] != 0xff && 
+                BSP_STRLEN(config->Webhook_Uri) < sizeof(config->Webhook_Uri);
 
 }
 

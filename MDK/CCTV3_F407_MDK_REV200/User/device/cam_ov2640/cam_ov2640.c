@@ -162,12 +162,12 @@ bool Device_CamOV2640_IsConfigValid(Device_CamOV2640_t *self,const Device_CamOV2
 {
     if( config!=NULL && 
         config->CamOV2640_JpegFormat < __JPEGFORMAT_CONFIG_MAX &&
-        config->CamOV2640_Qs < 0xff &&
+        config->CamOV2640_Qs > 0 && config->CamOV2640_Qs < 0xff &&
         config->CamOV2640_Brightness < __BRIGHTNESS_CONFIG_MAX &&
         config->CamOV2640_Contrast < __CONTRAST_CONFIG_MAX &&
         config->CamOV2640_LightMode < __LIGHTMODE_CONFIG_MAX &&
-        (config->CamOV2640_Flip == 0 || config->CamOV2640_Flip == 1) &&
-        (config->CamOV2640_Mirror == 0 || config->CamOV2640_Mirror == 1)
+        (config->CamOV2640_Flip <= 1) &&
+        (config->CamOV2640_Mirror <= 1)
     )
         return true;
     else

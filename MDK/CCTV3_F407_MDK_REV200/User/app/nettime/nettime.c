@@ -33,10 +33,15 @@ void NetTime_ConfigExport(const NetTime_t *self,NetTime_ConfigFile_t *config)
 
 bool NetTime_IsConfigValid(NetTime_t *self,const NetTime_ConfigFile_t *config)
 {
-    return config != NULL &&
-    (config->NetTime_Enable== true || config->NetTime_Enable== false) && 
-    config->NetTime_SNTP_Server != NULL && (int)(config->NetTime_SNTP_Server) != -1 &&
-    strlen(config->NetTime_SNTP_Server)>0;
+    if(config == NULL || config->NetTime_Enable>1)
+        return false;
+    else if (config->NetTime_Enable == false)
+        return true;
+    else
+        return  config->NetTime_SNTP_Server != NULL && 
+                config->NetTime_SNTP_Server[0]!=0 &&
+                config->NetTime_SNTP_Server[0]!=0xff &&
+                BSP_STRLEN(config->NetTime_SNTP_Server)<sizeof(config->NetTime_SNTP_Server);
 }
 
 //callback from sntpd
