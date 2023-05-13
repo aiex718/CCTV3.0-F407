@@ -8,6 +8,7 @@
 #define SysCtrl_Reset   NVIC_SystemReset
 
 void SysCtrl_ResetAfter(uint16_t ms);
+void SysCtrl_RaiseHardFault(void);
 void SysCtrl_Service(void);
 
 #endif
