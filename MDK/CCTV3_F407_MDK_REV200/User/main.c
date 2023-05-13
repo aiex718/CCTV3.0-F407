@@ -96,20 +96,19 @@ int main(void)
 	//ADC
 	HAL_ADC_CommonInit(Peri_ADC_CommonCfg);
 
-	//Current trig
-	Device_CurrentTrig_Init(Dev_CurrentTrig);
-	if(Dev_CurrentTrig->CurrentTrig_Enable)
-		Device_CurrentTrig_Cmd(Dev_CurrentTrig,true);
-	else
-		DBG_WARNING("CurrentTrig disabled\n");
-		
-
 	//Lwip & ETH 
 	ETH_BSP_Config();	
 	LwIP_Init();
 	Mjpegd_Init(App_Mjpegd);
 	NetTime_Init(App_NetTime);
 	httpd_init();
+	
+	//Current trig
+	Device_CurrentTrig_Init(Dev_CurrentTrig);
+	if(Dev_CurrentTrig->CurrentTrig_Enable)
+		Device_CurrentTrig_Cmd(Dev_CurrentTrig,true);
+	else
+		DBG_WARNING("CurrentTrig disabled\n");
 
 	//Link callbacks handler to object
 	Platform_RegistCallbacks();
