@@ -43,7 +43,7 @@ static HttpBuilder_Status_t HttpBuilder_ModifyContentLength(struct fs_file *file
     char* str_find;
     uint32_t content_len, overwrite_len;
     
-    HttpBuilder_Insert(file,http_end_clrf);
+    HttpBuilder_Insert(file,http_end_clrf,0);
 
     //calculate content length
     str_find = strstr(file->data,http_header_end);
@@ -61,6 +61,11 @@ static HttpBuilder_Status_t HttpBuilder_ModifyContentLength(struct fs_file *file
     return HTTP_BUILDER_OK;
 }
 
+/**
+ * @brief Insert content to fsfile using printf format
+ * @warning This function wont check overflow, make sure the fsfile is large enough
+ * @return CGI_HANDLER_OK if success, other if error
+ */
 HttpBuilder_Status_t HttpBuilder_printf(struct fs_file *file,const char* str,...)
 {
     uint16_t len;    
@@ -75,9 +80,16 @@ HttpBuilder_Status_t HttpBuilder_printf(struct fs_file *file,const char* str,...
     return HTTP_BUILDER_OK;
 }
 
-HttpBuilder_Status_t HttpBuilder_Insert(struct fs_file *file,const char* str)
+/**
+ * @brief Insert content to fsfile.
+ * @warning This function check buffer size, return HTTP_BUILDER_ERR_TOO_MANY if buffer is not enough.
+ * @return HTTP_BUILDER_OK if success, other if error
+ */
+HttpBuilder_Status_t HttpBuilder_Insert(struct fs_file *file,const char* str,uint16_t max_len)
 {
     uint16_t len=strlen(str);
+    if(max_len && len>max_len)
+        len = max_len;
 
     if(file==NULL || str == NULL || len<=0) return HTTP_BUILDER_ERR_ARG;
     if(len>(WEBAPI_RESPONSE_BUFFER_LEN-file->len)) return HTTP_BUILDER_ERR_TOO_MANY;
@@ -93,13 +105,13 @@ HttpBuilder_Status_t HttpBuilder_BuildResponse(struct fs_file *file,HttpBuilder_
     if(file==NULL) return HTTP_BUILDER_ERR_ARG;        
     if(code>=__NOT_RESPONSE_CODE_MAX) return HTTP_BUILDER_ERR_ARG;
 
-    HttpBuilder_Insert(file,http_response_header[code]);//insert header
-    HttpBuilder_Insert(file,header_http_server);
-    HttpBuilder_Insert(file,header_http_content_type_json);
-    HttpBuilder_Insert(file,header_http_content_length);
-    HttpBuilder_Insert(file,header_http_closed);
-    HttpBuilder_Insert(file,http_end_clrf);
-    HttpBuilder_Insert(file,http_response_default_msg[code]);//insert default content
+    HttpBuilder_Insert(file,http_response_header[code],0);//insert header
+    HttpBuilder_Insert(file,header_http_server,0);
+    HttpBuilder_Insert(file,header_http_content_type_json,0);
+    HttpBuilder_Insert(file,header_http_content_length,0);
+    HttpBuilder_Insert(file,header_http_closed,0);
+    HttpBuilder_Insert(file,http_end_clrf,0);
+    HttpBuilder_Insert(file,http_response_default_msg[code],0);//insert default content
     return HTTP_BUILDER_OK;
 }
 

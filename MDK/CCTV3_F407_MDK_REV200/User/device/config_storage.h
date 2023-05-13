@@ -6,6 +6,10 @@
 #ifndef CONFIG_STORAGE_OBJ_NAME_SIZE
     #define CONFIG_STORAGE_OBJ_NAME_SIZE 24
 #endif
+
+#ifndef CONFIG_STORAGE_DEBUG
+    #define CONFIG_STORAGE_DEBUG 0
+#endif
 /* Object which want to use config self function must implement 3 function
 and it's own config data struct. Register to Config_Storage_ObjectConfig_list 
 in dev_config_self.c
@@ -96,6 +100,10 @@ bool Config_Storage_Erase(Config_Storage_t *self);
 const void* Config_Storage_Read(Config_Storage_t *self, void* obj_instance, uint16_t* len_out);
 bool Config_Storage_Write(Config_Storage_t *self, void* obj_instance,void* obj_config);
 bool Config_Storage_Commit(Config_Storage_t *self);
+
+#if CONFIG_STORAGE_DEBUG
+void Config_Storage_Random(Config_Storage_t *self);
+#endif
 
 /*Example Uasge
 

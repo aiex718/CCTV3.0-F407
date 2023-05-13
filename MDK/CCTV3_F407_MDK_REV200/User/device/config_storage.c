@@ -85,7 +85,7 @@ bool Config_Storage_IsCrc32Valid(Config_Storage_t *self, const Config_Storage_Cr
 {
     return crc != NULL && crc->Config_Storage_Magic == self->Config_Storage_Magic &&
            crc->Config_Storage_Crc32 == _calc_crc32((const uint8_t *)self->Config_Storage_FlashAddr,
-                                                       self->_config_size_sum - sizeof(*crc));
+                                                    self->_config_size_sum - sizeof(*crc));
 }
 
 // load all config from storage, if config is not valid, copy default config from
@@ -103,9 +103,9 @@ void Config_Storage_Load(Config_Storage_t *self)
         skip = false;
 
         if (objcfg->Obj_Instance == self)
-            return;// skip self, crc will calculate inside commit
+            return; // skip self, crc will calculate inside commit
 
-        //check func exist
+        // check func exist
         if (objcfg->Obj_IsConfigValid_Func == NULL)
         {
             DBG_WARNING("%s 0x%p config has no valid check func\n", objcfg->Obj_Name, objcfg->Obj_Instance);
@@ -148,7 +148,7 @@ void Config_Storage_Load(Config_Storage_t *self)
         else // config is valid, apply to object
             objcfg->Obj_ConfigSet_Func(objcfg->Obj_Instance, config_r_ptr);
 
-        //move r_ptr to next config
+        // move r_ptr to next config
         config_r_ptr += objcfg->Obj_Config_Len;
     }
 }
@@ -230,7 +230,7 @@ bool Config_Storage_Commit(Config_Storage_t *self)
     self->_config_status = CONFIG_STORAGE_STATUS_ERR_COMMIT;
 
     Config_Storage_CalcCrc32(self,
-                                (Config_Storage_CrcFile_t *)(self->_config_wbuf + offset));
+        (Config_Storage_CrcFile_t *)(self->_config_wbuf + offset));
 
     HAL_FlashProg_Unlock(Peri_FlashProg);
     do
@@ -275,6 +275,35 @@ bool Config_Storage_Commit(Config_Storage_t *self)
     return result;
 }
 
+#if CONFIG_STORAGE_DEBUG
+void Config_Storage_Random(Config_Storage_t *self)
+{
+    uint16_t i, offset;
+
+    if (_get_config_addr_offset(self, self, &offset, NULL) == false)
+    {
+        DBG_ERROR("Config not found\n");
+        return;
+    }
+
+    self->_config_wbuf = (uint8_t *)BSP_MALLOC(self->_config_size_sum);
+
+    if (self->_config_wbuf == NULL)
+    {
+        DBG_ERROR("Random malloc failed\n");
+        return;
+    }
+
+    for (i = 0; i < self->_config_size_sum; i++)
+        self->_config_wbuf[i] = (uint8_t)rand();
+
+    Config_Storage_CalcCrc32(self,(Config_Storage_CrcFile_t *)(self->_config_wbuf + offset));
+
+    self->Config_Storage_FlashAddr = (uint32_t)self->_config_wbuf;
+    DBG_ERROR("Config random OK\n");
+}
+#endif
+
 static bool _get_config_addr_offset(Config_Storage_t *self,
                                     void *obj_instance, uint16_t *offset_out, uint16_t *len_out)
 {
@@ -317,3 +346,4 @@ static uint32_t _calc_crc32(const uint8_t *data, uint16_t len)
     }
     return ~crc;
 }
+

@@ -44,11 +44,11 @@ bool Webhook_IsConfigValid(Webhook_t *self,const Webhook_ConfigFile_t *config)
 {
     if(config==NULL || config->Webhook_Enable>1)
         return false;
-    
-    if(config->Webhook_Enable == false)
+    else if(config->Webhook_Enable == false)
         return true;
     else 
-        return  config->Webhook_Retry_Delay != 0 && config->Webhook_Retry_Delay < (u16_t)-1 &&
+        return  config->Webhook_Retrys  <= 10 && config->Webhook_Port != 0 &&
+                config->Webhook_Retry_Delay != 0 && config->Webhook_Retry_Delay < 60000 &&
                 config->Webhook_Host[0] != 0 && config->Webhook_Host[0] != 0xff &&
                 BSP_STRLEN(config->Webhook_Host) < sizeof(config->Webhook_Host) &&
                 config->Webhook_Uri[0] != 0 && config->Webhook_Uri[0] != 0xff && 

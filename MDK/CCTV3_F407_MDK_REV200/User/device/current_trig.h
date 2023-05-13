@@ -113,16 +113,15 @@ typedef struct Device_CurrentTrig_s
     uint16_t CurrentTrig_ADC_Buf_Len;
 
     bool CurrentTrig_Enable;
-    uint8_t __padding[1];
 
     //private fields
     //runtime flags
+    BitFlag8_t _curr_pending_event;
     CURRENT_TRIG_FLOAT_TYPE *_curr_buf_w_ptr;
     CURRENT_TRIG_FLOAT_TYPE *_curr_buf_r_ptr;
     //callback
     Callback_t _curr_dma_ht_cb;
     Callback_t _curr_dma_tc_cb;
-    BitFlag8_t _curr_pending_event;
 }Device_CurrentTrig_t;
 
 

@@ -75,6 +75,10 @@ void UartCmd_Service(UartCmd_t *self)
             {
                 DBG_ERROR("Failed to read ethernet config\n");
             }
+        } 
+        else if(BSP_STRCMP((char*)rxcmd,"fault")==0)
+        {
+            SysCtrl_RaiseHardFault();
         }
     }
 }

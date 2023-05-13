@@ -20,13 +20,9 @@ typedef enum {
     HTTP_BUILDER_BAD_CONTENT,
 } HttpBuilder_Status_t;
 
-/**
- * @brief Insert content to fsfile using printf format
- * @warning This function wont check overflow, make sure the fsfile is large enough
- * @return CGI_HANDLER_OK if success, other if error
- */
+
 HttpBuilder_Status_t HttpBuilder_printf(struct fs_file *file,const char* str,...);
-HttpBuilder_Status_t HttpBuilder_Insert(struct fs_file *file,const char* str);
+HttpBuilder_Status_t HttpBuilder_Insert(struct fs_file *file,const char* str,uint16_t max_len);
 HttpBuilder_Status_t HttpBuilder_BuildResponse(struct fs_file *file,HttpBuilder_ResponseCode_t code);
 HttpBuilder_Status_t HttpBuilder_FinishFile(struct fs_file *file);
 
