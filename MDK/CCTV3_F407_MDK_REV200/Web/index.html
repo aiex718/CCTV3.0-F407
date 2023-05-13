@@ -92,10 +92,10 @@
 									<i class="fas fa-solid fa-bolt mr-4 tm-icon-circled tm-icon-media"></i>	
 									<div class="media-body">
 										<h3 id="current_text">Current Sensor</h3>
-										<input id="peak_threshold_text" class="mr-3 mb-3 input-text" autofocus placeholder="Peak Threshold"></input>
-										<input id="peak_influence_text" class="mr-3 mb-3 input-text" autofocus placeholder="Peak Influence"></input>
-										<input id="disconnect_thres_text" class="mr-3 mb-3 input-text" autofocus placeholder="Disconnect Current"></input>
-										<input id="overload_thres_text" class="mr-3 mb-3 input-text" autofocus placeholder="Overload Current"></input>
+										<input id="peak_threshold_text" class="mr-3 mb-3 input-text" autofocus placeholder="Peak Threshold (1~10000)"></input>
+										<input id="peak_influence_text" class="mr-3 mb-3 input-text" autofocus placeholder="Peak Influence (0~1000)"></input>
+										<input id="disconnect_thres_text" class="mr-3 mb-3 input-text" autofocus placeholder="Disconnect Current (0~8)"></input>
+										<input id="overload_thres_text" class="mr-3 mb-3 input-text" autofocus placeholder="Overload Current (16~24)"></input>
 										<div class="flex-around">
 											<a class="btn tm-btn tm-font-big " id="current_get_btn">Get</a> 
 											<a class="btn tm-btn tm-font-big " id="current_on_btn">On</a> 
@@ -111,9 +111,9 @@
 										<h3>WebHook</h3>
 										<input id="webhook_host_text" class="mr-3 mb-3 input-text" autofocus placeholder="Host"></input>
 										<input id="webhook_uri_text" class="mr-3 mb-3 input-text" autofocus placeholder="Uri"></input>
-										<input id="webhook_port_text" class="mr-3 mb-3 input-text" autofocus placeholder="Port"></input>
-										<input id="webhook_retry_text" class="mr-3 mb-3 input-text" autofocus placeholder="Retry"></input>
-										<input id="webhook_delay_text" class="mr-3 mb-3 input-text" autofocus placeholder="Delay"></input>
+										<input id="webhook_port_text" class="mr-3 mb-3 input-text" autofocus placeholder="Port (1~65535)"></input>
+										<input id="webhook_retry_text" class="mr-3 mb-3 input-text" autofocus placeholder="Retry (0~10)"></input>
+										<input id="webhook_delay_text" class="mr-3 mb-3 input-text" autofocus placeholder="Delay (1~60000)"></input>
 										<div class="flex-around">
 											<a class="btn tm-btn tm-font-big " id="webhook_get_btn">Get</a> 
 											<a class="btn tm-btn tm-font-big " id="webhook_on_btn">On</a> 
@@ -183,8 +183,8 @@
 										<h3 class="text-center">Live Preview</h3>
 										<img id="mjpeg_img" class="center-image mb-3">
 										<input id="qs_text" class="mr-3 mb-3 input-text" autofocus placeholder="Quality (12)"></input>
-										<input id="brightness_text" class="mr-3 mb-3 input-text" autofocus placeholder="Brightness (1~5)"></input>
-										<input id="contrast_text" class="mr-3 mb-3 input-text" autofocus placeholder="Contrast (1~5)"></input>
+										<input id="brightness_text" class="mr-3 mb-3 input-text" autofocus placeholder="Brightness (0~4)"></input>
+										<input id="contrast_text" class="mr-3 mb-3 input-text" autofocus placeholder="Contrast (0~4)"></input>
 										<div class="flex-around">
 											<div> 
 												<input id="flip_checkbox" type="checkbox" class="mr-2 mb-4 checkbox"/>

@@ -67,21 +67,21 @@ const char RESULT_FALSE_JSON[] = "{\"result\":\"false\"}";
 __STATIC_INLINE WebApi_Result_t Default_Success_Response(struct fs_file *file)
 {
     HttpBuilder_BuildResponse(file, HTTP_RESPONSE_200_OK);
-    HttpBuilder_Insert(file, RESULT_TRUE_JSON);
+    HttpBuilder_Insert(file, RESULT_TRUE_JSON,0);
     return WEBAPI_OK;
 }
 
 __STATIC_INLINE WebApi_Result_t Default_Fail_Response(struct fs_file *file)
 {
     HttpBuilder_BuildResponse(file, HTTP_RESPONSE_400_BAD_REQUEST);
-    HttpBuilder_Insert(file, RESULT_FALSE_JSON);
+    HttpBuilder_Insert(file, RESULT_FALSE_JSON,0);
     return WEBAPI_ERR_FAILED;
 }
 
 __STATIC_INLINE WebApi_Result_t Act_Fail_Response(struct fs_file *file)
 {
     HttpBuilder_BuildResponse(file, HTTP_RESPONSE_400_BAD_REQUEST);
-    HttpBuilder_Insert(file, BAD_ACT_MESSAGE);
+    HttpBuilder_Insert(file, BAD_ACT_MESSAGE,0);
     return WEBAPI_ERR_BAD_ACT;
 }
 #endif
@@ -159,7 +159,7 @@ static WebApi_Result_t Webapi_IP_Handler(struct fs_file *file, const char *uri, 
     const Ethernetif_ConfigFile_t *config = (Ethernetif_ConfigFile_t *)
         Config_Storage_Read(Dev_ConfigStorage, obj, NULL);
 
-    if (config == NULL)
+    if (config == NULL )
     {
         HttpBuilder_BuildResponse(file, HTTP_RESPONSE_503_UNAVAILABLE);
         return WEBAPI_ERR_FAILED;
@@ -167,6 +167,11 @@ static WebApi_Result_t Webapi_IP_Handler(struct fs_file *file, const char *uri, 
     else if (BSP_STRCMP((const char *)act, GET_STR) == 0)
     {
         struct netif *_netif = &Dev_Ethernetif_Default->_netif;
+        if(Ethernetif_IsConfigValid(obj,config)==false)
+        {
+            HttpBuilder_BuildResponse(file, HTTP_RESPONSE_503_UNAVAILABLE);
+            return WEBAPI_ERR_FAILED;
+        }
         HttpBuilder_BuildResponse(file, HTTP_RESPONSE_200_OK);
 
         HttpBuilder_printf(file, "{\"ip\":\"%s\",", ip4addr_ntoa(&(_netif->ip_addr)));
@@ -233,6 +238,11 @@ static WebApi_Result_t Webapi_DHCP_Handler(struct fs_file *file, const char *uri
     }
     else if (BSP_STRCMP((const char *)act, GET_STR) == 0)
     {
+        if(Ethernetif_IsConfigValid(obj, config) == false)
+        {
+            HttpBuilder_BuildResponse(file, HTTP_RESPONSE_503_UNAVAILABLE);
+            return WEBAPI_ERR_FAILED;
+        }
         HttpBuilder_BuildResponse(file, HTTP_RESPONSE_200_OK);
         HttpBuilder_printf(file, "{\"DHCP\":%s}", config->Netif_Config_DHCP_Enable ? TRUE_STR : FALSE_STR);
         return WEBAPI_OK;
@@ -270,9 +280,17 @@ static WebApi_Result_t Webapi_SNTP_Handler(struct fs_file *file, const char *uri
     }
     else if (BSP_STRCMP((const char *)act, GET_STR) == 0)
     {
+        if(NetTime_IsConfigValid(obj, config) == false)
+        {
+            HttpBuilder_BuildResponse(file, HTTP_RESPONSE_503_UNAVAILABLE);
+            return WEBAPI_ERR_FAILED;
+        }
+
         HttpBuilder_BuildResponse(file, HTTP_RESPONSE_200_OK);
         HttpBuilder_printf(file, "{\"enable\":%s,", config->NetTime_Enable? TRUE_STR : FALSE_STR);
-        HttpBuilder_printf(file, "\"server\":\"%s\"}", config->NetTime_SNTP_Server);
+        HttpBuilder_printf(file, "\"server\":\"");
+        HttpBuilder_Insert(file, config->NetTime_SNTP_Server, sizeof(config->NetTime_SNTP_Server));
+        HttpBuilder_printf(file, "\"}");
         return WEBAPI_OK;
     }
     else if (BSP_STRCMP((const char *)act, SET_STR) == 0)
@@ -288,8 +306,7 @@ static WebApi_Result_t Webapi_SNTP_Handler(struct fs_file *file, const char *uri
             check = SetBool_IfValid(&new_config.NetTime_Enable, enable);
         
         if (check && NetTime_IsConfigValid(obj, &new_config) &&
-            Config_Storage_Write(Dev_ConfigStorage, obj, &new_config) &&
-            Config_Storage_Commit(Dev_ConfigStorage))
+            SaveConfig(obj, &new_config))
             return Default_Success_Response(file);
         else
             return Default_Fail_Response(file);
@@ -312,6 +329,12 @@ static WebApi_Result_t Webapi_Current_Handler(struct fs_file *file, const char *
     }
     else if (BSP_STRCMP((const char *)act, GET_STR) == 0)
     {
+        if(Device_CurrentTrig_IsConfigValid(obj, config) == false)
+        {
+            HttpBuilder_BuildResponse(file, HTTP_RESPONSE_503_UNAVAILABLE);
+            return WEBAPI_ERR_FAILED;
+        }
+
         HttpBuilder_BuildResponse(file, HTTP_RESPONSE_200_OK);
         HttpBuilder_printf(file, "{\"enable\":%s,", config->CurrentTrig_Enable? TRUE_STR : FALSE_STR);
         HttpBuilder_printf(file, "\"disconnect\":%d,", config->CurrentTrig_Disconnect_Thres_mA);
@@ -342,8 +365,7 @@ static WebApi_Result_t Webapi_Current_Handler(struct fs_file *file, const char *
             new_config.CurrentTrig_PeakInfluence_1000x=atoi(influence);
         
         if (check && Device_CurrentTrig_IsConfigValid(obj, &new_config) &&
-            Config_Storage_Write(Dev_ConfigStorage, obj, &new_config) &&
-            Config_Storage_Commit(Dev_ConfigStorage))
+            SaveConfig(obj, &new_config))
             return Default_Success_Response(file);
         else
             return Default_Fail_Response(file);
@@ -375,6 +397,11 @@ static WebApi_Result_t Webapi_Light_Handler(struct fs_file *file, const char *ur
     }
     else if (BSP_STRCMP((const char *)act, GET_STR) == 0)
     {
+        if(Device_FlashLight_IsConfigValid(obj, config) == false)
+        {
+            HttpBuilder_BuildResponse(file, HTTP_RESPONSE_503_UNAVAILABLE);
+            return WEBAPI_ERR_FAILED;
+        }
         HttpBuilder_BuildResponse(file, HTTP_RESPONSE_200_OK);
         HttpBuilder_printf(file, "{\"%s\":%d}",VALUE_STR, config->FlashLight_Brightness);
         return WEBAPI_OK;
@@ -388,8 +415,7 @@ static WebApi_Result_t Webapi_Light_Handler(struct fs_file *file, const char *ur
             new_config.FlashLight_Brightness = atoi(value);
 
         if (Device_FlashLight_IsConfigValid(obj, &new_config) &&
-            Config_Storage_Write(Dev_ConfigStorage, obj, &new_config) &&
-            Config_Storage_Commit(Dev_ConfigStorage))
+            SaveConfig(obj, &new_config))
             return Default_Success_Response(file);
         else
             return Default_Fail_Response(file);
@@ -412,6 +438,11 @@ static WebApi_Result_t Webapi_Camera_Handler(struct fs_file *file, const char *u
     }
     else if (BSP_STRCMP((const char *)act, GET_STR) == 0)
     {
+        if(Device_CamOV2640_IsConfigValid(obj, config) == false)
+        {
+            HttpBuilder_BuildResponse(file, HTTP_RESPONSE_503_UNAVAILABLE);
+            return WEBAPI_ERR_FAILED;
+        }
         HttpBuilder_BuildResponse(file, HTTP_RESPONSE_200_OK);
         HttpBuilder_printf(file, "{\"qs\":%d,", config->CamOV2640_Qs);
         HttpBuilder_printf(file, "\"brightness\":%d,", config->CamOV2640_Brightness);
@@ -443,8 +474,7 @@ static WebApi_Result_t Webapi_Camera_Handler(struct fs_file *file, const char *u
             check = SetBool_IfValid(&new_config.CamOV2640_Mirror,mirror);
 
         if (check && Device_CamOV2640_IsConfigValid(obj, &new_config) &&
-            Config_Storage_Write(Dev_ConfigStorage, obj, &new_config) &&
-            Config_Storage_Commit(Dev_ConfigStorage))
+            SaveConfig(obj, &new_config))
             return Default_Success_Response(file);
         else
             return Default_Fail_Response(file);
@@ -467,13 +497,23 @@ static WebApi_Result_t Webapi_Webhook_Handler(struct fs_file *file, const char *
     }
     else if (BSP_STRCMP((const char *)act, GET_STR) == 0)
     {
+        if(Webhook_IsConfigValid(obj, config) == false)
+        {
+            HttpBuilder_BuildResponse(file, HTTP_RESPONSE_503_UNAVAILABLE);
+            return WEBAPI_ERR_FAILED;
+        }
+
         HttpBuilder_BuildResponse(file, HTTP_RESPONSE_200_OK);
         HttpBuilder_printf(file, "{\"enable\":%s,", config->Webhook_Enable? TRUE_STR : FALSE_STR);
         HttpBuilder_printf(file, "\"retrys\":%d,", config->Webhook_Retrys);
         HttpBuilder_printf(file, "\"retry_delay\":%d,", config->Webhook_Retry_Delay);
         HttpBuilder_printf(file, "\"port\":%d,", config->Webhook_Port);
-        HttpBuilder_printf(file, "\"host\":\"%s\",", config->Webhook_Host);
-        HttpBuilder_printf(file, "\"uri\":\"%s\"}", config->Webhook_Uri);
+        HttpBuilder_printf(file, "\"host\":\"");
+        HttpBuilder_Insert(file, config->Webhook_Host, sizeof(config->Webhook_Host));
+        HttpBuilder_printf(file, "\",");
+        HttpBuilder_printf(file, "\"uri\":\"", config->Webhook_Uri,sizeof(config->Webhook_Uri));
+        HttpBuilder_Insert(file, config->Webhook_Uri, sizeof(config->Webhook_Uri));
+        HttpBuilder_printf(file, "\"}");
         return WEBAPI_OK;
     }
     else if (BSP_STRCMP((const char *)act, SET_STR) == 0)
@@ -502,8 +542,7 @@ static WebApi_Result_t Webapi_Webhook_Handler(struct fs_file *file, const char *
             check = SetStr_IfValid(new_config.Webhook_Uri,uri,sizeof(new_config.Webhook_Uri));
 
         if (check && Webhook_IsConfigValid(obj, &new_config) &&
-            Config_Storage_Write(Dev_ConfigStorage, obj, &new_config) &&
-            Config_Storage_Commit(Dev_ConfigStorage))
+            SaveConfig(obj, &new_config))
             return Default_Success_Response(file);
         else
             return Default_Fail_Response(file);
