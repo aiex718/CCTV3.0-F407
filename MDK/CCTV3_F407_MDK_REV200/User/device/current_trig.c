@@ -83,7 +83,7 @@ void Device_CurrentTrig_Init(Device_CurrentTrig_t *self)
     HAL_Timer_Init(self->CurrentTrig_Timer);
     HAL_ADC_Init(self->CurrentTrig_ADC);
     HAL_DMA_Init(self->CurrentTrig_DMA);
-
+    self->_curr_pending_event = 0;
     //flags is cleared when cmd enabled
     self->_curr_dma_ht_cb.func = Device_CurrentTrig_DmaHT_Callback;
     self->_curr_dma_ht_cb.invoke_cfg = INVOKE_IMMEDIATELY;
@@ -122,7 +122,7 @@ bool Device_CurrentTrig_IsConfigValid(Device_CurrentTrig_t *self,const Device_Cu
     else
         return ( config->CurrentTrig_Disconnect_Thres_mA <= 8 &&
         config->CurrentTrig_Overload_Thres_mA >= 16 && config->CurrentTrig_Overload_Thres_mA <= 24 &&
-        config->CurrentTrig_PeakThreshold_1000x > 0 && config->CurrentTrig_PeakThreshold_1000x < (uint16_t) -1 &&
+        config->CurrentTrig_PeakThreshold_1000x > 0 && config->CurrentTrig_PeakThreshold_1000x <= 10000 &&
         config->CurrentTrig_PeakInfluence_1000x <=1000);
 }
 
