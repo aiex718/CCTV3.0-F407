@@ -65,34 +65,6 @@ void Config_Storage_Init(Config_Storage_t *self)
 
     self->_config_status = CONFIG_STORAGE_STATUS_OK;
 }
-#if CONFIG_STORAGE_DEBUG
-void Config_Storage_Random(Config_Storage_t *self)
-{
-    uint16_t i, offset;
-
-    if (_get_config_addr_offset(self, self, &offset, NULL) == false)
-    {
-        DBG_ERROR("Config not found\n");
-        return;
-    }
-
-    self->_config_wbuf = (uint8_t *)BSP_MALLOC(self->_config_size_sum);
-
-    if (self->_config_wbuf == NULL)
-    {
-        DBG_ERROR("Random malloc failed\n");
-        return;
-    }
-
-    for (i = 0; i < self->_config_size_sum; i++)
-        self->_config_wbuf[i] = (uint8_t)rand();
-
-    Config_Storage_CalcCrc32(self,(Config_Storage_CrcFile_t *)(self->_config_wbuf + offset));
-
-    self->Config_Storage_FlashAddr = (uint32_t)self->_config_wbuf;
-    DBG_ERROR("Config random OK\n");
-}
-#endif
 
 // calculate crc and write magic to storage
 void Config_Storage_CalcCrc32(const Config_Storage_t *self, Config_Storage_CrcFile_t *crc)
@@ -303,6 +275,35 @@ bool Config_Storage_Commit(Config_Storage_t *self)
     return result;
 }
 
+#if CONFIG_STORAGE_DEBUG
+void Config_Storage_Random(Config_Storage_t *self)
+{
+    uint16_t i, offset;
+
+    if (_get_config_addr_offset(self, self, &offset, NULL) == false)
+    {
+        DBG_ERROR("Config not found\n");
+        return;
+    }
+
+    self->_config_wbuf = (uint8_t *)BSP_MALLOC(self->_config_size_sum);
+
+    if (self->_config_wbuf == NULL)
+    {
+        DBG_ERROR("Random malloc failed\n");
+        return;
+    }
+
+    for (i = 0; i < self->_config_size_sum; i++)
+        self->_config_wbuf[i] = (uint8_t)rand();
+
+    Config_Storage_CalcCrc32(self,(Config_Storage_CrcFile_t *)(self->_config_wbuf + offset));
+
+    self->Config_Storage_FlashAddr = (uint32_t)self->_config_wbuf;
+    DBG_ERROR("Config random OK\n");
+}
+#endif
+
 static bool _get_config_addr_offset(Config_Storage_t *self,
                                     void *obj_instance, uint16_t *offset_out, uint16_t *len_out)
 {
@@ -345,3 +346,4 @@ static uint32_t _calc_crc32(const uint8_t *data, uint16_t len)
     }
     return ~crc;
 }
+
