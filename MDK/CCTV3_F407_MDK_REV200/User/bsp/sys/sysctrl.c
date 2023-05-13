@@ -8,6 +8,12 @@ void SysCtrl_ResetAfter(uint16_t ms)
     ResetTime = SysTime_Get() + ms;
 }
 
+void SysCtrl_RaiseHardFault(void)
+{
+    void (*func)(int)  = (void(*)(int))0xFFFFFFFF;
+    func(0);
+}
+
 void SysCtrl_Service(void)
 {
     if(ResetTime && SysTime_Get() > ResetTime)
