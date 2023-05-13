@@ -9,4 +9,7 @@
 #define DEBUG_SERIAL_TX_BUFFER_SIZE 1024
 #define DEBUG_SERIAL_RX_BUFFER_SIZE 16
 
+//Config Storage
+#define CONFIG_STORAGE_DEBUG 0
+
 #endif
