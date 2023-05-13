@@ -61,6 +61,11 @@ static HttpBuilder_Status_t HttpBuilder_ModifyContentLength(struct fs_file *file
     return HTTP_BUILDER_OK;
 }
 
+/**
+ * @brief Insert content to fsfile using printf format
+ * @warning This function wont check overflow, make sure the fsfile is large enough
+ * @return CGI_HANDLER_OK if success, other if error
+ */
 HttpBuilder_Status_t HttpBuilder_printf(struct fs_file *file,const char* str,...)
 {
     uint16_t len;    
@@ -75,6 +80,11 @@ HttpBuilder_Status_t HttpBuilder_printf(struct fs_file *file,const char* str,...
     return HTTP_BUILDER_OK;
 }
 
+/**
+ * @brief Insert content to fsfile.
+ * @warning This function check buffer size, return HTTP_BUILDER_ERR_TOO_MANY if buffer is not enough.
+ * @return HTTP_BUILDER_OK if success, other if error
+ */
 HttpBuilder_Status_t HttpBuilder_Insert(struct fs_file *file,const char* str,uint16_t max_len)
 {
     uint16_t len=strlen(str);
