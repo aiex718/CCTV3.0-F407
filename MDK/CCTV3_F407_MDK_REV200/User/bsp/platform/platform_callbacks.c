@@ -26,6 +26,7 @@ static void HardwareCtrl_WkupButton_LongPress_Handler(void *sender, void *args, 
 
 static void HardwareCtrl_CurrentTrig_Triggered_Handler(void *sender, void *args, void *owner)
 {
+    Device_Buzzer_ShortBeep(Dev_Buzzer);
     if( Webhook_IsEnabled(App_Webhook_Triggered) &&
         Webhook_IsBusy(App_Webhook_Triggered)==false)
     {
