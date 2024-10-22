@@ -10,7 +10,7 @@ Ethernetif_t Dev_Ethernetif_Default_Inst= {
     .Netif_DNS0 = 8|8<<8|8<<16|8<<24,
     .Netif_DNS1 = 8|8<<8|4<<16|4<<24,
 #endif
-    .Netif_DHCP_Enable = false,
+    .Netif_DHCP_Enable = true,
     .Netif_PHYCheckLink_Func = ETH_CheckLinkStatus,
 };
 
