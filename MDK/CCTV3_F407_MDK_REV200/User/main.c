@@ -114,6 +114,7 @@ int main(void)
 	Platform_RegistCallbacks();
 
 	DBG_INFO("Init done\n");
+	UartCmd_PrintHelpMsg();
 
 	while(1)
 	{
