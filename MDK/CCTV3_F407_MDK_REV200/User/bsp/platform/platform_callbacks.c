@@ -39,7 +39,7 @@ static void HardwareCtrl_CurrentTrig_Triggered_Handler(void *sender, void *args,
 #define CURRENT_TRIG_DISCONNECT_MSG_FILTER_CNT 50
 static void HardwareCtrl_CurrentTrig_Disconnect_Handler(void *sender, void *args, void *owner)
 {
-    static u8_t filter_cnt = 0;
+    static uint8_t filter_cnt = 0;
     if((filter_cnt--) == 0)
     {
         filter_cnt=CURRENT_TRIG_DISCONNECT_MSG_FILTER_CNT;
