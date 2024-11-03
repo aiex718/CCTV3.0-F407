@@ -9,5 +9,6 @@ typedef struct UartCmd_s
 } UartCmd_t;
 
 void UartCmd_Service(UartCmd_t *self);
+void UartCmd_PrintHelpMsg(void);
 
 #endif

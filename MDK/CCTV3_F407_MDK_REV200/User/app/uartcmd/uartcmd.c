@@ -4,9 +4,9 @@
 #include "bsp/sys/sysctrl.h"
 #include "bsp/sys/mem_guard.h"
 
+
 void UartCmd_Service(UartCmd_t *self)
 {
-    self->UartCmd_RxBuf[0] = 0;
     uint8_t *rxcmd = self->UartCmd_RxBuf;
     if(DBG_Serial_ReadLine(Peri_DBG_Serial,rxcmd,sizeof(self->UartCmd_RxBuf)))
     {
@@ -80,5 +80,32 @@ void UartCmd_Service(UartCmd_t *self)
         {
             SysCtrl_RaiseHardFault();
         }
+        else if (BSP_STRCMP((char*)rxcmd,"help")==0)
+        {
+            DBG_INFO("\n"
+            "Commands Available:\n"
+            "hello - say hello\n"
+            "time - print time\n"
+            "stack - print stack usage\n"
+            "format - format disk\n"
+            "reset - factory reset system\n"
+            "reboot - reboot system\n"
+            "beep - beep\n"
+            "ip - print ip\n"
+            "dhcp - toggle dhcp\n"
+            "fault - raise hard fault\n"
+            "help - print this help\n");
+        }
+        else
+        {
+            DBG_ERROR("Unknown command:%s\n",rxcmd);
+        }
+        
+        BSP_MEMSET(self->UartCmd_RxBuf,0,sizeof(self->UartCmd_RxBuf));
     }
+}
+
+void UartCmd_PrintHelpMsg(void)
+{
+    DBG_INFO("Input 'help' for command list\n");
 }
