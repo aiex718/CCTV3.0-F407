@@ -26,12 +26,30 @@ static void HardwareCtrl_WkupButton_LongPress_Handler(void *sender, void *args, 
 
 static void HardwareCtrl_CurrentTrig_Triggered_Handler(void *sender, void *args, void *owner)
 {
+    DBG_INFO("CurrentTrigger triggered!\n");
     Device_Buzzer_ShortBeep(Dev_Buzzer);
     if( Webhook_IsEnabled(App_Webhook_Triggered) &&
         Webhook_IsBusy(App_Webhook_Triggered)==false)
     {
         Webhook_Send(App_Webhook_Triggered);
+        DBG_INFO("CurrentTrigger webhook sent!\n");
     }
+}
+
+#define CURRENT_TRIG_DISCONNECT_MSG_FILTER_CNT 50
+static void HardwareCtrl_CurrentTrig_Disconnect_Handler(void *sender, void *args, void *owner)
+{
+    static u8_t filter_cnt = 0;
+    if((filter_cnt--) == 0)
+    {
+        filter_cnt=CURRENT_TRIG_DISCONNECT_MSG_FILTER_CNT;
+        DBG_WARNING("CurrentTrigger current source disconnected\n");
+    }
+}
+
+static void HardwareCtrl_CurrentTrig_Overload_Handler(void *sender, void *args, void *owner)
+{
+    DBG_WARNING("CurrentTrigger current overload!!!\n");
 }
 
 // callback instances
@@ -41,6 +59,10 @@ const Callback_t WkupButton_LongPress_cb =
     {.func = HardwareCtrl_WkupButton_LongPress_Handler};
 const Callback_t CurrentTrig_Triggered_cb =
     {.func = HardwareCtrl_CurrentTrig_Triggered_Handler};
+const Callback_t CurrentTrig_Disconnect_cb =
+    {.func = HardwareCtrl_CurrentTrig_Disconnect_Handler};
+const Callback_t CurrentTrig_Overload_cb =
+    {.func = HardwareCtrl_CurrentTrig_Overload_Handler};
 
 void Platform_RegistCallbacks(void)
 {
@@ -50,4 +72,8 @@ void Platform_RegistCallbacks(void)
         BUTTON_CALLBACK_LONG_PRESS, (Callback_t*)&WkupButton_LongPress_cb);
     Device_CurrentTrig_SetCallback(Dev_CurrentTrig,
         DEVICE_CURRENT_TRIG_CALLBACK_TRIGGERED, (Callback_t*)&CurrentTrig_Triggered_cb);
+    Device_CurrentTrig_SetCallback(Dev_CurrentTrig,
+        DEVICE_CURRENT_TRIG_CALLBACK_DISCONNECT, (Callback_t*)&CurrentTrig_Disconnect_cb);
+    Device_CurrentTrig_SetCallback(Dev_CurrentTrig,
+        DEVICE_CURRENT_TRIG_CALLBACK_OVERLOAD, (Callback_t*)&CurrentTrig_Overload_cb);
 }
