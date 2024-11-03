@@ -258,7 +258,10 @@ static void Device_CurrentTrig_CheckADCThres(Device_CurrentTrig_t *self,const CU
         Callback_Invoke_Idx(
             self,NULL,self->CurrentTrig_Callbacks, 
             DEVICE_CURRENT_TRIG_CALLBACK_DISCONNECT);
-        DBG_WARNING("ISEN disconnect!\n");
+
+#if CURRENT_TRIG_DEBUG_PRINT_EVENT
+            DBG_WARNING("ISEN disconnect!\n");
+#endif
     }
 
     if(overload)
@@ -266,7 +269,10 @@ static void Device_CurrentTrig_CheckADCThres(Device_CurrentTrig_t *self,const CU
         Callback_Invoke_Idx(
             self,NULL,self->CurrentTrig_Callbacks, 
             DEVICE_CURRENT_TRIG_CALLBACK_OVERLOAD);
-        DBG_WARNING("ISEN overloaded!\n");
+
+#if CURRENT_TRIG_DEBUG_PRINT_EVENT
+            DBG_WARNING("ISEN overloaded!\n");
+#endif
     }
 }
 
@@ -289,7 +295,7 @@ static void Device_CurrentTrig_CheckRecvLen(Device_CurrentTrig_t *self)
         if(Device_CurrentTrig_CheckPeak(self))
         {
 #if CURRENT_TRIG_DEBUG_PRINT_EVENT
-            DBG_INFO("Triggered!\n");
+            DBG_INFO("Current Triggered!\n");
 #endif
             Callback_Invoke_Idx(
                 self,NULL,self->CurrentTrig_Callbacks, 
