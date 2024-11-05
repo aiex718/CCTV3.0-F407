@@ -379,18 +379,19 @@ void HAL_USART_IRQHandler(HAL_USART_t* usart)
     }
     if(USART_GetITStatus(usart->USARTx, USART_IT_RXNE) != RESET)
     {
-        //clear RXND flag and read data
+        //clear RXNE flag and read data
         uint8_t data = USART_ReceiveData(usart->USARTx);
-        if(Buffer_Queue_IsFull(usart->USART_Rx_Buf))
-            Callback_Invoke_Idx(usart,NULL,usart->USART_Callbacks,USART_CALLBACK_IRQ_RX_FULL);
-        
         if(Buffer_Queue_Push_uint8_t(usart->USART_Rx_Buf, data))
             usart->_last_rx_time = SysTime_Get();
+
+        if(Buffer_Queue_IsFull(usart->USART_Rx_Buf))
+            Callback_Invoke_Idx(usart,NULL,usart->USART_Callbacks,USART_CALLBACK_IRQ_RX_FULL);
 
         if (Buffer_Queue_GetSize(usart->USART_Rx_Buf)==usart->USART_Rx_Threshold)
             Callback_InvokeNowOrPending_Idx(usart,NULL,usart->USART_Callbacks,
                 USART_CALLBACK_RX_THRSHOLD,usart->_callback_pending_flag);
     }
+
     if(USART_GetITStatus(usart->USARTx, USART_IT_IDLE) != RESET)
     {
         //clear IDLE flag by read data and disable IDLE interrupt
@@ -429,8 +430,8 @@ void HAL_USART_Service(HAL_USART_t* usart)
 
     //check rx timeout, only applicable for stream rx mode
     //dma mode only use idle interrupt to detect timeout
-    if( HAL_USART_IsRxDmaEnabled(usart) == false && 
-        usart->USART_Rx_Timeout && Buffer_Queue_IsEmpty(usart->USART_Rx_Buf)==false &&
+    if( usart->USART_Rx_Timeout && HAL_USART_IsRxDmaEnabled(usart) == false && 
+        Buffer_Queue_IsEmpty(usart->USART_Rx_Buf)==false &&
         (SysTime_Get() - usart->_last_rx_time) >= usart->USART_Rx_Timeout)
     {
         Callback_Invoke_Idx(usart,NULL,usart->USART_Callbacks,USART_CALLBACK_RX_TIMEOUT);   
