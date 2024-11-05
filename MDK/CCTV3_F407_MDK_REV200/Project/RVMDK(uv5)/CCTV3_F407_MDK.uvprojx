@@ -690,6 +690,11 @@
               <FileType>1</FileType>
               <FilePath>..\..\User\bsp\hal\usart.c</FilePath>
             </File>
+            <File>
+              <FileName>dwt.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\User\bsp\hal\dwt.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
