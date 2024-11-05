@@ -342,7 +342,7 @@ HAL_USART_Status_t HAL_USART_TxDmaWake(const HAL_USART_t* usart)
     if(HAL_USART_IsTransmitting(usart)) 
         return HAL_USART_BUSY;
     
-    if(USART_GetITStatus(usart->USARTx,USART_IT_TC))
+    if(USART_GetITStatus(usart->USARTx,USART_IT_TC) == RESET)
     {
         USART_ITConfig(usart->USARTx, USART_IT_TC, ENABLE);
         return HAL_USART_OK;

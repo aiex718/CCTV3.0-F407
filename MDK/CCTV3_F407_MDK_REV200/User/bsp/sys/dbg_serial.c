@@ -276,9 +276,9 @@ int fputc(int ch, FILE *f)
                 //yield();
 #if DBG_SERIAL_USING_USART_ISR
     #if DBG_SERIAL_ENABLE_DMA
-            HAL_USART_TxStreamWake(usart);
-    #else
             HAL_USART_TxDmaWake(usart);
+    #else
+            HAL_USART_TxStreamWake(usart);
     #endif
 #endif
         }
