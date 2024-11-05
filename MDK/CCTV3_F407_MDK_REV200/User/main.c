@@ -120,6 +120,7 @@ int main(void)
 
 	while(1)
 	{
+		//TODO:Add a timer for each services to optimize performance
 		DBG_Serial_Service(Peri_DBG_Serial);
 		Device_Buzzer_Service(Dev_Buzzer);
 		Device_LedIndicator_Service(Dev_Led_Blink);

@@ -15,7 +15,10 @@ void Device_Buzzer_Service(Device_Buzzer_t *self)
     if(SysTimer_IsElapsed(&self->_buzzer_tmr))
     {
         if(Buffer_Queue_IsEmpty(self->Buzzer_Buffer))
+        {
+            SysTimer_Init(&self->_buzzer_tmr,10);//set next check to 10ms
             HAL_GPIO_WritePin(self->Buzzer_GPIO_pin,0);
+        }
         else if(Buffer_Queue_Pop_uint16_t(self->Buzzer_Buffer,&val) && val)
         {
             SysTimer_Init(&self->_buzzer_tmr,val);
