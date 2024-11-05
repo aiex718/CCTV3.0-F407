@@ -101,3 +101,9 @@ void HAL_RCC_Init(const HAL_RCC_t *self)
         }
     }
 }
+
+uint32_t HAL_RCC_GetClockSpeed(void)
+{
+    SystemCoreClockUpdate();
+    return SystemCoreClock;
+}
