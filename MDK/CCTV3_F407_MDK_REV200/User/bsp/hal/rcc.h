@@ -55,6 +55,7 @@ __BSP_STRUCT_ALIGN typedef struct HAL_RCC_s
 
 void HAL_RCC_Cmd(const HAL_RCC_Cmd_t* cmd,const bool en);
 void HAL_RCC_Init(const HAL_RCC_t *self);
+uint32_t HAL_RCC_GetClockSpeed(void);
 
 /* Example Usage
 
