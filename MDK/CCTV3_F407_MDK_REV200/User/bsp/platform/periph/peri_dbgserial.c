@@ -163,6 +163,7 @@ DBG_Serial_t Peri_DBG_Serial_Inst=
 		},
 		.USART_Rx_Threshold = 0,
 		.USART_Rx_Timeout = 100,
+		.USART_Service_Period = 1,//1ms
 		.pExtension = NULL,
 	},//hal_usart
 };

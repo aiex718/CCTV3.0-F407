@@ -6,6 +6,7 @@
 #include "bsp/sys/callback.h"
 #include "bsp/sys/systime.h"
 #include "bsp/sys/bitflag.h"
+#include "bsp/sys/systimer.h"
 
 #include "bsp/hal/gpio.h"
 #include "bsp/hal/rcc.h"
@@ -62,12 +63,15 @@ __BSP_STRUCT_ALIGN typedef struct HAL_USART_s
     //if enabled, it's required to call HAL_USART_Service() 
     //periodically in main thread/task
     uint16_t USART_Rx_Timeout;
+    uint16_t USART_Service_Period;
     //callbacks
     Callback_t* USART_Callbacks[__NOT_CALLBACK_USART_MAX];
     //customize data structure
     void* pExtension;
 
     //private flags, dont use
+    //timer
+    SysTimer_t _service_tmr;
     SysTime_t _last_rx_time;
     BitFlag8_t _callback_pending_flag;
 }HAL_USART_t;

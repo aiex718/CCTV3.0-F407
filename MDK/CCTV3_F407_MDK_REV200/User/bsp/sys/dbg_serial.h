@@ -22,11 +22,11 @@
 #endif
 
 #ifndef DBG_SERIAL_TX_DMA_MODE
-    #define DBG_SERIAL_TX_DMA_MODE 1
+    #define DBG_SERIAL_TX_DMA_MODE 0
 #endif
 
 #ifndef DBG_SERIAL_RX_DMA_MODE
-    #define DBG_SERIAL_RX_DMA_MODE 1
+    #define DBG_SERIAL_RX_DMA_MODE 0
 #endif
 
 #ifndef DBG_SERIAL_CALLBACK_IN_ISR
