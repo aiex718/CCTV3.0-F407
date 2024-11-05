@@ -8,6 +8,7 @@
 #include "bsp/sys/systimer.h"
 #include "bsp/sys/sysctrl.h"
 #include "bsp/sys/mem_guard.h"
+#include "bsp/sys/perfmon.h"
 
 #include "bsp/hal/systick.h"
 #include "bsp/hal/timer.h"
@@ -113,6 +114,8 @@ int main(void)
 	//Link callbacks handler to object
 	Platform_RegistCallbacks();
 
+	PerfMon_Init();
+
 	DBG_INFO("Init done\n");
 	UartCmd_PrintHelpMsg();
 
@@ -137,5 +140,6 @@ int main(void)
 		/* handle periodic timers for LwIP */
 		sys_check_timeouts();
 		SysCtrl_Service();
+		PerfMon_Serivce();
 	}
 }
