@@ -29,13 +29,13 @@ typedef enum
 typedef enum 
 {
     //IRQ callbacks, always invoked in ISR
-    USART_CALLBACK_IRQ = 0          ,
-    USART_CALLBACK_IRQ_RX_FULL      ,
-    USART_CALLBACK_IRQ_TX_EMPTY     ,
+    USART_CALLBACK_IRQ = 0      ,
+    USART_CALLBACK_IRQ_RX_FULL  ,//Only for rx stream mode
+    USART_CALLBACK_IRQ_TX_EMPTY ,
     //Normal callbacks, invoked in ISR or delay to service call
-    USART_CALLBACK_RX_THRSHOLD      ,
-    USART_CALLBACK_RX_TIMEOUT       ,
-    __NOT_CALLBACK_USART_MAX        ,
+    USART_CALLBACK_RX_THRSHOLD  ,//Only for rx stream mode
+    USART_CALLBACK_RX_TIMEOUT   ,
+    __NOT_CALLBACK_USART_MAX    ,
 }HAL_USART_CallbackIdx_t;
 
 __BSP_STRUCT_ALIGN typedef struct HAL_USART_s

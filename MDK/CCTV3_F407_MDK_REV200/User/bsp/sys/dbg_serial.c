@@ -21,7 +21,7 @@ void DBG_Serial_UsartTxEmptyCallback(void *sender,void *arg,void* owner)
 
     if(Buffer_Queue_IsEmpty(hal_usart->USART_Tx_Buf)==false)
     {
-#if DBG_SERIAL_ENABLE_DMA
+#if DBG_SERIAL_TX_DMA_MODE
         HAL_USART_DmaWrite(hal_usart);
 #else
         HAL_USART_TxStreamCmd(hal_usart,true);
@@ -41,7 +41,7 @@ void DBG_Serial_UsartRxTimeoutCallback(void *sender,void *arg,void* owner)
     if(Buffer_Queue_IsEmpty(hal_usart->USART_Rx_Buf)==false)
         DBG_INFO("DBG_Serial: rx data dropped\n");
 
-#if DBG_SERIAL_ENABLE_DMA
+#if DBG_SERIAL_RX_DMA_MODE
         HAL_USART_DmaRead(hal_usart,0);
 #endif    
     //no need to restart rx stream(if enable) here, it's always on
@@ -58,15 +58,11 @@ void DBG_Serial_Init(DBG_Serial_t *self)
 
     self->_tx_empty_cb.func = DBG_Serial_UsartTxEmptyCallback;
     self->_tx_empty_cb.owner = self;
-#if DBG_SERIAL_USING_USART_ISR
     self->_tx_empty_cb.invoke_cfg = INVOKE_IMMEDIATELY;
-#else
-    self->_tx_empty_cb->invoke_cfg = INVOKE_IN_SERVICE;
-#endif
 
     self->_rx_timeout_cb.func = DBG_Serial_UsartRxTimeoutCallback;
     self->_rx_timeout_cb.owner = self;
-#if DBG_SERIAL_USING_USART_ISR
+#if DBG_SERIAL_CALLBACK_IN_ISR
     self->_rx_timeout_cb.invoke_cfg = INVOKE_IMMEDIATELY;
 #else
     self->_rx_timeout_cb.invoke_cfg = INVOKE_IN_SERVICE;
@@ -98,7 +94,7 @@ void DBG_Serial_Cmd(DBG_Serial_t *self,bool en)
     {
         if(self->rx_con_queue!=NULL)
         {
-#if DBG_SERIAL_ENABLE_DMA
+#if DBG_SERIAL_RX_DMA_MODE
 	    HAL_USART_DmaRead(self->hal_usart,0);
 #else
         HAL_USART_RxStreamCmd(self->hal_usart,true);
@@ -195,17 +191,11 @@ There's several ways to trigger transfer manually:
 */
 void DBG_Serial_Service(DBG_Serial_t *self)
 {
+#if (!DBG_SERIAL_CALLBACK_IN_ISR) || (!DBG_SERIAL_RX_DMA_MODE)
     HAL_USART_t *usart = self->hal_usart;
-#if DBG_SERIAL_USING_USART_ISR
-    BSP_UNUSED_ARG(self);
-    BSP_UNUSED_ARG(usart);
-#else
     if(usart != NULL && HAL_USART_IsEnabled(usart))
     {
         HAL_USART_Service(usart);
-        //Invoke callback manually if tx is idle to trigger transfer
-        if(HAL_USART_IsTransmitting(usart)==false)
-            DBG_Serial_UsartTxEmptyCallback(usart,self);
     }
 #endif
 }
@@ -274,12 +264,10 @@ int fputc(int ch, FILE *f)
                 Concurrent_Queue_TryPush(dbg_serial->tx_con_queue,(uint8_t)ch)==false && 
                 SysCtrl_IsThreadInIRq() == false );
                 //yield();
-#if DBG_SERIAL_USING_USART_ISR
-    #if DBG_SERIAL_ENABLE_DMA
+#if DBG_SERIAL_TX_DMA_MODE
             HAL_USART_TxDmaWake(usart);
-    #else
+#else
             HAL_USART_TxStreamWake(usart);
-    #endif
 #endif
         }
     }
