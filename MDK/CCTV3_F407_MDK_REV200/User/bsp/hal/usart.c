@@ -36,6 +36,7 @@ void HAL_USART_Init(HAL_USART_t* usart)
     usart->pExtension = NULL;
     usart->_callback_pending_flag = 0;
     usart->_last_rx_time = 0;
+    SysTimer_Init(&usart->_service_tmr,usart->USART_Service_Period);
 }
 
 void HAL_USART_Cmd(HAL_USART_t* usart, bool en)
@@ -420,20 +421,26 @@ void HAL_USART_IRQHandler(HAL_USART_t* usart)
  */
 void HAL_USART_Service(HAL_USART_t* usart)
 {
-    //Execute pending callbacks
-    while(usart->_callback_pending_flag)
+    if(SysTimer_IsElapsed(&usart->_service_tmr))
     {
-        uint8_t cb_idx = BitFlag_BinToIdx(usart->_callback_pending_flag);
-        Callback_Invoke_Idx(usart,NULL,usart->USART_Callbacks,cb_idx);        
-        BitFlag_ClearIdx(usart->_callback_pending_flag,cb_idx);
-    }
+        //Execute pending callbacks
+        while(usart->_callback_pending_flag)
+        {
+            uint8_t cb_idx = BitFlag_BinToIdx(usart->_callback_pending_flag);
+            Callback_Invoke_Idx(usart,NULL,usart->USART_Callbacks,cb_idx);        
+            BitFlag_ClearIdx(usart->_callback_pending_flag,cb_idx);
+        }
 
-    //check rx timeout, only applicable for stream rx mode
-    //dma mode only use idle interrupt to detect timeout
-    if( usart->USART_Rx_Timeout && HAL_USART_IsRxDmaEnabled(usart) == false && 
-        Buffer_Queue_IsEmpty(usart->USART_Rx_Buf)==false &&
-        (SysTime_Get() - usart->_last_rx_time) >= usart->USART_Rx_Timeout)
-    {
-        Callback_Invoke_Idx(usart,NULL,usart->USART_Callbacks,USART_CALLBACK_RX_TIMEOUT);   
+        //check rx timeout, only applicable for stream rx mode
+        //dma mode only use idle interrupt to detect timeout
+        if( usart->USART_Rx_Timeout && HAL_USART_IsRxDmaEnabled(usart) == false && 
+            Buffer_Queue_IsEmpty(usart->USART_Rx_Buf)==false &&
+            (SysTime_Get() - usart->_last_rx_time) >= usart->USART_Rx_Timeout)
+        {
+            Callback_Invoke_Idx(usart,NULL,usart->USART_Callbacks,USART_CALLBACK_RX_TIMEOUT);   
+        }
+        
+        SysTimer_Reset(&usart->_service_tmr);
     }
+    
 }

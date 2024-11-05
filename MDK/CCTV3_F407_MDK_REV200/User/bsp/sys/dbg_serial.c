@@ -191,13 +191,11 @@ There's several ways to trigger transfer manually:
 */
 void DBG_Serial_Service(DBG_Serial_t *self)
 {
-#if (!DBG_SERIAL_CALLBACK_IN_ISR) || (!DBG_SERIAL_RX_DMA_MODE)
     HAL_USART_t *usart = self->hal_usart;
     if(usart != NULL && HAL_USART_IsEnabled(usart))
     {
         HAL_USART_Service(usart);
     }
-#endif
 }
 
 uint16_t DBG_Serial_ReadLine(DBG_Serial_t *self,uint8_t* buf, 
