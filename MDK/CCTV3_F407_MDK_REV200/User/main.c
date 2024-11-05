@@ -6,10 +6,11 @@
 #include "bsp/sys/systime.h"
 #include "bsp/sys/systimer.h"
 #include "bsp/sys/mem_guard.h"
+#include "bsp/sys/perfmon.h"
 
 void Button_Wkup_ShortPress_Handler(void* sender, void* args,void* owner)
 {
-	DBG_INFO("Button_Wkup_ShortPress_Handler\n");
+	DBG_INFO("LoopFreq:%d\n",PerfMon_GetLoopFreq());
 }
 
 const Callback_t Button_Wkup_ShortPress_CB = 
@@ -42,6 +43,8 @@ int main(void)
 	HAL_GPIO_InitPin(Peri_LED_STAT_pin);
 	HAL_GPIO_WritePin(Peri_LED_STAT_pin,0);
 
+	PerfMon_Init();
+
 	while(1)
 	{
 		uint8_t rxcmd[DEBUG_SERIAL_RX_BUFFER_SIZE]={0};
@@ -50,7 +53,7 @@ int main(void)
 			if(strcmp((char*)rxcmd,"hello")==0)
 				DBG_INFO("hello there\n");
 		}
-		
+		PerfMon_Serivce();
 		DBG_Serial_Service(Peri_DBG_Serial);
 		Device_LedIndicator_Service(Dev_Led_Blink);
 		Device_Button_Service(Dev_Button_Wkup);
