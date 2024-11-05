@@ -3,6 +3,7 @@
 #include "bsp/platform/platform_inst.h"
 #include "bsp/sys/sysctrl.h"
 #include "bsp/sys/mem_guard.h"
+#include "bsp/sys/perfmon.h"
 
 
 void UartCmd_Service(UartCmd_t *self)
@@ -80,6 +81,10 @@ void UartCmd_Service(UartCmd_t *self)
         {
             SysCtrl_RaiseHardFault();
         }
+        else if(BSP_STRCMP((char*)rxcmd,"loopfreq")==0)
+        {
+            DBG_INFO("LoopFreq:%d\n",PerfMon_GetLoopFreq());
+        }
         else if (BSP_STRCMP((char*)rxcmd,"help")==0)
         {
             DBG_INFO("\n"
@@ -94,6 +99,7 @@ void UartCmd_Service(UartCmd_t *self)
             "ip - print ip\n"
             "dhcp - toggle dhcp\n"
             "fault - raise hard fault\n"
+            "loopfreq - print main loop frequency\n"
             "help - print this help\n");
         }
         else

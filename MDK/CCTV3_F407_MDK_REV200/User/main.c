@@ -113,7 +113,6 @@ int main(void)
 
 	//Link callbacks handler to object
 	Platform_RegistCallbacks();
-
 	PerfMon_Init();
 
 	DBG_INFO("Init done\n");
@@ -123,8 +122,8 @@ int main(void)
 	{
 		DBG_Serial_Service(Peri_DBG_Serial);
 		Device_Buzzer_Service(Dev_Buzzer);
-    	Device_LedIndicator_Service(Dev_Led_Blink);
-    	Device_Button_Service(Dev_Button_Wkup);
+		Device_LedIndicator_Service(Dev_Led_Blink);
+		Device_Button_Service(Dev_Button_Wkup);
 		Device_CurrentTrig_Service(Dev_CurrentTrig);
 		UartCmd_Service(App_UartCmd);
 
