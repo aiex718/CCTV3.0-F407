@@ -19,6 +19,7 @@ typedef __IO uint8_t BitFlag8_t;
 
 #define BitFlag_IdxToBin(idx) (1<<(idx))
 
+//f must be not zero
 __STATIC_INLINE uint8_t BitFlag_BinToIdx(BitFlag32_t f){
     uint8_t result = 0;
     while (f >>= 1)result++;
